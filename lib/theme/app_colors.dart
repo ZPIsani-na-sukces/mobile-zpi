@@ -18,4 +18,8 @@ abstract final class AppColors {
   static const Color onSuccess = Color(0xFFFFFFFF);
   static const Color onWarning = Color(0xFF1C2833);
   static const Color onError = Color(0xFFFFFFFF);
+
+  static const Color disabled = Color(0xFFE0E0E0);
+  static const Color onDisabled = Color(0xFF9E9E9E);
+  static const Color surfacePressed = Color(0xFFEAECEE);
 }

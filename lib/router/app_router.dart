@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:mobile_zpi/config/app_env.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Page|Screen|View|Scaffold,Route')
@@ -17,5 +18,6 @@ class AppRouter extends RootStackRouter {
       ],
     ),
     AutoRoute(path: '/sos', page: SosRoute.page),
+    if (AppEnv.isDev) AutoRoute(path: '/playground', page: PlaygroudRoute.page),
   ];
 }

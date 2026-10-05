@@ -7,18 +7,21 @@
         {
             "name": "mobile-zpi",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "toolArgs": ["--dart-define-from-file=.env"]
         },
         {
             "name": "mobile-zpi (profile mode)",
             "request": "launch",
             "type": "dart",
+            "toolArgs": ["--dart-define-from-file=.env"],
             "flutterMode": "profile"
         },
         {
             "name": "mobile-zpi (release mode)",
             "request": "launch",
             "type": "dart",
+            "toolArgs": ["--dart-define-from-file=.env"],
             "flutterMode": "release"
         }
     ]
