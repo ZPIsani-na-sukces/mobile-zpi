@@ -8,4 +8,14 @@ abstract final class AppEnv {
   /// builds are PROD.
   static const bool isDev = _env == 'DEV' || (_env == '' && kDebugMode);
   static const bool isProd = !isDev;
+
+  /// Whether repositories should return mocked data instead of calling the
+  /// API. When `USE_MOCKS` is not set, it follows [isDev].
+  static const bool useMocks = bool.fromEnvironment(
+    'USE_MOCKS',
+    defaultValue: isDev,
+  );
+
+  /// Base URL of the backend API, e.g. `https://api.example.com`.
+  static const String apiBaseUrl = String.fromEnvironment('API_BASE_URL');
 }
