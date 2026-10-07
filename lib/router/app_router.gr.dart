@@ -11,12 +11,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:auto_route/auto_route.dart' as _i8;
-import 'package:mobile_zpi/features/contacts/contacts_view.dart' as _i2;
-import 'package:mobile_zpi/features/home/home_view.dart' as _i3;
-import 'package:mobile_zpi/features/med_history/med_history_view.dart' as _i4;
-import 'package:mobile_zpi/features/playground/playgroud_view.dart' as _i5;
-import 'package:mobile_zpi/features/routine/routine_view.dart' as _i6;
-import 'package:mobile_zpi/features/sos/sos_view.dart' as _i7;
+import 'package:mobile_zpi/features/contacts/presentation/contacts_view.dart'
+    as _i2;
+import 'package:mobile_zpi/features/home/presentation/home_view.dart' as _i3;
+import 'package:mobile_zpi/features/med_history/presentation/med_history_view.dart'
+    as _i4;
+import 'package:mobile_zpi/features/playground/presentation/playgroud_view.dart'
+    as _i5;
+import 'package:mobile_zpi/features/routine/presentation/routine_view.dart'
+    as _i6;
+import 'package:mobile_zpi/features/sos/presentation/sos_view.dart' as _i7;
 import 'package:mobile_zpi/widgets/app_scaffold.dart' as _i1;
 
 /// generated route for
