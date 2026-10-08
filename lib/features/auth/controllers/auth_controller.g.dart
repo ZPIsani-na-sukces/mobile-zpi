@@ -8,15 +8,12 @@ part of 'auth_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The current session for the whole app; `null` means logged out.
 
 @ProviderFor(AuthController)
 final authControllerProvider = AuthControllerProvider._();
 
-/// The current session for the whole app; `null` means logged out.
 final class AuthControllerProvider
     extends $AsyncNotifierProvider<AuthController, AuthSession?> {
-  /// The current session for the whole app; `null` means logged out.
   AuthControllerProvider._()
     : super(
         from: null,
@@ -37,8 +34,6 @@ final class AuthControllerProvider
 }
 
 String _$authControllerHash() => r'c80252ed02102622eb38fd47bc11c1e1d89e9017';
-
-/// The current session for the whole app; `null` means logged out.
 
 abstract class _$AuthController extends $AsyncNotifier<AuthSession?> {
   FutureOr<AuthSession?> build();

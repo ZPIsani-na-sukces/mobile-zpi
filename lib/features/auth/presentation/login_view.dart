@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/auth/controllers/login_controller.dart';
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/presentation/widgets/logo_placeholder.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -49,7 +50,7 @@ class LoginView extends HookConsumerWidget {
     }
 
     void onForgotPassword() {}
-    void onSignUp() {}
+    void onSignUp() => context.router.push(const RegisterRoute());
 
     return Scaffold(
       body: SafeArea(
@@ -59,7 +60,7 @@ class LoginView extends HookConsumerWidget {
             child: Column(
               spacing: AppSpacing.xl,
               children: [
-                const _LogoPlaceholder(),
+                const LogoPlaceholder(),
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   decoration: const BoxDecoration(
@@ -187,26 +188,3 @@ String _loginErrorMessage(Object error) => switch (error) {
     'Brak połączenia z internetem. Spróbuj ponownie.',
   _ => 'Coś poszło nie tak. Spróbuj ponownie.',
 };
-
-class _LogoPlaceholder extends StatelessWidget {
-  const _LogoPlaceholder();
-
-  static const double _size = 96;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: _size,
-      height: _size,
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: AppRadius.xlAll,
-      ),
-      child: const Icon(
-        Icons.home_rounded,
-        size: _size / 2,
-        color: AppColors.onPrimary,
-      ),
-    );
-  }
-}

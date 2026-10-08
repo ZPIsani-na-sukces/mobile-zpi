@@ -49,3 +49,11 @@ app.*.map.json
 
 # Environment
 .env
+
+# Generated code (build_runner, freezed, json_serializable, riverpod, auto_route, flutter_gen)
+*.g.dart
+*.freezed.dart
+*.gr.dart
+*.gen.dart
+*.config.dart
+*.mocks.dart

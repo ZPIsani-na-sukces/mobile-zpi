@@ -19,6 +19,7 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(path: '/sos', page: SosRoute.page),
     AutoRoute(path: '/login', page: LoginRoute.page),
+    AutoRoute(path: '/register', page: RegisterRoute.page),
     if (AppEnv.isDev) AutoRoute(path: '/playground', page: PlaygroudRoute.page),
   ];
 }
