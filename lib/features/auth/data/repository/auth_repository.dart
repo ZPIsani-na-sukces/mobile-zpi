@@ -1,5 +1,6 @@
 import 'package:mobile_zpi/config/app_env.dart';
 import 'package:mobile_zpi/features/auth/data/models/auth_session.dart';
+import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/data/models/register_request.dart';
@@ -20,7 +21,9 @@ class AccountAlreadyExistsException implements Exception {
 }
 
 class TooManyAttemptsException implements Exception {
-  const TooManyAttemptsException();
+  const TooManyAttemptsException({this.retryAfter});
+
+  final Duration? retryAfter;
 }
 
 class InvalidCodeException implements Exception {
@@ -31,9 +34,25 @@ class CodeExpiredException implements Exception {
   const CodeExpiredException();
 }
 
+class PhoneVerificationRequiredException implements Exception {
+  const PhoneVerificationRequiredException({
+    required this.verificationTicket,
+    this.phoneChallenge,
+  });
+
+  final String verificationTicket;
+  final PhoneChallenge? phoneChallenge;
+}
+
+class VerificationExpiredException implements Exception {
+  const VerificationExpiredException();
+}
+
 abstract interface class AuthRepository {
   Future<AuthSession> login(String identifier, String password);
   Future<RegisterResponse> register(RegisterRequest request);
+  Future<PhoneChallenge> sendVerificationCode(String verificationTicket);
+  Future<void> confirmPhone(ConfirmChallengeRequest request);
   Future<PhoneChallenge> sendResetCode(String phoneNumber);
   Future<void> setNewPassword(NewPasswordRequest request);
 }

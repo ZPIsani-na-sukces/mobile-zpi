@@ -9,6 +9,7 @@ import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
 import 'package:mobile_zpi/features/auth/presentation/widgets/step_card.dart';
 import 'package:mobile_zpi/features/auth/presentation/widgets/step_progress.dart';
 import 'package:mobile_zpi/features/auth/validation/auth_validators.dart';
+import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -73,6 +74,24 @@ class RegisterView extends HookConsumerWidget {
       fieldError.value = null;
       ref.read(registerControllerProvider.notifier).clearError();
     };
+
+    ref.listen(registerControllerProvider, (previous, next) {
+      if (previous?.isLoading != true) return;
+      if (next case AsyncData(value: final response?)) {
+        final phoneNumber = AuthValidators.normalizePhoneNumber(
+          phoneController.text,
+        )!;
+        context.router.replace(
+          AccountVerificationRoute(
+            verificationTicket: response.verificationTicket,
+            identifier: phoneNumber,
+            password: passwordController.text,
+            phoneNumber: phoneNumber,
+            initialChallenge: response.phoneChallenge,
+          ),
+        );
+      }
+    });
 
     void onBack() => goToStep(0);
 

@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/auth/controllers/login_controller.dart';
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
 import 'package:mobile_zpi/features/auth/presentation/widgets/logo_placeholder.dart';
+import 'package:mobile_zpi/features/auth/validation/auth_validators.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -31,8 +32,27 @@ class LoginView extends HookConsumerWidget {
     final isLoading = loginState.isLoading;
 
     ref.listen(loginControllerProvider, (previous, next) {
-      if (previous?.isLoading == true && next is AsyncData) {
-        context.router.replaceAll([const AppRoute()]);
+      if (previous?.isLoading != true) return;
+      switch (next) {
+        case AsyncData():
+          context.router.replaceAll([const AppRoute()]);
+        case AsyncError(
+          error: PhoneVerificationRequiredException(
+            :final verificationTicket,
+            :final phoneChallenge,
+          ),
+        ):
+          final identifier = identifierController.text.trim();
+          context.router.push(
+            AccountVerificationRoute(
+              verificationTicket: verificationTicket,
+              identifier: identifier,
+              password: passwordController.text,
+              phoneNumber: AuthValidators.normalizePhoneNumber(identifier),
+              initialChallenge: phoneChallenge,
+            ),
+          );
+        default:
       }
     });
 
@@ -133,7 +153,8 @@ class LoginView extends HookConsumerWidget {
                             ),
                           ],
                         ),
-                        if (loginState.error case final error?)
+                        if (loginState.error case final error?
+                            when error is! PhoneVerificationRequiredException)
                           Text(
                             _loginErrorMessage(error),
                             textAlign: TextAlign.center,

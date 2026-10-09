@@ -21,6 +21,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(path: '/login', page: LoginRoute.page),
     AutoRoute(path: '/register', page: RegisterRoute.page),
     AutoRoute(path: '/reset-password', page: ResetPasswordRoute.page),
+    AutoRoute(path: '/verify-account', page: AccountVerificationRoute.page),
     if (AppEnv.isDev) AutoRoute(path: '/playground', page: PlaygroudRoute.page),
   ];
 }

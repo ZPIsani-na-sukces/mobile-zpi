@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:mobile_zpi/features/auth/data/models/auth_session.dart';
+import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/login_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/data/models/register_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/register_response.dart';
 import 'package:mobile_zpi/features/auth/data/models/reset_code_request.dart';
+import 'package:mobile_zpi/features/auth/data/models/start_phone_verification_request.dart';
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
 
 class ApiAuthRepository implements AuthRepository {
@@ -22,8 +24,20 @@ class ApiAuthRepository implements AuthRepository {
       );
       return AuthSession.fromJson(response.data!);
     } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        throw const InvalidCredentialsException();
+      switch (e.response) {
+        case Response(statusCode: 401):
+          throw const InvalidCredentialsException();
+        case Response(
+          statusCode: 403,
+          data: {
+            'code': 'phoneVerificationRequired',
+            'verificationTicket': final String verificationTicket,
+          },
+        ):
+          throw PhoneVerificationRequiredException(
+            verificationTicket: verificationTicket,
+            phoneChallenge: _phoneChallenge(e),
+          );
       }
       rethrow;
     }
@@ -43,6 +57,47 @@ class ApiAuthRepository implements AuthRepository {
           throw const AccountAlreadyExistsException();
         case 429:
           throw const TooManyAttemptsException();
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<PhoneChallenge> sendVerificationCode(String verificationTicket) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/auth/phone-verifications',
+        data: StartPhoneVerificationRequest(
+          verificationTicket: verificationTicket,
+        ).toJson(),
+      );
+      return PhoneChallenge.fromJson(response.data!);
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 400 || 409:
+          throw const VerificationExpiredException();
+        case 429:
+          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> confirmPhone(ConfirmChallengeRequest request) async {
+    try {
+      await _dio.post<void>(
+        '/auth/phone-verifications/confirm',
+        data: request.toJson(),
+      );
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 400 when _problemCode(e) == 'invalidCode':
+          throw const InvalidCodeException();
+        case 409:
+          throw const CodeExpiredException();
+        case 429:
+          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
       }
       rethrow;
     }
@@ -85,4 +140,23 @@ class ApiAuthRepository implements AuthRepository {
     {'code': final String code} => code,
     _ => null,
   };
+
+  PhoneChallenge? _phoneChallenge(DioException e) {
+    if (e.response?.data case {
+      'phoneChallenge': final Map<String, dynamic> json,
+    }) {
+      try {
+        return PhoneChallenge.fromJson(json);
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  Duration? _retryAfter(DioException e) =>
+      switch (int.tryParse(e.response?.headers.value('retry-after') ?? '')) {
+        final seconds? => Duration(seconds: seconds),
+        null => null,
+      };
 }

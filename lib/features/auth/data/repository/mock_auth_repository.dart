@@ -1,5 +1,6 @@
 import 'package:mobile_zpi/features/auth/data/models/auth_session.dart';
 import 'package:mobile_zpi/features/auth/data/models/auth_user.dart';
+import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/data/models/register_request.dart';
@@ -10,11 +11,24 @@ class MockAuthRepository implements AuthRepository {
   static const _delay = Duration(milliseconds: 500);
 
   var _resetChallengeCount = 0;
+  var _verificationChallengeCount = 0;
+  var _phoneVerified = false;
 
   @override
   Future<AuthSession> login(String identifier, String password) async {
     await Future<void>.delayed(_delay);
     if (password == 'wrong') throw const InvalidCredentialsException();
+    if (password.startsWith('unverified') && !_phoneVerified) {
+      throw PhoneVerificationRequiredException(
+        verificationTicket: 'mock-verification-ticket',
+        phoneChallenge: password == 'unverified-pending'
+            ? PhoneChallenge(
+                challengeId: 'mock-pending-challenge',
+                resendAfter: DateTime.now().add(const Duration(seconds: 30)),
+              )
+            : null,
+      );
+    }
 
     return const AuthSession(
       accessToken: 'mock-access-token',
@@ -45,6 +59,30 @@ class MockAuthRepository implements AuthRepository {
         resendAfter: now.add(const Duration(seconds: 30)),
       ),
     );
+  }
+
+  @override
+  Future<PhoneChallenge> sendVerificationCode(String verificationTicket) async {
+    await Future<void>.delayed(_delay);
+
+    _verificationChallengeCount++;
+    return PhoneChallenge(
+      challengeId: 'mock-verification-challenge-$_verificationChallengeCount',
+      resendAfter: DateTime.now().add(const Duration(seconds: 60)),
+    );
+  }
+
+  @override
+  Future<void> confirmPhone(ConfirmChallengeRequest request) async {
+    await Future<void>.delayed(_delay);
+    switch (request.code) {
+      case '123456':
+        _phoneVerified = true;
+      case '000000':
+        throw const CodeExpiredException();
+      default:
+        throw const InvalidCodeException();
+    }
   }
 
   @override
