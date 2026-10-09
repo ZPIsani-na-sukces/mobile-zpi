@@ -4,6 +4,7 @@ import 'package:mobile_zpi/features/auth/acc_activation/models/send_acc_activati
 import 'package:mobile_zpi/features/auth/login/models/login_request.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/send_reset_pass_code_request.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/verify_reset_pass_code_request.dart';
 import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
 import 'package:mobile_zpi/features/auth/register/models/register_response.dart';
 import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
@@ -115,6 +116,24 @@ class ApiAuthRepository implements AuthRepository {
     } on DioException catch (e) {
       if (e.response?.statusCode == 429) {
         throw const TooManyAttemptsException();
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> verifyResetCode(VerifyResetPassCodeRequest request) async {
+    try {
+      await _dio.post<void>(
+        '/auth/password-resets/verify',
+        data: request.toJson(),
+      );
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 400 when _problemCode(e) == 'invalidCode':
+          throw const InvalidCodeException();
+        case 429:
+          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
       }
       rethrow;
     }

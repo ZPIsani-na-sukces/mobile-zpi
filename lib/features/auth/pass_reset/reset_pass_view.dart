@@ -5,7 +5,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/controllers/send_reset_pass_code_controller.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/controllers/set_new_pass_controller.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/controllers/verify_reset_pass_code_controller.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/verify_reset_pass_code_request.dart';
 import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
@@ -46,10 +48,13 @@ class ResetPassView extends HookConsumerWidget {
 
     final requestedPhone = useState<String?>(null);
     final challenge = useState<PhoneChallenge?>(null);
+    final verifiedCode = useState<String?>(null);
 
     final requestState = ref.watch(sendResetPassCodeControllerProvider);
+    final verifyState = ref.watch(verifyResetPassCodeControllerProvider);
     final resetState = ref.watch(setNewPassControllerProvider);
     final isRequesting = requestState.isLoading;
+    final isVerifying = verifyState.isLoading;
     final isResetting = resetState.isLoading;
 
     void goToStep(int step) {
@@ -63,6 +68,7 @@ class ResetPassView extends HookConsumerWidget {
 
     void clearControllerErrors() {
       ref.read(sendResetPassCodeControllerProvider.notifier).clearError();
+      ref.read(verifyResetPassCodeControllerProvider.notifier).clearError();
       ref.read(setNewPassControllerProvider.notifier).clearError();
     }
 
@@ -70,9 +76,22 @@ class ResetPassView extends HookConsumerWidget {
       if (previous?.isLoading != true) return;
       if (next case AsyncData(value: final newChallenge?)) {
         challenge.value = newChallenge;
+        verifiedCode.value = null;
         codeController.clear();
         codeError.value = null;
         goToStep(1);
+      }
+    });
+
+    ref.listen(verifyResetPassCodeControllerProvider, (previous, next) {
+      if (previous?.isLoading != true) return;
+      switch (next) {
+        case AsyncData():
+          verifiedCode.value = codeController.text;
+          goToStep(2);
+        case AsyncError(:final error) when _isCodeError(error):
+          codeError.value = _resetPasswordErrorMessage(error);
+        default:
       }
     });
 
@@ -90,6 +109,7 @@ class ResetPassView extends HookConsumerWidget {
           );
           context.router.replaceAll([const LoginRoute()]);
         case AsyncError(:final error) when _isCodeError(error):
+          verifiedCode.value = null;
           codeError.value = _resetPasswordErrorMessage(error);
           goToStep(1);
         default:
@@ -131,7 +151,21 @@ class ResetPassView extends HookConsumerWidget {
       codeError.value = AuthValidators.verificationCode(codeController.text);
       if (codeError.value != null) return;
 
-      goToStep(2);
+      if (codeController.text == verifiedCode.value) {
+        goToStep(2);
+        return;
+      }
+
+      FocusScope.of(context).unfocus();
+      clearControllerErrors();
+      ref
+          .read(verifyResetPassCodeControllerProvider.notifier)
+          .verify(
+            VerifyResetPassCodeRequest(
+              challengeId: challenge.value!.challengeId,
+              code: codeController.text,
+            ),
+          );
     }
 
     void onResetPassword() {
@@ -161,6 +195,12 @@ class ResetPassView extends HookConsumerWidget {
 
     void onSignIn() => context.router.maybePop();
 
+    final codeStepError = switch ((requestState.error, verifyState.error)) {
+      (final error?, _) => error,
+      (_, final error?) when !_isCodeError(error) => error,
+      _ => null,
+    };
+
     final passwordStepError = switch (resetState.error) {
       final error? when !_isCodeError(error) => error,
       _ => null,
@@ -169,7 +209,7 @@ class ResetPassView extends HookConsumerWidget {
     return PopScope(
       canPop: currentStep.value == 0,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop && !isResetting) onBack();
+        if (!didPop && !isVerifying && !isResetting) onBack();
       },
       child: Scaffold(
         body: SafeArea(
@@ -260,8 +300,13 @@ class ResetPassView extends HookConsumerWidget {
                               controller: codeController,
                               autoFocus: true,
                               errorText: codeError.value,
-                              onChanged: clearErrors(codeError),
-                              onCompleted: (_) => onConfirmCode(),
+                              onChanged: (value) {
+                                verifiedCode.value = null;
+                                clearErrors(codeError)(value);
+                              },
+                              onCompleted: (_) {
+                                if (!isVerifying) onConfirmCode();
+                              },
                             ),
                             Wrap(
                               alignment: WrapAlignment.center,
@@ -274,16 +319,17 @@ class ResetPassView extends HookConsumerWidget {
                                 ResendCodeButton(
                                   resendAfter: challenge.value?.resendAfter,
                                   isLoading: isRequesting,
-                                  onPressed: onResendCode,
+                                  onPressed: () {
+                                    if (!isVerifying) onResendCode();
+                                  },
                                 ),
                               ],
                             ),
                           ],
                         ),
-                        if (currentStep.value == 1 &&
-                            requestState.error != null)
+                        if (currentStep.value == 1 && codeStepError != null)
                           Text(
-                            _resetPasswordErrorMessage(requestState.error!),
+                            _resetPasswordErrorMessage(codeStepError),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
                               color: AppColors.error,
@@ -295,12 +341,14 @@ class ResetPassView extends HookConsumerWidget {
                           spacing: AppSpacing.sm,
                           children: [
                             AppButton.primary(
-                              label: 'Dalej',
-                              onPressed: isRequesting ? null : onConfirmCode,
+                              label: isVerifying ? 'Sprawdzanie…' : 'Dalej',
+                              onPressed: isRequesting || isVerifying
+                                  ? null
+                                  : onConfirmCode,
                             ),
                             AppButton.secondary(
                               label: 'Wstecz',
-                              onPressed: onBack,
+                              onPressed: isVerifying ? null : onBack,
                             ),
                           ],
                         ),

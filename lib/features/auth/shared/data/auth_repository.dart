@@ -1,6 +1,7 @@
 import 'package:mobile_zpi/config/app_env.dart';
 import 'package:mobile_zpi/features/auth/acc_activation/models/activate_acc_request.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/verify_reset_pass_code_request.dart';
 import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
 import 'package:mobile_zpi/features/auth/register/models/register_response.dart';
 import 'package:mobile_zpi/features/auth/shared/data/api_auth_repository.dart';
@@ -18,6 +19,7 @@ abstract interface class AuthRepository {
   Future<PhoneChallenge> sendActivationCode(String verificationTicket);
   Future<void> activateAccount(ActivateAccRequest request);
   Future<PhoneChallenge> sendResetCode(String phoneNumber);
+  Future<void> verifyResetCode(VerifyResetPassCodeRequest request);
   Future<void> setNewPassword(SetNewPassRequest request);
 }
 

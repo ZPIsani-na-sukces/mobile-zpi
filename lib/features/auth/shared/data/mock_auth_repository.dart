@@ -1,5 +1,6 @@
 import 'package:mobile_zpi/features/auth/acc_activation/models/activate_acc_request.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/verify_reset_pass_code_request.dart';
 import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
 import 'package:mobile_zpi/features/auth/register/models/register_response.dart';
 import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
@@ -96,6 +97,19 @@ class MockAuthRepository implements AuthRepository {
       challengeId: 'mock-reset-challenge-$_resetChallengeCount',
       resendAfter: DateTime.now().add(const Duration(seconds: 60)),
     );
+  }
+
+  @override
+  Future<void> verifyResetCode(VerifyResetPassCodeRequest request) async {
+    await Future<void>.delayed(_delay);
+    switch (request.code) {
+      case '123456':
+        return;
+      case '000000':
+        throw const CodeExpiredException();
+      default:
+        throw const InvalidCodeException();
+    }
   }
 
   @override
