@@ -21,7 +21,7 @@ class AppBottomNav extends StatelessWidget {
         BottomNavigationBarItem(
           icon: _BottomNavIcon(Icons.event_note_outlined),
           activeIcon: _BottomNavIcon(Icons.event_note_rounded),
-          label: 'Routine',
+          label: 'Routines',
         ),
         BottomNavigationBarItem(
           icon: _BottomNavIcon(Icons.contacts_outlined),

@@ -8,6 +8,9 @@ class SosView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const BackScaffold(body: Center(child: Text('Sos view')));
+    return const BackScaffold(
+      title: 'SOS',
+      body: Center(child: Text('Sos view')),
+    );
   }
 }

@@ -26,6 +26,7 @@ class PlaygroudView extends HookWidget {
     final clearableController = useTextEditingController(text: 'Warszawa');
 
     return BackScaffold(
+      title: 'Playground',
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
