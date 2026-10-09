@@ -49,7 +49,7 @@ class LoginView extends HookConsumerWidget {
       ref.read(loginControllerProvider.notifier).login(identifier, password);
     }
 
-    void onForgotPassword() {}
+    void onForgotPassword() => context.router.push(const ResetPasswordRoute());
     void onSignUp() => context.router.push(const RegisterRoute());
 
     return Scaffold(

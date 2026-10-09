@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
+import 'package:mobile_zpi/theme/app_radius.dart';
+import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 
 class AppTheme {
@@ -50,6 +52,19 @@ class AppTheme {
         ),
         showSelectedLabels: true,
         showUnselectedLabels: true,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.onSurface,
+        contentTextStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.onPrimary,
+        ),
+        actionTextColor: AppColors.secondary,
+        showCloseIcon: true,
+        closeIconColor: AppColors.onPrimary,
+        elevation: 4,
+        insetPadding: const EdgeInsets.all(AppSpacing.md),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgAll),
       ),
     );
   }

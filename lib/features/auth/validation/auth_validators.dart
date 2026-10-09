@@ -1,14 +1,16 @@
-abstract final class RegisterValidators {
+abstract final class AuthValidators {
   static const int _nameMaxLength = 100;
   static const int _emailMaxLength = 254;
   static const int _passwordMinLength = 12;
   static const int _passwordMaxLength = 128;
   static const String _defaultCountryCode = '+48';
+  static const int _verificationCodeLength = 6;
 
   static final _e164 = RegExp(r'^\+[1-9][0-9]{1,14}$');
   static final _localPhone = RegExp(r'^[0-9]{9}$');
   static final _phoneSeparators = RegExp(r'[\s\-()]');
   static final _email = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+  static final _verificationCode = RegExp('^[0-9]{$_verificationCodeLength}\$');
 
   static String? firstName(String value) =>
       _name(value, empty: 'Wpisz imię', tooLong: 'Imię jest za długie');
@@ -24,7 +26,6 @@ abstract final class RegisterValidators {
     return null;
   }
 
-  /// Email is optional, so an empty value is valid.
   static String? email(String value) {
     final email = value.trim();
     if (email.isEmpty) return null;
@@ -51,9 +52,14 @@ abstract final class RegisterValidators {
     return null;
   }
 
-  /// Converts user input like `600 123 456`, `+48 600-123-456` or
-  /// `0048600123456` to E.164 (`+48600123456`). Numbers without a country
-  /// code are treated as Polish. Returns null when the number is invalid.
+  static String? verificationCode(String value) {
+    if (value.isEmpty) return 'Wpisz kod z SMS';
+    if (!_verificationCode.hasMatch(value)) {
+      return 'Kod ma $_verificationCodeLength cyfr';
+    }
+    return null;
+  }
+
   static String? normalizePhoneNumber(String value) {
     var phone = value.replaceAll(_phoneSeparators, '');
     if (phone.startsWith('00')) {
@@ -65,7 +71,6 @@ abstract final class RegisterValidators {
     return _e164.hasMatch(phone) ? phone : null;
   }
 
-  /// Returns null for an empty email, because the API expects null then.
   static String? normalizeEmail(String value) {
     final email = value.trim();
     return email.isEmpty ? null : email;

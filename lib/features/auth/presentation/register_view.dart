@@ -8,7 +8,7 @@ import 'package:mobile_zpi/features/auth/data/models/register_request.dart';
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
 import 'package:mobile_zpi/features/auth/presentation/widgets/step_card.dart';
 import 'package:mobile_zpi/features/auth/presentation/widgets/step_progress.dart';
-import 'package:mobile_zpi/features/auth/validation/register_validators.dart';
+import 'package:mobile_zpi/features/auth/validation/auth_validators.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -56,13 +56,9 @@ class RegisterView extends HookConsumerWidget {
     }
 
     void onNext() {
-      firstNameError.value = RegisterValidators.firstName(
-        firstNameController.text,
-      );
-      lastNameError.value = RegisterValidators.lastName(
-        lastNameController.text,
-      );
-      phoneError.value = RegisterValidators.phoneNumber(phoneController.text);
+      firstNameError.value = AuthValidators.firstName(firstNameController.text);
+      lastNameError.value = AuthValidators.lastName(lastNameController.text);
+      phoneError.value = AuthValidators.phoneNumber(phoneController.text);
 
       if (firstNameError.value != null ||
           lastNameError.value != null ||
@@ -82,9 +78,9 @@ class RegisterView extends HookConsumerWidget {
 
     void onRegister() {
       final password = passwordController.text;
-      emailError.value = RegisterValidators.email(emailController.text);
-      passwordError.value = RegisterValidators.password(password);
-      repeatPasswordError.value = RegisterValidators.repeatPassword(
+      emailError.value = AuthValidators.email(emailController.text);
+      passwordError.value = AuthValidators.password(password);
+      repeatPasswordError.value = AuthValidators.repeatPassword(
         repeatPasswordController.text,
         password,
       );
@@ -103,10 +99,10 @@ class RegisterView extends HookConsumerWidget {
             RegisterRequest(
               firstName: firstNameController.text.trim(),
               lastName: lastNameController.text.trim(),
-              phoneNumber: RegisterValidators.normalizePhoneNumber(
+              phoneNumber: AuthValidators.normalizePhoneNumber(
                 phoneController.text,
               )!,
-              email: RegisterValidators.normalizeEmail(emailController.text),
+              email: AuthValidators.normalizeEmail(emailController.text),
               password: password,
             ),
           );
