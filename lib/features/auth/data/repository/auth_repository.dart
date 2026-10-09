@@ -41,5 +41,5 @@ abstract interface class AuthRepository {
 @Riverpod(keepAlive: true)
 AuthRepository authRepository(Ref ref) {
   if (AppEnv.useMocks) return MockAuthRepository();
-  return ApiAuthRepository(ref.watch(dioProvider));
+  return ApiAuthRepository(ref.watch(publicDioProvider));
 }

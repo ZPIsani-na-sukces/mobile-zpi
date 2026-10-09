@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/app.dart';
+import 'package:mobile_zpi/features/auth/controllers/auth_controller.dart';
 
-void main() {
-  runApp(ProviderScope(child: MyApp()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final container = ProviderContainer();
+  await container.read(authControllerProvider.future);
+
+  runApp(UncontrolledProviderScope(container: container, child: MyApp()));
 }

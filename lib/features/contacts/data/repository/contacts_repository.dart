@@ -15,5 +15,5 @@ abstract interface class ContactsRepository {
 @Riverpod(keepAlive: true)
 ContactsRepository contactsRepository(Ref ref) {
   if (AppEnv.useMocks) return MockContactsRepository();
-  return ApiContactsRepository(ref.watch(dioProvider));
+  return ApiContactsRepository(ref.watch(authDioProvider));
 }
