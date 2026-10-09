@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 
 part 'register_response.freezed.dart';
 part 'register_response.g.dart';

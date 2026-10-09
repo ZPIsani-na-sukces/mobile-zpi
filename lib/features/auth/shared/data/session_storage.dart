@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:mobile_zpi/features/auth/data/models/auth_session.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'session_storage.g.dart';

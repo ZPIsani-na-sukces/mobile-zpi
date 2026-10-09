@@ -3,14 +3,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mobile_zpi/features/auth/controllers/activate_account_controller.dart';
-import 'package:mobile_zpi/features/auth/controllers/send_activation_code_controller.dart';
-import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
-import 'package:mobile_zpi/features/auth/presentation/widgets/resend_code_button.dart';
-import 'package:mobile_zpi/features/auth/presentation/widgets/step_card.dart';
-import 'package:mobile_zpi/features/auth/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/acc_activation/controllers/activate_acc_controller.dart';
+import 'package:mobile_zpi/features/auth/acc_activation/controllers/send_acc_activation_code_controller.dart';
+import 'package:mobile_zpi/features/auth/acc_activation/models/activate_acc_request.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
+import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/resend_code_button.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -19,8 +19,8 @@ import 'package:mobile_zpi/widgets/app_button.dart';
 import 'package:mobile_zpi/widgets/app_code_input.dart';
 
 @RoutePage()
-class AccountVerificationView extends HookConsumerWidget {
-  const AccountVerificationView({
+class AccActivationView extends HookConsumerWidget {
+  const AccActivationView({
     super.key,
     required this.verificationTicket,
     required this.identifier,
@@ -42,20 +42,20 @@ class AccountVerificationView extends HookConsumerWidget {
     final challenge = useState(initialChallenge);
     final resendAfter = useState(initialChallenge?.resendAfter);
 
-    final sendState = ref.watch(sendActivationCodeControllerProvider);
-    final activationState = ref.watch(activateAccountControllerProvider);
+    final sendState = ref.watch(sendAccActivationCodeControllerProvider);
+    final activationState = ref.watch(activateAccControllerProvider);
     final isSending = sendState.isLoading;
     final isActivating = activationState.isLoading;
 
     void clearControllerErrors() {
-      ref.read(sendActivationCodeControllerProvider.notifier).clearError();
-      ref.read(activateAccountControllerProvider.notifier).clearError();
+      ref.read(sendAccActivationCodeControllerProvider.notifier).clearError();
+      ref.read(activateAccControllerProvider.notifier).clearError();
     }
 
     void requestCode() {
       clearControllerErrors();
       ref
-          .read(sendActivationCodeControllerProvider.notifier)
+          .read(sendAccActivationCodeControllerProvider.notifier)
           .send(verificationTicket);
     }
 
@@ -71,7 +71,7 @@ class AccountVerificationView extends HookConsumerWidget {
       context.router.replaceAll([const LoginRoute()]);
     }
 
-    ref.listen(sendActivationCodeControllerProvider, (previous, next) {
+    ref.listen(sendAccActivationCodeControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       switch (next) {
         case AsyncData(value: final newChallenge?):
@@ -90,7 +90,7 @@ class AccountVerificationView extends HookConsumerWidget {
       }
     });
 
-    ref.listen(activateAccountControllerProvider, (previous, next) {
+    ref.listen(activateAccControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       switch (next) {
         case AsyncData():
@@ -114,9 +114,9 @@ class AccountVerificationView extends HookConsumerWidget {
 
       FocusScope.of(context).unfocus();
       ref
-          .read(activateAccountControllerProvider.notifier)
+          .read(activateAccControllerProvider.notifier)
           .activate(
-            request: ConfirmChallengeRequest(
+            request: ActivateAccRequest(
               challengeId: currentChallenge.challengeId,
               code: codeController.text,
             ),

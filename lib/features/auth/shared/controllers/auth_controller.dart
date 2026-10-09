@@ -1,5 +1,5 @@
-import 'package:mobile_zpi/features/auth/data/models/auth_session.dart';
-import 'package:mobile_zpi/features/auth/data/session_storage.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
+import 'package:mobile_zpi/features/auth/shared/data/session_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_controller.g.dart';

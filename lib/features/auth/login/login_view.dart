@@ -3,10 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mobile_zpi/features/auth/controllers/login_controller.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
-import 'package:mobile_zpi/features/auth/presentation/widgets/logo_placeholder.dart';
-import 'package:mobile_zpi/features/auth/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/login/controllers/login_controller.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
+import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/logo_placeholder.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -44,7 +44,7 @@ class LoginView extends HookConsumerWidget {
         ):
           final identifier = identifierController.text.trim();
           context.router.push(
-            AccountVerificationRoute(
+            AccActivationRoute(
               verificationTicket: verificationTicket,
               identifier: identifier,
               password: passwordController.text,
@@ -69,7 +69,7 @@ class LoginView extends HookConsumerWidget {
       ref.read(loginControllerProvider.notifier).login(identifier, password);
     }
 
-    void onForgotPassword() => context.router.push(const ResetPasswordRoute());
+    void onForgotPassword() => context.router.push(const ResetPassRoute());
     void onSignUp() => context.router.push(const RegisterRoute());
 
     return Scaffold(

@@ -1,15 +1,15 @@
-import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'set_new_password_controller.g.dart';
+part 'set_new_pass_controller.g.dart';
 
 @riverpod
-class SetNewPasswordController extends _$SetNewPasswordController {
+class SetNewPassController extends _$SetNewPassController {
   @override
   FutureOr<void> build() {}
 
-  Future<void> submit(NewPasswordRequest request) async {
+  Future<void> submit(SetNewPassRequest request) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(
       () => ref.read(authRepositoryProvider).setNewPassword(request),

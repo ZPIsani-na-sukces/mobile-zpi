@@ -3,12 +3,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mobile_zpi/features/auth/controllers/register_controller.dart';
-import 'package:mobile_zpi/features/auth/data/models/register_request.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
-import 'package:mobile_zpi/features/auth/presentation/widgets/step_card.dart';
-import 'package:mobile_zpi/features/auth/presentation/widgets/step_progress.dart';
-import 'package:mobile_zpi/features/auth/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/register/controllers/register_controller.dart';
+import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
+import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/step_progress.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -82,7 +82,7 @@ class RegisterView extends HookConsumerWidget {
           phoneController.text,
         )!;
         context.router.replace(
-          AccountVerificationRoute(
+          AccActivationRoute(
             verificationTicket: response.verificationTicket,
             identifier: phoneNumber,
             password: passwordController.text,

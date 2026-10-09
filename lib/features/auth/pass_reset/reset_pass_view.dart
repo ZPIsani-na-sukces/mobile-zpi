@@ -3,15 +3,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mobile_zpi/features/auth/controllers/send_reset_code_controller.dart';
-import 'package:mobile_zpi/features/auth/controllers/set_new_password_controller.dart';
-import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
-import 'package:mobile_zpi/features/auth/presentation/widgets/resend_code_button.dart';
-import 'package:mobile_zpi/features/auth/presentation/widgets/step_card.dart';
-import 'package:mobile_zpi/features/auth/presentation/widgets/step_progress.dart';
-import 'package:mobile_zpi/features/auth/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/controllers/send_reset_pass_code_controller.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/controllers/set_new_pass_controller.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
+import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/resend_code_button.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/step_progress.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -24,8 +24,8 @@ const _stepCount = 3;
 const _pageTransitionDuration = Duration(milliseconds: 300);
 
 @RoutePage()
-class ResetPasswordView extends HookConsumerWidget {
-  const ResetPasswordView({super.key});
+class ResetPassView extends HookConsumerWidget {
+  const ResetPassView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,8 +47,8 @@ class ResetPasswordView extends HookConsumerWidget {
     final requestedPhone = useState<String?>(null);
     final challenge = useState<PhoneChallenge?>(null);
 
-    final requestState = ref.watch(sendResetCodeControllerProvider);
-    final resetState = ref.watch(setNewPasswordControllerProvider);
+    final requestState = ref.watch(sendResetPassCodeControllerProvider);
+    final resetState = ref.watch(setNewPassControllerProvider);
     final isRequesting = requestState.isLoading;
     final isResetting = resetState.isLoading;
 
@@ -62,11 +62,11 @@ class ResetPasswordView extends HookConsumerWidget {
     }
 
     void clearControllerErrors() {
-      ref.read(sendResetCodeControllerProvider.notifier).clearError();
-      ref.read(setNewPasswordControllerProvider.notifier).clearError();
+      ref.read(sendResetPassCodeControllerProvider.notifier).clearError();
+      ref.read(setNewPassControllerProvider.notifier).clearError();
     }
 
-    ref.listen(sendResetCodeControllerProvider, (previous, next) {
+    ref.listen(sendResetPassCodeControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       if (next case AsyncData(value: final newChallenge?)) {
         challenge.value = newChallenge;
@@ -76,7 +76,7 @@ class ResetPasswordView extends HookConsumerWidget {
       }
     });
 
-    ref.listen(setNewPasswordControllerProvider, (previous, next) {
+    ref.listen(setNewPassControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       switch (next) {
         case AsyncData():
@@ -99,7 +99,7 @@ class ResetPasswordView extends HookConsumerWidget {
     void requestCode(String phone) {
       clearControllerErrors();
       requestedPhone.value = phone;
-      ref.read(sendResetCodeControllerProvider.notifier).send(phone);
+      ref.read(sendResetPassCodeControllerProvider.notifier).send(phone);
     }
 
     void onSendCode() {
@@ -149,9 +149,9 @@ class ResetPasswordView extends HookConsumerWidget {
       FocusScope.of(context).unfocus();
 
       ref
-          .read(setNewPasswordControllerProvider.notifier)
+          .read(setNewPassControllerProvider.notifier)
           .submit(
-            NewPasswordRequest(
+            SetNewPassRequest(
               challengeId: challenge.value!.challengeId,
               code: codeController.text,
               newPassword: password,

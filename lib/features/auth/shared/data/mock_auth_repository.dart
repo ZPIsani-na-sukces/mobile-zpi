@@ -1,11 +1,12 @@
-import 'package:mobile_zpi/features/auth/data/models/auth_session.dart';
-import 'package:mobile_zpi/features/auth/data/models/auth_user.dart';
-import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
-import 'package:mobile_zpi/features/auth/data/models/register_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/register_response.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/acc_activation/models/activate_acc_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
+import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
+import 'package:mobile_zpi/features/auth/register/models/register_response.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/auth_user.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 
 class MockAuthRepository implements AuthRepository {
   static const _delay = Duration(milliseconds: 500);
@@ -62,7 +63,7 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<PhoneChallenge> sendVerificationCode(String verificationTicket) async {
+  Future<PhoneChallenge> sendActivationCode(String verificationTicket) async {
     await Future<void>.delayed(_delay);
 
     _verificationChallengeCount++;
@@ -73,7 +74,7 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> confirmPhone(ConfirmChallengeRequest request) async {
+  Future<void> activateAccount(ActivateAccRequest request) async {
     await Future<void>.delayed(_delay);
     switch (request.code) {
       case '123456':
@@ -98,7 +99,7 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> setNewPassword(NewPasswordRequest request) async {
+  Future<void> setNewPassword(SetNewPassRequest request) async {
     await Future<void>.delayed(_delay);
     switch (request.code) {
       case '123456':

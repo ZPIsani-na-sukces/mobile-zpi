@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:mobile_zpi/config/app_env.dart';
-import 'package:mobile_zpi/features/auth/controllers/auth_controller.dart';
+import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dio_provider.g.dart';

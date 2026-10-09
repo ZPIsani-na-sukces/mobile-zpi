@@ -1,11 +1,12 @@
-import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'send_activation_code_controller.g.dart';
+part 'send_acc_activation_code_controller.g.dart';
 
 @riverpod
-class SendActivationCodeController extends _$SendActivationCodeController {
+class SendAccActivationCodeController
+    extends _$SendAccActivationCodeController {
   @override
   FutureOr<PhoneChallenge?> build() => null;
 
@@ -14,7 +15,7 @@ class SendActivationCodeController extends _$SendActivationCodeController {
     final result = await AsyncValue.guard(
       () => ref
           .read(authRepositoryProvider)
-          .sendVerificationCode(verificationTicket),
+          .sendActivationCode(verificationTicket),
     );
     if (ref.mounted) state = result;
   }

@@ -1,6 +1,6 @@
-import 'package:mobile_zpi/features/auth/data/models/register_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/register_response.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
+import 'package:mobile_zpi/features/auth/register/models/register_response.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'register_controller.g.dart';

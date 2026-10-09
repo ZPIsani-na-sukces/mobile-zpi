@@ -1,14 +1,15 @@
 import 'package:dio/dio.dart';
-import 'package:mobile_zpi/features/auth/data/models/auth_session.dart';
-import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/login_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
-import 'package:mobile_zpi/features/auth/data/models/register_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/register_response.dart';
-import 'package:mobile_zpi/features/auth/data/models/reset_code_request.dart';
-import 'package:mobile_zpi/features/auth/data/models/start_phone_verification_request.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/acc_activation/models/activate_acc_request.dart';
+import 'package:mobile_zpi/features/auth/acc_activation/models/send_acc_activation_code_request.dart';
+import 'package:mobile_zpi/features/auth/login/models/login_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/send_reset_pass_code_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
+import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
+import 'package:mobile_zpi/features/auth/register/models/register_response.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 
 class ApiAuthRepository implements AuthRepository {
   ApiAuthRepository(this._dio);
@@ -63,11 +64,11 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<PhoneChallenge> sendVerificationCode(String verificationTicket) async {
+  Future<PhoneChallenge> sendActivationCode(String verificationTicket) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/auth/phone-verifications',
-        data: StartPhoneVerificationRequest(
+        data: SendAccActivationCodeRequest(
           verificationTicket: verificationTicket,
         ).toJson(),
       );
@@ -84,7 +85,7 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> confirmPhone(ConfirmChallengeRequest request) async {
+  Future<void> activateAccount(ActivateAccRequest request) async {
     try {
       await _dio.post<void>(
         '/auth/phone-verifications/confirm',
@@ -108,7 +109,7 @@ class ApiAuthRepository implements AuthRepository {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/auth/password-reset-requests',
-        data: ResetCodeRequest(identifier: phoneNumber).toJson(),
+        data: SendResetPassCodeRequest(identifier: phoneNumber).toJson(),
       );
       return PhoneChallenge.fromJson(response.data!);
     } on DioException catch (e) {
@@ -120,7 +121,7 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> setNewPassword(NewPasswordRequest request) async {
+  Future<void> setNewPassword(SetNewPassRequest request) async {
     try {
       await _dio.post<void>('/auth/password-resets', data: request.toJson());
     } on DioException catch (e) {

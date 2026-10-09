@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_zpi/features/auth/data/models/auth_user.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/auth_user.dart';
 
 part 'auth_session.freezed.dart';
 part 'auth_session.g.dart';

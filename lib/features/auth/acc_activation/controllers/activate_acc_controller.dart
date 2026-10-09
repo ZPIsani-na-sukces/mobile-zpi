@@ -1,28 +1,28 @@
-import 'package:mobile_zpi/features/auth/controllers/auth_controller.dart';
-import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.dart';
-import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
+import 'package:mobile_zpi/features/auth/acc_activation/models/activate_acc_request.dart';
+import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'activate_account_controller.g.dart';
+part 'activate_acc_controller.g.dart';
 
 class AutoLoginFailedException implements Exception {
   const AutoLoginFailedException();
 }
 
 @riverpod
-class ActivateAccountController extends _$ActivateAccountController {
+class ActivateAccController extends _$ActivateAccController {
   @override
   FutureOr<void> build() {}
 
   Future<void> activate({
-    required ConfirmChallengeRequest request,
+    required ActivateAccRequest request,
     required String identifier,
     required String password,
   }) async {
     state = const AsyncLoading();
     final repository = ref.read(authRepositoryProvider);
     final result = await AsyncValue.guard(() async {
-      await repository.confirmPhone(request);
+      await repository.activateAccount(request);
       try {
         final session = await repository.login(identifier, password);
         await ref.read(authControllerProvider.notifier).setSession(session);
