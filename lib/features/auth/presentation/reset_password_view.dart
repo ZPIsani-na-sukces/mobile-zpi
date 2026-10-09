@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mobile_zpi/features/auth/controllers/new_password_controller.dart';
-import 'package:mobile_zpi/features/auth/controllers/reset_code_controller.dart';
+import 'package:mobile_zpi/features/auth/controllers/send_reset_code_controller.dart';
+import 'package:mobile_zpi/features/auth/controllers/set_new_password_controller.dart';
 import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
@@ -47,8 +47,8 @@ class ResetPasswordView extends HookConsumerWidget {
     final requestedPhone = useState<String?>(null);
     final challenge = useState<PhoneChallenge?>(null);
 
-    final requestState = ref.watch(resetCodeControllerProvider);
-    final resetState = ref.watch(newPasswordControllerProvider);
+    final requestState = ref.watch(sendResetCodeControllerProvider);
+    final resetState = ref.watch(setNewPasswordControllerProvider);
     final isRequesting = requestState.isLoading;
     final isResetting = resetState.isLoading;
 
@@ -62,11 +62,11 @@ class ResetPasswordView extends HookConsumerWidget {
     }
 
     void clearControllerErrors() {
-      ref.read(resetCodeControllerProvider.notifier).clearError();
-      ref.read(newPasswordControllerProvider.notifier).clearError();
+      ref.read(sendResetCodeControllerProvider.notifier).clearError();
+      ref.read(setNewPasswordControllerProvider.notifier).clearError();
     }
 
-    ref.listen(resetCodeControllerProvider, (previous, next) {
+    ref.listen(sendResetCodeControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       if (next case AsyncData(value: final newChallenge?)) {
         challenge.value = newChallenge;
@@ -76,7 +76,7 @@ class ResetPasswordView extends HookConsumerWidget {
       }
     });
 
-    ref.listen(newPasswordControllerProvider, (previous, next) {
+    ref.listen(setNewPasswordControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       switch (next) {
         case AsyncData():
@@ -99,7 +99,7 @@ class ResetPasswordView extends HookConsumerWidget {
     void requestCode(String phone) {
       clearControllerErrors();
       requestedPhone.value = phone;
-      ref.read(resetCodeControllerProvider.notifier).send(phone);
+      ref.read(sendResetCodeControllerProvider.notifier).send(phone);
     }
 
     void onSendCode() {
@@ -149,7 +149,7 @@ class ResetPasswordView extends HookConsumerWidget {
       FocusScope.of(context).unfocus();
 
       ref
-          .read(newPasswordControllerProvider.notifier)
+          .read(setNewPasswordControllerProvider.notifier)
           .submit(
             NewPasswordRequest(
               challengeId: challenge.value!.challengeId,

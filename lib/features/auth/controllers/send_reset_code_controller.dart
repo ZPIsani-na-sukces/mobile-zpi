@@ -2,10 +2,10 @@ import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'reset_code_controller.g.dart';
+part 'send_reset_code_controller.g.dart';
 
 @riverpod
-class ResetCodeController extends _$ResetCodeController {
+class SendResetCodeController extends _$SendResetCodeController {
   @override
   FutureOr<PhoneChallenge?> build() => null;
 

@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mobile_zpi/features/auth/controllers/account_activation_controller.dart';
-import 'package:mobile_zpi/features/auth/controllers/verification_challenge_controller.dart';
+import 'package:mobile_zpi/features/auth/controllers/activate_account_controller.dart';
+import 'package:mobile_zpi/features/auth/controllers/send_activation_code_controller.dart';
 import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.dart';
 import 'package:mobile_zpi/features/auth/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
@@ -42,20 +42,20 @@ class AccountVerificationView extends HookConsumerWidget {
     final challenge = useState(initialChallenge);
     final resendAfter = useState(initialChallenge?.resendAfter);
 
-    final sendState = ref.watch(verificationChallengeControllerProvider);
-    final activationState = ref.watch(accountActivationControllerProvider);
+    final sendState = ref.watch(sendActivationCodeControllerProvider);
+    final activationState = ref.watch(activateAccountControllerProvider);
     final isSending = sendState.isLoading;
     final isActivating = activationState.isLoading;
 
     void clearControllerErrors() {
-      ref.read(verificationChallengeControllerProvider.notifier).clearError();
-      ref.read(accountActivationControllerProvider.notifier).clearError();
+      ref.read(sendActivationCodeControllerProvider.notifier).clearError();
+      ref.read(activateAccountControllerProvider.notifier).clearError();
     }
 
     void requestCode() {
       clearControllerErrors();
       ref
-          .read(verificationChallengeControllerProvider.notifier)
+          .read(sendActivationCodeControllerProvider.notifier)
           .send(verificationTicket);
     }
 
@@ -71,7 +71,7 @@ class AccountVerificationView extends HookConsumerWidget {
       context.router.replaceAll([const LoginRoute()]);
     }
 
-    ref.listen(verificationChallengeControllerProvider, (previous, next) {
+    ref.listen(sendActivationCodeControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       switch (next) {
         case AsyncData(value: final newChallenge?):
@@ -90,7 +90,7 @@ class AccountVerificationView extends HookConsumerWidget {
       }
     });
 
-    ref.listen(accountActivationControllerProvider, (previous, next) {
+    ref.listen(activateAccountControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       switch (next) {
         case AsyncData():
@@ -114,7 +114,7 @@ class AccountVerificationView extends HookConsumerWidget {
 
       FocusScope.of(context).unfocus();
       ref
-          .read(accountActivationControllerProvider.notifier)
+          .read(activateAccountControllerProvider.notifier)
           .activate(
             request: ConfirmChallengeRequest(
               challengeId: currentChallenge.challengeId,

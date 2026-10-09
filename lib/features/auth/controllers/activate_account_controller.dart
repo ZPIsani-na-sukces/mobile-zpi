@@ -3,14 +3,14 @@ import 'package:mobile_zpi/features/auth/data/models/confirm_challenge_request.d
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'account_activation_controller.g.dart';
+part 'activate_account_controller.g.dart';
 
 class AutoLoginFailedException implements Exception {
   const AutoLoginFailedException();
 }
 
 @riverpod
-class AccountActivationController extends _$AccountActivationController {
+class ActivateAccountController extends _$ActivateAccountController {
   @override
   FutureOr<void> build() {}
 

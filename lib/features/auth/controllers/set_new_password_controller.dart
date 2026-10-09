@@ -2,10 +2,10 @@ import 'package:mobile_zpi/features/auth/data/models/new_password_request.dart';
 import 'package:mobile_zpi/features/auth/data/repository/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'new_password_controller.g.dart';
+part 'set_new_password_controller.g.dart';
 
 @riverpod
-class NewPasswordController extends _$NewPasswordController {
+class SetNewPasswordController extends _$SetNewPasswordController {
   @override
   FutureOr<void> build() {}
 
