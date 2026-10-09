@@ -11,6 +11,7 @@ import 'package:mobile_zpi/features/auth/pass_reset/models/verify_reset_pass_cod
 import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/pass_strength.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/resend_code_button.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_progress.dart';
@@ -358,25 +359,32 @@ class ResetPassView extends HookConsumerWidget {
                       title: 'Ustaw nowe hasło',
                       subtitle: 'Wymyśl nowe hasło do swojego konta',
                       children: [
-                        AppTextInput(
-                          label: 'Nowe hasło',
-                          hintText: 'Wpisz nowe hasło',
-                          helperText: 'Co najmniej 12 znaków',
-                          controller: passwordController,
-                          leadingIcon: Icons.lock_outline,
-                          obscureText: passwordHidden.value,
-                          trailingIcon: passwordHidden.value
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          trailingIconTooltip: passwordHidden.value
-                              ? 'Pokaż hasło'
-                              : 'Ukryj hasło',
-                          onTrailingIconPressed: () =>
-                              passwordHidden.value = !passwordHidden.value,
-                          textInputAction: TextInputAction.next,
-                          autofillHints: const [AutofillHints.newPassword],
-                          errorText: passwordError.value,
-                          onChanged: clearErrors(passwordError),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            AppTextInput(
+                              label: 'Nowe hasło',
+                              hintText: 'Wpisz nowe hasło',
+                              helperText:
+                                  'Co najmniej ${AuthValidators.passwordMinLength} znaków',
+                              controller: passwordController,
+                              leadingIcon: Icons.lock_outline,
+                              obscureText: passwordHidden.value,
+                              trailingIcon: passwordHidden.value
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              trailingIconTooltip: passwordHidden.value
+                                  ? 'Pokaż hasło'
+                                  : 'Ukryj hasło',
+                              onTrailingIconPressed: () =>
+                                  passwordHidden.value = !passwordHidden.value,
+                              textInputAction: TextInputAction.next,
+                              autofillHints: const [AutofillHints.newPassword],
+                              errorText: passwordError.value,
+                              onChanged: clearErrors(passwordError),
+                            ),
+                            PassStrength(controller: passwordController),
+                          ],
                         ),
                         AppTextInput(
                           label: 'Powtórz nowe hasło',

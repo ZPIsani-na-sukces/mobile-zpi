@@ -1,7 +1,7 @@
 abstract final class AuthValidators {
   static const int _nameMaxLength = 100;
   static const int _emailMaxLength = 254;
-  static const int _passwordMinLength = 12;
+  static const int passwordMinLength = 8;
   static const int _passwordMaxLength = 128;
   static const String _defaultCountryCode = '+48';
   static const int _verificationCodeLength = 6;
@@ -37,8 +37,8 @@ abstract final class AuthValidators {
 
   static String? password(String value) {
     if (value.isEmpty) return 'Wpisz hasło';
-    if (value.length < _passwordMinLength) {
-      return 'Hasło musi mieć co najmniej $_passwordMinLength znaków';
+    if (value.length < passwordMinLength) {
+      return 'Hasło musi mieć co najmniej $passwordMinLength znaków';
     }
     if (value.length > _passwordMaxLength) {
       return 'Hasło może mieć maksymalnie $_passwordMaxLength znaków';

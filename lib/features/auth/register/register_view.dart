@@ -7,6 +7,7 @@ import 'package:mobile_zpi/features/auth/register/controllers/register_controlle
 import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
 import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
 import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
+import 'package:mobile_zpi/features/auth/shared/widgets/pass_strength.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_progress.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
@@ -238,25 +239,32 @@ class RegisterView extends HookConsumerWidget {
                           errorText: emailError.value,
                           onChanged: clearErrors(emailError),
                         ),
-                        AppTextInput(
-                          label: 'Hasło',
-                          hintText: 'Wpisz hasło',
-                          helperText: 'Co najmniej 12 znaków',
-                          controller: passwordController,
-                          leadingIcon: Icons.lock_outline,
-                          obscureText: passwordHidden.value,
-                          trailingIcon: passwordHidden.value
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          trailingIconTooltip: passwordHidden.value
-                              ? 'Pokaż hasło'
-                              : 'Ukryj hasło',
-                          onTrailingIconPressed: () =>
-                              passwordHidden.value = !passwordHidden.value,
-                          textInputAction: TextInputAction.next,
-                          autofillHints: const [AutofillHints.newPassword],
-                          errorText: passwordError.value,
-                          onChanged: clearErrors(passwordError),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            AppTextInput(
+                              label: 'Hasło',
+                              hintText: 'Wpisz hasło',
+                              helperText:
+                                  'Co najmniej ${AuthValidators.passwordMinLength} znaków',
+                              controller: passwordController,
+                              leadingIcon: Icons.lock_outline,
+                              obscureText: passwordHidden.value,
+                              trailingIcon: passwordHidden.value
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              trailingIconTooltip: passwordHidden.value
+                                  ? 'Pokaż hasło'
+                                  : 'Ukryj hasło',
+                              onTrailingIconPressed: () =>
+                                  passwordHidden.value = !passwordHidden.value,
+                              textInputAction: TextInputAction.next,
+                              autofillHints: const [AutofillHints.newPassword],
+                              errorText: passwordError.value,
+                              onChanged: clearErrors(passwordError),
+                            ),
+                            PassStrength(controller: passwordController),
+                          ],
                         ),
                         AppTextInput(
                           label: 'Powtórz hasło',
