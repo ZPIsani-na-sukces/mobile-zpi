@@ -5,6 +5,7 @@ import 'package:mobile_zpi/features/home/controllers/home_controller.dart';
 import 'package:mobile_zpi/features/home/data/models/home_overview.dart';
 import 'package:mobile_zpi/features/home/data/phone_call.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
+import 'package:mobile_zpi/features/sos/presentation/sos_button.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -55,6 +56,13 @@ class _HomeBody extends ConsumerWidget {
             'Dzień dobry, $firstName',
             style: AppTypography.headlineSmall.copyWith(
               color: AppColors.onBackground,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Center(
+            child: SosButton(
+              onPressed: () =>
+                  context.router.push(SosRoute(seniorId: seniorId)),
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
