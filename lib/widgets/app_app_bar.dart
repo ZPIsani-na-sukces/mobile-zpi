@@ -4,9 +4,10 @@ import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 
 class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const AppAppBar({super.key, required this.title});
+  const AppAppBar({super.key, required this.title, this.actions});
 
   final String title;
+  final List<Widget>? actions;
 
   static const double _height = 80;
 
@@ -32,6 +33,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
           color: AppColors.onBackground,
         ),
       ),
+      actions: actions,
     );
   }
 }

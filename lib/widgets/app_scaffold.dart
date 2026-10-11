@@ -28,7 +28,16 @@ class AppScaffold extends StatelessWidget {
         final tabsRouter = AutoTabsRouter.of(context);
 
         return Scaffold(
-          appBar: AppAppBar(title: _tabTitles[tabsRouter.activeIndex]),
+          appBar: AppAppBar(
+            title: _tabTitles[tabsRouter.activeIndex],
+            actions: [
+              IconButton(
+                tooltip: 'Profil',
+                onPressed: () => context.router.push(const ProfileRoute()),
+                icon: const Icon(Icons.account_circle_outlined, size: 32),
+              ),
+            ],
+          ),
           body: child,
           bottomNavigationBar: const AppBottomNav(),
         );
