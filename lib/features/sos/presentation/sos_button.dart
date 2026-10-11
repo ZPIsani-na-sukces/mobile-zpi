@@ -15,25 +15,25 @@ class SosButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: 'SOS, wezwij pomoc',
-      child: Material(
-        color: AppColors.error,
-        shape: const CircleBorder(),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onPressed,
-          child: Ink(
-            width: _size,
-            height: _size,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.error,
-              boxShadow: AppShadows.lg,
-            ),
-            child: Center(
-              child: Text(
-                'SOS',
-                style: AppTypography.displaySmall.copyWith(
-                  color: AppColors.onError,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: AppShadows.lg,
+        ),
+        child: Material(
+          color: AppColors.error,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onPressed,
+            child: SizedBox.square(
+              dimension: _size,
+              child: Center(
+                child: Text(
+                  'SOS',
+                  style: AppTypography.displaySmall.copyWith(
+                    color: AppColors.onError,
+                  ),
                 ),
               ),
             ),
