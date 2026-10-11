@@ -106,28 +106,9 @@ class _ProfileBody extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.xl),
-        const _ProfileActions(),
-      ],
-    );
-  }
-}
-
-class _ProfileActions extends StatelessWidget {
-  const _ProfileActions();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
         AppButton.primary(
-          label: 'Edytuj profil',
+          label: 'Edytuj',
           onPressed: () => context.router.push(const ProfileEditRoute()),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        AppButton.secondary(
-          label: 'Edytuj adres',
-          onPressed: () => context.router.push(const AddressEditRoute()),
         ),
       ],
     );
