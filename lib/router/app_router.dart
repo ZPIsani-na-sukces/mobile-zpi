@@ -17,6 +17,8 @@ class AppRouter extends RootStackRouter {
         AutoRoute(path: 'med-history', page: MedHistoryRoute.page),
       ],
     ),
+    AutoRoute(path: '/profile', page: ProfileRoute.page),
+    AutoRoute(path: '/profile/edit', page: ProfileEditRoute.page),
     AutoRoute(path: '/sos', page: SosRoute.page),
     AutoRoute(path: '/login', page: LoginRoute.page),
     AutoRoute(path: '/register', page: RegisterRoute.page),
