@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/routine/controllers/create_routine_task_controller.dart';
+import 'package:mobile_zpi/features/routine/controllers/routine_tasks_controller.dart';
 import 'package:mobile_zpi/features/routine/data/routine_task_draft.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -127,6 +128,7 @@ class CreateRoutineTaskView extends HookConsumerWidget {
         formError.value = _createError(next.error!);
         return;
       }
+      ref.invalidate(routineTasksControllerProvider(seniorId));
       context.router.pop();
     }
 
