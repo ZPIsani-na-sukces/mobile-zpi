@@ -73,7 +73,15 @@ class _TaskList extends ConsumerWidget {
           padding: const EdgeInsets.all(AppSpacing.lg),
           itemCount: items.length,
           separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-          itemBuilder: (context, index) => _TaskCard(task: items[index]),
+          itemBuilder: (context, index) {
+            final task = items[index];
+            return _TaskCard(
+              task: task,
+              onTap: () => context.router.push(
+                RoutineTaskRoute(seniorId: seniorId, taskId: task.taskId),
+              ),
+            );
+          },
         );
       },
     );
@@ -81,9 +89,10 @@ class _TaskList extends ConsumerWidget {
 }
 
 class _TaskCard extends StatelessWidget {
-  const _TaskCard({required this.task});
+  const _TaskCard({required this.task, required this.onTap});
 
   final RoutineTask task;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -93,41 +102,49 @@ class _TaskCard extends StatelessWidget {
         borderRadius: AppRadius.lgAll,
         boxShadow: AppShadows.sm,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              routineTypeLabel(task.type),
-              style: AppTypography.labelLarge.copyWith(
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              task.title,
-              style: AppTypography.titleLarge.copyWith(
-                color: AppColors.onBackground,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              formatSchedule(task.schedule),
-              style: AppTypography.bodyLarge.copyWith(
-                color: AppColors.onSurface,
-              ),
-            ),
-            if (!task.isActive) ...[
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                'Nieaktywne',
-                style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.error,
+      child: Material(
+        color: AppColors.surface,
+        borderRadius: AppRadius.lgAll,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: AppRadius.lgAll,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  routineTypeLabel(task.type),
+                  style: AppTypography.labelLarge.copyWith(
+                    color: AppColors.primary,
+                  ),
                 ),
-              ),
-            ],
-          ],
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  task.title,
+                  style: AppTypography.titleLarge.copyWith(
+                    color: AppColors.onBackground,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  formatSchedule(task.schedule),
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.onSurface,
+                  ),
+                ),
+                if (!task.isActive) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    'Nieaktywne',
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.error,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );
