@@ -11,37 +11,47 @@ class TaskConfirmationController extends _$TaskConfirmationController {
   Future<TaskConfirmationState> build(String seniorId) async {
     final items = await ref
         .watch(routineRepositoryProvider)
-        .pendingToday(seniorId);
+        .occurrencesToday(seniorId);
     return TaskConfirmationState(items: items);
   }
 
   Future<void> decide(String occurrenceId, String decision) async {
     final current = state.value;
-    if (current == null || current.submitting) return;
+    if (current == null || current.submittingId != null) return;
 
-    state = AsyncData(current.copyWith(submitting: true, error: null));
+    state = AsyncData(
+      current.copyWith(submittingId: occurrenceId, error: null),
+    );
     try {
       await ref
           .read(routineRepositoryProvider)
           .decide(seniorId, occurrenceId, decision);
       state = AsyncData(
         current.copyWith(
-          submitting: false,
-          items: current.items
-              .where((item) => item.occurrenceId != occurrenceId)
-              .toList(),
+          submittingId: null,
+          items: [
+            for (final item in current.items)
+              if (item.occurrenceId == occurrenceId)
+                item.copyWith(status: decision)
+              else
+                item,
+          ],
         ),
       );
     } on DioException catch (error) {
       final alreadyRecorded = error.response?.statusCode == 409;
       state = AsyncData(
         current.copyWith(
-          submitting: false,
+          submittingId: null,
           error: alreadyRecorded ? null : 'Nie udało się zapisać decyzji.',
           items: alreadyRecorded
-              ? current.items
-                    .where((item) => item.occurrenceId != occurrenceId)
-                    .toList()
+              ? [
+                  for (final item in current.items)
+                    if (item.occurrenceId == occurrenceId)
+                      item.copyWith(status: decision)
+                    else
+                      item,
+                ]
               : current.items,
         ),
       );

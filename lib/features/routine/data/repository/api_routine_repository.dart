@@ -38,7 +38,7 @@ class ApiRoutineRepository implements RoutineRepository {
   }
 
   @override
-  Future<List<TaskOccurrence>> pendingToday(String seniorId) async {
+  Future<List<TaskOccurrence>> occurrencesToday(String seniorId) async {
     final now = DateTime.now();
     final start = DateTime(now.year, now.month, now.day);
     final end = start.add(const Duration(days: 1));
@@ -47,7 +47,6 @@ class ApiRoutineRepository implements RoutineRepository {
       queryParameters: {
         'from': start.toUtc().toIso8601String(),
         'to': end.toUtc().toIso8601String(),
-        'status': 'pending',
         'limit': 100,
       },
     );
@@ -68,6 +67,7 @@ class ApiRoutineRepository implements RoutineRepository {
     String occurrenceId,
     String decision,
   ) async {
+    if (decision != 'confirmed' && decision != 'skipped') return;
     await _dio.put<void>(
       '/seniors/$seniorId/task-occurrences/$occurrenceId/decision',
       data: {

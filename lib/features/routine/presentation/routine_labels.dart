@@ -18,6 +18,25 @@ String formatSchedule(RoutineSchedule schedule) {
             .where((day) => day >= 1 && day <= 7)
             .map((day) => days[day - 1])
             .join(', ');
-  final times = schedule.times.map((time) => time.substring(0, 5)).join(', ');
+  final times = schedule.times
+      .map((time) => time.length >= 5 ? time.substring(0, 5) : time)
+      .join(', ');
   return '$dayText · $times';
+}
+
+String formatClock(DateTime value) {
+  final local = value.toLocal();
+  final hour = local.hour.toString().padLeft(2, '0');
+  final minute = local.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+}
+
+String occurrenceStatusLabel(String status) {
+  return switch (status) {
+    'confirmed' => 'Wykonane',
+    'skipped' => 'Pominięte',
+    'missed' => 'Minęło',
+    'cancelled' => 'Anulowane',
+    _ => '',
+  };
 }

@@ -7,7 +7,7 @@ part 'task_confirmation_state.freezed.dart';
 abstract class TaskConfirmationState with _$TaskConfirmationState {
   const factory TaskConfirmationState({
     required List<TaskOccurrence> items,
-    @Default(false) bool submitting,
+    String? submittingId,
     String? error,
   }) = _TaskConfirmationState;
 }

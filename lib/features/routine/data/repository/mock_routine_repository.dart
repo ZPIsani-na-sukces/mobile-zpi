@@ -4,9 +4,10 @@ import 'package:mobile_zpi/features/routine/data/repository/routine_repository.d
 import 'package:mobile_zpi/features/routine/data/routine_task_draft.dart';
 
 class MockRoutineRepository implements RoutineRepository {
-  final _pending = <TaskOccurrence>[
+  final _occurrences = <TaskOccurrence>[
     TaskOccurrence(
-      occurrenceId: '1',
+      occurrenceId: 'occ-1',
+      taskId: '1',
       title: 'Lek poranny',
       instructions: 'Przyjmij jedną tabletkę po śniadaniu.',
       type: 'medication',
@@ -14,11 +15,30 @@ class MockRoutineRepository implements RoutineRepository {
       status: 'pending',
     ),
     TaskOccurrence(
-      occurrenceId: '2',
+      occurrenceId: 'occ-2',
+      taskId: '2',
+      title: 'Śniadanie',
+      instructions: 'Zjedz śniadanie.',
+      type: 'meal',
+      scheduledAt: DateTime.now().copyWith(hour: 8, minute: 30),
+      status: 'pending',
+    ),
+    TaskOccurrence(
+      occurrenceId: 'occ-3',
+      taskId: '3',
       title: 'Szklanka wody',
       instructions: 'Wypij szklankę wody.',
       type: 'hydration',
       scheduledAt: DateTime.now().copyWith(hour: 11, minute: 0),
+      status: 'pending',
+    ),
+    TaskOccurrence(
+      occurrenceId: 'occ-4',
+      taskId: '3',
+      title: 'Szklanka wody',
+      instructions: 'Wypij szklankę wody.',
+      type: 'hydration',
+      scheduledAt: DateTime.now().copyWith(hour: 15, minute: 0),
       status: 'pending',
     ),
   ];
@@ -96,8 +116,8 @@ class MockRoutineRepository implements RoutineRepository {
   }
 
   @override
-  Future<List<TaskOccurrence>> pendingToday(String seniorId) async {
-    return List<TaskOccurrence>.of(_pending);
+  Future<List<TaskOccurrence>> occurrencesToday(String seniorId) async {
+    return List<TaskOccurrence>.of(_occurrences);
   }
 
   @override
@@ -106,7 +126,11 @@ class MockRoutineRepository implements RoutineRepository {
     String occurrenceId,
     String decision,
   ) async {
-    _pending.removeWhere((item) => item.occurrenceId == occurrenceId);
+    final index = _occurrences.indexWhere(
+      (item) => item.occurrenceId == occurrenceId,
+    );
+    if (index == -1) return;
+    _occurrences[index] = _occurrences[index].copyWith(status: decision);
   }
 
   static String _date(DateTime value) {

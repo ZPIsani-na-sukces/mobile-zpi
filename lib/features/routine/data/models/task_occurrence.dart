@@ -7,6 +7,7 @@ part 'task_occurrence.g.dart';
 abstract class TaskOccurrence with _$TaskOccurrence {
   const factory TaskOccurrence({
     required String occurrenceId,
+    required String taskId,
     required String title,
     required String instructions,
     required String type,

@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/routine/controllers/routine_tasks_controller.dart';
+import 'package:mobile_zpi/features/routine/controllers/task_confirmation_controller.dart';
 import 'package:mobile_zpi/features/routine/data/models/routine_task.dart';
+import 'package:mobile_zpi/features/routine/data/models/task_occurrence.dart';
 import 'package:mobile_zpi/features/routine/presentation/routine_labels.dart';
+import 'package:mobile_zpi/features/routine/presentation/routine_occurrence_mark.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -25,38 +28,24 @@ class RoutineView extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, _) =>
           const Center(child: Text('Nie udało się wczytać profilu.')),
-      data: (account) => Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              0,
-            ),
-            child: AppButton.primary(
-              label: 'Nowe zadanie',
-              onPressed: () => context.router.push(
-                CreateRoutineTaskRoute(seniorId: account.userId),
-              ),
+      data: (account) => Scaffold(
+        backgroundColor: AppColors.background,
+        floatingActionButton: FloatingActionButton.extended(
+          heroTag: 'new-routine-task',
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          icon: const Icon(Icons.add),
+          label: Text(
+            'Nowe zadanie',
+            style: AppTypography.labelLarge.copyWith(
+              color: AppColors.onPrimary,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.sm,
-              AppSpacing.lg,
-              0,
-            ),
-            child: AppButton.secondary(
-              label: 'Potwierdź zadania',
-              onPressed: () => context.router.push(
-                TaskSliderRoute(seniorId: account.userId),
-              ),
-            ),
+          onPressed: () => context.router.push(
+            CreateRoutineTaskRoute(seniorId: account.userId),
           ),
-          Expanded(child: _TaskList(seniorId: account.userId)),
-        ],
+        ),
+        body: _TaskList(seniorId: account.userId),
       ),
     );
   }
@@ -70,6 +59,9 @@ class _TaskList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tasks = ref.watch(routineTasksControllerProvider(seniorId));
+    final confirmation = ref.watch(
+      taskConfirmationControllerProvider(seniorId),
+    );
 
     return tasks.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -83,14 +75,39 @@ class _TaskList extends ConsumerWidget {
         if (items.isEmpty) {
           return const _Message(text: 'Brak zadań.');
         }
+        final occurrences = confirmation.value?.items ?? const [];
+        final submittingId = confirmation.value?.submittingId;
+        final error = confirmation.hasError
+            ? 'Nie udało się wczytać dzisiejszych zadań.'
+            : confirmation.value?.error;
+
         return ListView.separated(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          itemCount: items.length,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            96,
+          ),
+          itemCount: items.length + (error == null ? 0 : 1),
           separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
           itemBuilder: (context, index) {
-            final task = items[index];
+            if (error != null && index == 0) {
+              return Text(
+                error,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.error,
+                ),
+              );
+            }
+            final task = items[error == null ? index : index - 1];
             return _TaskCard(
+              seniorId: seniorId,
               task: task,
+              occurrences: [
+                for (final item in occurrences)
+                  if (item.taskId == task.taskId) item,
+              ],
+              submittingId: submittingId,
               onTap: () => context.router.push(
                 RoutineTaskRoute(seniorId: seniorId, taskId: task.taskId),
               ),
@@ -103,9 +120,18 @@ class _TaskList extends ConsumerWidget {
 }
 
 class _TaskCard extends StatelessWidget {
-  const _TaskCard({required this.task, required this.onTap});
+  const _TaskCard({
+    required this.seniorId,
+    required this.task,
+    required this.occurrences,
+    required this.submittingId,
+    required this.onTap,
+  });
 
+  final String seniorId;
   final RoutineTask task;
+  final List<TaskOccurrence> occurrences;
+  final String? submittingId;
   final VoidCallback onTap;
 
   @override
@@ -119,46 +145,68 @@ class _TaskCard extends StatelessWidget {
       child: Material(
         color: AppColors.surface,
         borderRadius: AppRadius.lgAll,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: AppRadius.lgAll,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  routineTypeLabel(task.type),
-                  style: AppTypography.labelLarge.copyWith(
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  task.title,
-                  style: AppTypography.titleLarge.copyWith(
-                    color: AppColors.onBackground,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  formatSchedule(task.schedule),
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: AppColors.onSurface,
-                  ),
-                ),
-                if (!task.isActive) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Nieaktywne',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.error,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            InkWell(
+              onTap: onTap,
+              borderRadius: occurrences.isEmpty
+                  ? AppRadius.lgAll
+                  : const BorderRadius.vertical(
+                      top: Radius.circular(AppRadius.lg),
                     ),
-                  ),
-                ],
-              ],
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      routineTypeLabel(task.type),
+                      style: AppTypography.labelLarge.copyWith(
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      task.title,
+                      style: AppTypography.titleLarge.copyWith(
+                        color: AppColors.onBackground,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      formatSchedule(task.schedule),
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: AppColors.onSurface,
+                      ),
+                    ),
+                    if (!task.isActive) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        'Nieaktywne',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
-          ),
+            for (final occurrence in occurrences)
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: AppSpacing.sm,
+                  right: AppSpacing.sm,
+                  bottom: AppSpacing.xs,
+                ),
+                child: RoutineOccurrenceMark(
+                  seniorId: seniorId,
+                  occurrence: occurrence,
+                  submittingId: submittingId,
+                ),
+              ),
+          ],
         ),
       ),
     );

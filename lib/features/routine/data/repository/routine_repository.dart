@@ -16,7 +16,7 @@ abstract interface class RoutineRepository {
 
   Future<RoutineTask> task(String seniorId, String taskId);
 
-  Future<List<TaskOccurrence>> pendingToday(String seniorId);
+  Future<List<TaskOccurrence>> occurrencesToday(String seniorId);
 
   Future<void> decide(String seniorId, String occurrenceId, String decision);
 }
