@@ -41,6 +41,20 @@ class RoutineView extends ConsumerWidget {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              0,
+            ),
+            child: AppButton.secondary(
+              label: 'Potwierdź zadania',
+              onPressed: () => context.router.push(
+                TaskSliderRoute(seniorId: account.userId),
+              ),
+            ),
+          ),
           Expanded(child: _TaskList(seniorId: account.userId)),
         ],
       ),
