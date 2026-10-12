@@ -1,8 +1,28 @@
 import 'package:mobile_zpi/features/routine/data/models/routine_task.dart';
+import 'package:mobile_zpi/features/routine/data/models/task_occurrence.dart';
 import 'package:mobile_zpi/features/routine/data/repository/routine_repository.dart';
 import 'package:mobile_zpi/features/routine/data/routine_task_draft.dart';
 
 class MockRoutineRepository implements RoutineRepository {
+  final _pending = <TaskOccurrence>[
+    TaskOccurrence(
+      occurrenceId: '1',
+      title: 'Lek poranny',
+      instructions: 'Przyjmij jedną tabletkę po śniadaniu.',
+      type: 'medication',
+      scheduledAt: DateTime.now().copyWith(hour: 8, minute: 0),
+      status: 'pending',
+    ),
+    TaskOccurrence(
+      occurrenceId: '2',
+      title: 'Szklanka wody',
+      instructions: 'Wypij szklankę wody.',
+      type: 'hydration',
+      scheduledAt: DateTime.now().copyWith(hour: 11, minute: 0),
+      status: 'pending',
+    ),
+  ];
+
   final _tasks = <RoutineTask>[
     const RoutineTask(
       taskId: '1',
@@ -73,6 +93,20 @@ class MockRoutineRepository implements RoutineRepository {
   @override
   Future<RoutineTask> task(String seniorId, String taskId) async {
     return _tasks.firstWhere((task) => task.taskId == taskId);
+  }
+
+  @override
+  Future<List<TaskOccurrence>> pendingToday(String seniorId) async {
+    return List<TaskOccurrence>.of(_pending);
+  }
+
+  @override
+  Future<void> decide(
+    String seniorId,
+    String occurrenceId,
+    String decision,
+  ) async {
+    _pending.removeWhere((item) => item.occurrenceId == occurrenceId);
   }
 
   static String _date(DateTime value) {

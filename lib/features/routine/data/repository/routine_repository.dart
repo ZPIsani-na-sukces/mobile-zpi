@@ -1,5 +1,6 @@
 import 'package:mobile_zpi/config/app_env.dart';
 import 'package:mobile_zpi/features/routine/data/models/routine_task.dart';
+import 'package:mobile_zpi/features/routine/data/models/task_occurrence.dart';
 import 'package:mobile_zpi/features/routine/data/repository/api_routine_repository.dart';
 import 'package:mobile_zpi/features/routine/data/repository/mock_routine_repository.dart';
 import 'package:mobile_zpi/features/routine/data/routine_task_draft.dart';
@@ -14,6 +15,10 @@ abstract interface class RoutineRepository {
   Future<List<RoutineTask>> tasks(String seniorId);
 
   Future<RoutineTask> task(String seniorId, String taskId);
+
+  Future<List<TaskOccurrence>> pendingToday(String seniorId);
+
+  Future<void> decide(String seniorId, String occurrenceId, String decision);
 }
 
 @Riverpod(keepAlive: true)
