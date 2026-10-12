@@ -27,4 +27,12 @@ class ApiRoutineRepository implements RoutineRepository {
         .map((item) => RoutineTask.fromJson(item as Map<String, dynamic>))
         .toList();
   }
+
+  @override
+  Future<RoutineTask> task(String seniorId, String taskId) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/seniors/$seniorId/routine-tasks/$taskId',
+    );
+    return RoutineTask.fromJson(response.data!);
+  }
 }

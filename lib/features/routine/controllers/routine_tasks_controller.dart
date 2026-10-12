@@ -10,3 +10,10 @@ class RoutineTasksController extends _$RoutineTasksController {
   Future<List<RoutineTask>> build(String seniorId) =>
       ref.watch(routineRepositoryProvider).tasks(seniorId);
 }
+
+@riverpod
+class RoutineTaskController extends _$RoutineTaskController {
+  @override
+  Future<RoutineTask> build(String seniorId, String taskId) =>
+      ref.watch(routineRepositoryProvider).task(seniorId, taskId);
+}

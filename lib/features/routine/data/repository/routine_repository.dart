@@ -12,6 +12,8 @@ abstract interface class RoutineRepository {
   Future<void> createTask(String seniorId, RoutineTaskDraft draft);
 
   Future<List<RoutineTask>> tasks(String seniorId);
+
+  Future<RoutineTask> task(String seniorId, String taskId);
 }
 
 @Riverpod(keepAlive: true)

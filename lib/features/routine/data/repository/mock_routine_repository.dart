@@ -70,6 +70,11 @@ class MockRoutineRepository implements RoutineRepository {
   Future<List<RoutineTask>> tasks(String seniorId) async =>
       List<RoutineTask>.of(_tasks);
 
+  @override
+  Future<RoutineTask> task(String seniorId, String taskId) async {
+    return _tasks.firstWhere((task) => task.taskId == taskId);
+  }
+
   static String _date(DateTime value) {
     final month = value.month.toString().padLeft(2, '0');
     final day = value.day.toString().padLeft(2, '0');
