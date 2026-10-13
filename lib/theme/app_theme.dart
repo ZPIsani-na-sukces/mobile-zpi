@@ -11,6 +11,9 @@ class AppTheme {
     onPrimary: AppColors.onPrimary,
     secondary: AppColors.secondary,
     onSecondary: AppColors.onSecondary,
+    // Selected M3 chips use the container slot; keep them blue.
+    secondaryContainer: AppColors.primary,
+    onSecondaryContainer: AppColors.onPrimary,
     error: AppColors.error,
     onError: AppColors.onError,
     surface: AppColors.surface,
