@@ -1,10 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mobile_zpi/config/app_env.dart';
 import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
 import 'package:mobile_zpi/features/profile/presentation/profile_messages.dart';
+import 'package:mobile_zpi/features/profile/presentation/widgets/dev_section.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -110,6 +112,10 @@ class _ProfileBody extends ConsumerWidget {
           label: 'Edytuj',
           onPressed: () => context.router.push(const ProfileEditRoute()),
         ),
+        if (AppEnv.isDev) ...[
+          const SizedBox(height: AppSpacing.xl),
+          const DevSection(),
+        ],
       ],
     );
   }
