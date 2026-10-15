@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppTypography {
-  static const String fontFamily = 'AtkinsonHyperlegible';
+  static const String fontFamily = 'Inter';
+
+  static const List<FontFeature> fontFeatures = [
+    FontFeature('cv05'),
+    FontFeature('cv08'),
+  ];
 
   static const FontWeight regular = FontWeight.w400;
   static const FontWeight bold = FontWeight.w700;
@@ -9,6 +14,7 @@ abstract final class AppTypography {
   // Display
   static const TextStyle displayLarge = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 57,
     height: 64 / 57,
     fontWeight: bold,
@@ -16,6 +22,7 @@ abstract final class AppTypography {
   );
   static const TextStyle displayMedium = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 45,
     height: 52 / 45,
     fontWeight: bold,
@@ -23,6 +30,7 @@ abstract final class AppTypography {
   );
   static const TextStyle displaySmall = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 36,
     height: 44 / 36,
     fontWeight: bold,
@@ -32,6 +40,7 @@ abstract final class AppTypography {
   // Headline
   static const TextStyle headlineLarge = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 32,
     height: 40 / 32,
     fontWeight: bold,
@@ -39,6 +48,7 @@ abstract final class AppTypography {
   );
   static const TextStyle headlineMedium = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 28,
     height: 36 / 28,
     fontWeight: bold,
@@ -46,6 +56,7 @@ abstract final class AppTypography {
   );
   static const TextStyle headlineSmall = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 24,
     height: 32 / 24,
     fontWeight: bold,
@@ -55,6 +66,7 @@ abstract final class AppTypography {
   // Title
   static const TextStyle titleLarge = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 22,
     height: 28 / 22,
     fontWeight: bold,
@@ -62,6 +74,7 @@ abstract final class AppTypography {
   );
   static const TextStyle titleMedium = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 18,
     height: 24 / 18,
     fontWeight: bold,
@@ -69,6 +82,7 @@ abstract final class AppTypography {
   );
   static const TextStyle titleSmall = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 16,
     height: 22 / 16,
     fontWeight: bold,
@@ -78,6 +92,7 @@ abstract final class AppTypography {
   // Body
   static const TextStyle bodyLarge = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 18,
     height: 28 / 18,
     fontWeight: regular,
@@ -85,6 +100,7 @@ abstract final class AppTypography {
   );
   static const TextStyle bodyMedium = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 16,
     height: 24 / 16,
     fontWeight: regular,
@@ -92,6 +108,7 @@ abstract final class AppTypography {
   );
   static const TextStyle bodySmall = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 14,
     height: 20 / 14,
     fontWeight: regular,
@@ -101,6 +118,7 @@ abstract final class AppTypography {
   // Label
   static const TextStyle labelLarge = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 16,
     height: 20 / 16,
     fontWeight: bold,
@@ -108,6 +126,7 @@ abstract final class AppTypography {
   );
   static const TextStyle labelMedium = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 14,
     height: 18 / 14,
     fontWeight: bold,
@@ -115,6 +134,7 @@ abstract final class AppTypography {
   );
   static const TextStyle labelSmall = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 12,
     height: 16 / 12,
     fontWeight: bold,
@@ -124,6 +144,7 @@ abstract final class AppTypography {
   // Caption & Subtext (not part of Material's TextTheme)
   static const TextStyle caption = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 12,
     height: 16 / 12,
     fontWeight: regular,
@@ -132,6 +153,7 @@ abstract final class AppTypography {
 
   static const TextStyle overline = TextStyle(
     fontFamily: fontFamily,
+    fontFeatures: fontFeatures,
     fontSize: 11,
     height: 16 / 11,
     fontWeight: bold,

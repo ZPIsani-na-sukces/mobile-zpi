@@ -74,14 +74,14 @@ flutter:
   uses-material-design: true
 
   fonts:
-    - family: AtkinsonHyperlegible
+    - family: Inter
       fonts:
-        - asset: assets/fonts/AtkinsonHyperlegible-Regular.ttf
-        - asset: assets/fonts/AtkinsonHyperlegible-Italic.ttf
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Italic.ttf
           style: italic
-        - asset: assets/fonts/AtkinsonHyperlegible-Bold.ttf
+        - asset: assets/fonts/Inter-Bold.ttf
           weight: 700
-        - asset: assets/fonts/AtkinsonHyperlegible-BoldItalic.ttf
+        - asset: assets/fonts/Inter-BoldItalic.ttf
           weight: 700
           style: italic
 
