@@ -26,15 +26,15 @@ class ProfileView extends ConsumerWidget {
 
     return BackScaffold(
       title: 'Profil',
-      body: profile.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => _Message(
+      body: switch (profile) {
+        AsyncData(value: final account) => _ProfileBody(account: account),
+        AsyncError() => _Message(
           text: 'Nie udało się wczytać profilu.',
           actionLabel: 'Spróbuj ponownie',
           onPressed: () => ref.invalidate(profileControllerProvider),
         ),
-        data: (account) => _ProfileBody(account: account),
-      ),
+        AsyncLoading() => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
@@ -88,17 +88,8 @@ class _ProfileBody extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        address.when(
-          loading: () => const Padding(
-            padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-            child: Center(child: CircularProgressIndicator()),
-          ),
-          error: (_, _) => const _InfoCard(
-            rows: [
-              _InfoRow(label: 'Adres', value: 'Nie udało się wczytać adresu.'),
-            ],
-          ),
-          data: (value) => _InfoCard(
+        switch (address) {
+          AsyncData(:final value) => _InfoCard(
             rows: [
               _InfoRow(
                 label: 'Adres',
@@ -107,7 +98,16 @@ class _ProfileBody extends ConsumerWidget {
               ),
             ],
           ),
-        ),
+          AsyncError() => const _InfoCard(
+            rows: [
+              _InfoRow(label: 'Adres', value: 'Nie udało się wczytać adresu.'),
+            ],
+          ),
+          AsyncLoading() => const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        },
         const SizedBox(height: AppSpacing.xl),
         AppButton.primary(
           label: 'Edytuj',

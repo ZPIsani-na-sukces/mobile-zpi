@@ -6,6 +6,7 @@ import 'package:mobile_zpi/features/routine/controllers/routine_tasks_controller
 import 'package:mobile_zpi/features/routine/controllers/task_confirmation_controller.dart';
 import 'package:mobile_zpi/features/routine/data/models/routine_task.dart';
 import 'package:mobile_zpi/features/routine/data/models/task_occurrence.dart';
+import 'package:mobile_zpi/features/routine/data/task_confirmation_state.dart';
 import 'package:mobile_zpi/features/routine/presentation/routine_labels.dart';
 import 'package:mobile_zpi/features/routine/presentation/routine_occurrence_mark.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
@@ -24,11 +25,8 @@ class RoutineView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileControllerProvider);
 
-    return profile.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) =>
-          const Center(child: Text('Nie udało się wczytać profilu.')),
-      data: (account) => Scaffold(
+    return switch (profile) {
+      AsyncData(value: final account) => Scaffold(
         backgroundColor: AppColors.background,
         floatingActionButton: FloatingActionButton.extended(
           heroTag: 'new-routine-task',
@@ -47,7 +45,11 @@ class RoutineView extends ConsumerWidget {
         ),
         body: _TaskList(seniorId: account.userId),
       ),
-    );
+      AsyncError() => const Center(
+        child: Text('Nie udało się wczytać profilu.'),
+      ),
+      AsyncLoading() => const Center(child: CircularProgressIndicator()),
+    };
   }
 }
 
@@ -63,56 +65,60 @@ class _TaskList extends ConsumerWidget {
       taskConfirmationControllerProvider(seniorId),
     );
 
-    return tasks.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) => _Message(
+    return switch (tasks) {
+      AsyncData(value: final items) when items.isEmpty => const _Message(
+        text: 'Brak zadań.',
+      ),
+      AsyncData(value: final items) => _list(context, items, confirmation),
+      AsyncError() => _Message(
         text: 'Nie udało się wczytać zadań.',
         actionLabel: 'Spróbuj ponownie',
         onPressed: () =>
             ref.invalidate(routineTasksControllerProvider(seniorId)),
       ),
-      data: (items) {
-        if (items.isEmpty) {
-          return const _Message(text: 'Brak zadań.');
-        }
-        final occurrences = confirmation.value?.items ?? const [];
-        final submittingId = confirmation.value?.submittingId;
-        final error = confirmation.hasError
-            ? 'Nie udało się wczytać dzisiejszych zadań.'
-            : confirmation.value?.error;
+      AsyncLoading() => const Center(child: CircularProgressIndicator()),
+    };
+  }
 
-        return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            96,
+  Widget _list(
+    BuildContext context,
+    List<RoutineTask> items,
+    AsyncValue<TaskConfirmationState> confirmation,
+  ) {
+    final occurrences = confirmation.value?.items ?? const [];
+    final submittingId = confirmation.value?.submittingId;
+    final error = confirmation.hasError
+        ? 'Nie udało się wczytać dzisiejszych zadań.'
+        : confirmation.value?.error;
+
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        96,
+      ),
+      itemCount: items.length + (error == null ? 0 : 1),
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+      itemBuilder: (context, index) {
+        if (error != null && index == 0) {
+          return Text(
+            error,
+            style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
+          );
+        }
+        final task = items[error == null ? index : index - 1];
+        return _TaskCard(
+          seniorId: seniorId,
+          task: task,
+          occurrences: [
+            for (final item in occurrences)
+              if (item.taskId == task.taskId) item,
+          ],
+          submittingId: submittingId,
+          onTap: () => context.router.push(
+            RoutineTaskRoute(seniorId: seniorId, taskId: task.taskId),
           ),
-          itemCount: items.length + (error == null ? 0 : 1),
-          separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-          itemBuilder: (context, index) {
-            if (error != null && index == 0) {
-              return Text(
-                error,
-                style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.error,
-                ),
-              );
-            }
-            final task = items[error == null ? index : index - 1];
-            return _TaskCard(
-              seniorId: seniorId,
-              task: task,
-              occurrences: [
-                for (final item in occurrences)
-                  if (item.taskId == task.taskId) item,
-              ],
-              submittingId: submittingId,
-              onTap: () => context.router.push(
-                RoutineTaskRoute(seniorId: seniorId, taskId: task.taskId),
-              ),
-            );
-          },
         );
       },
     );

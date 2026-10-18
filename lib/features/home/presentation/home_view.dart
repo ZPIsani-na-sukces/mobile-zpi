@@ -22,13 +22,16 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileControllerProvider);
 
-    return profile.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) =>
-          const _StatusMessage(text: 'Nie udało się wczytać ekranu głównego.'),
-      data: (account) =>
-          _HomeBody(firstName: account.firstName, seniorId: account.userId),
-    );
+    return switch (profile) {
+      AsyncData(value: final account) => _HomeBody(
+        firstName: account.firstName,
+        seniorId: account.userId,
+      ),
+      AsyncError() => const _StatusMessage(
+        text: 'Nie udało się wczytać ekranu głównego.',
+      ),
+      AsyncLoading() => const Center(child: CircularProgressIndicator()),
+    };
   }
 }
 
@@ -42,14 +45,8 @@ class _HomeBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final home = ref.watch(homeControllerProvider(seniorId));
 
-    return home.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) => _StatusMessage(
-        text: 'Nie udało się wczytać danych.',
-        actionLabel: 'Spróbuj ponownie',
-        onPressed: () => ref.invalidate(homeControllerProvider(seniorId)),
-      ),
-      data: (overview) => ListView(
+    return switch (home) {
+      AsyncData(value: final overview) => ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
           Text(
@@ -121,7 +118,13 @@ class _HomeBody extends ConsumerWidget {
           ),
         ],
       ),
-    );
+      AsyncError() => _StatusMessage(
+        text: 'Nie udało się wczytać danych.',
+        actionLabel: 'Spróbuj ponownie',
+        onPressed: () => ref.invalidate(homeControllerProvider(seniorId)),
+      ),
+      AsyncLoading() => const Center(child: CircularProgressIndicator()),
+    };
   }
 }
 

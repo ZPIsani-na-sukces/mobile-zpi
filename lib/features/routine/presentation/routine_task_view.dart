@@ -31,11 +31,8 @@ class RoutineTaskView extends ConsumerWidget {
 
     return BackScaffold(
       title: 'Zadanie',
-      body: task.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) =>
-            const Center(child: Text('Nie udało się wczytać zadania.')),
-        data: (value) => ListView(
+      body: switch (task) {
+        AsyncData(:final value) => ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
             Text(
@@ -77,7 +74,11 @@ class RoutineTaskView extends ConsumerWidget {
             ..._today(confirmation, seniorId, value.taskId),
           ],
         ),
-      ),
+        AsyncError() => const Center(
+          child: Text('Nie udało się wczytać zadania.'),
+        ),
+        AsyncLoading() => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
@@ -87,44 +88,48 @@ List<Widget> _today(
   String seniorId,
   String taskId,
 ) {
-  return confirmation.when(
-    loading: () => const [Center(child: CircularProgressIndicator())],
-    error: (_, _) => [
+  return switch (confirmation) {
+    AsyncData(:final value) => _todayItems(value, seniorId, taskId),
+    AsyncError() => [
       Text(
         'Nie udało się wczytać dzisiejszych zadań.',
         style: AppTypography.bodyLarge.copyWith(color: AppColors.onBackground),
       ),
     ],
-    data: (state) {
-      final items = [
-        for (final item in state.items)
-          if (item.taskId == taskId) item,
-      ];
-      if (items.isEmpty) {
-        return [
-          Text(
-            'Dziś nie ma tego zadania.',
-            style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
-            ),
-          ),
-        ];
-      }
-      return [
-        if (state.error != null)
-          Text(
-            state.error!,
-            style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
-          ),
-        for (final item in items)
-          RoutineOccurrenceMark(
-            seniorId: seniorId,
-            occurrence: item,
-            submittingId: state.submittingId,
-          ),
-      ];
-    },
-  );
+    AsyncLoading() => const [Center(child: CircularProgressIndicator())],
+  };
+}
+
+List<Widget> _todayItems(
+  TaskConfirmationState state,
+  String seniorId,
+  String taskId,
+) {
+  final items = [
+    for (final item in state.items)
+      if (item.taskId == taskId) item,
+  ];
+  if (items.isEmpty) {
+    return [
+      Text(
+        'Dziś nie ma tego zadania.',
+        style: AppTypography.bodyLarge.copyWith(color: AppColors.onBackground),
+      ),
+    ];
+  }
+  return [
+    if (state.error != null)
+      Text(
+        state.error!,
+        style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
+      ),
+    for (final item in items)
+      RoutineOccurrenceMark(
+        seniorId: seniorId,
+        occurrence: item,
+        submittingId: state.submittingId,
+      ),
+  ];
 }
 
 class _Row extends StatelessWidget {
