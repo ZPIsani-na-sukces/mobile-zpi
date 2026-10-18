@@ -20,29 +20,31 @@ class GeozonePreviewView extends ConsumerWidget {
 
     return BackScaffold(
       title: 'Geostrefy',
-      body: home.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) =>
-            const Center(child: Text('Nie udało się wczytać geostref.')),
-        data: (overview) => overview.zones.isEmpty
-            ? const Center(child: Text('Brak ustawionych geostref.'))
-            : ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                children: [
-                  Text(
-                    'Bezpieczne strefy ustawione przez opiekuna.',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.onBackground,
+      body: switch (home) {
+        AsyncData(value: final overview) =>
+          overview.zones.isEmpty
+              ? const Center(child: Text('Brak ustawionych geostref.'))
+              : ListView(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  children: [
+                    Text(
+                      'Bezpieczne strefy ustawione przez opiekuna.',
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: AppColors.onBackground,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  for (final zone in overview.zones) ...[
-                    _ZonePreview(zone: zone),
-                    const SizedBox(height: AppSpacing.md),
+                    const SizedBox(height: AppSpacing.lg),
+                    for (final zone in overview.zones) ...[
+                      _ZonePreview(zone: zone),
+                      const SizedBox(height: AppSpacing.md),
+                    ],
                   ],
-                ],
-              ),
-      ),
+                ),
+        AsyncError() => const Center(
+          child: Text('Nie udało się wczytać geostref.'),
+        ),
+        AsyncLoading() => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }

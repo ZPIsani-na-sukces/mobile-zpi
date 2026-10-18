@@ -28,12 +28,13 @@ class ProfileEditView extends HookConsumerWidget {
 
     return BackScaffold(
       title: 'Edycja profilu',
-      body: profile.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) =>
-            const Center(child: Text('Nie udało się wczytać profilu.')),
-        data: (account) => _ProfileEditForm(account: account),
-      ),
+      body: switch (profile) {
+        AsyncData(value: final account) => _ProfileEditForm(account: account),
+        AsyncError() => const Center(
+          child: Text('Nie udało się wczytać profilu.'),
+        ),
+        AsyncLoading() => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
