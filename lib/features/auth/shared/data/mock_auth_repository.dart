@@ -124,4 +124,7 @@ class MockAuthRepository implements AuthRepository {
         throw const InvalidCodeException();
     }
   }
+
+  @override
+  Future<void> logout(String accessToken) => Future<void>.delayed(_delay);
 }

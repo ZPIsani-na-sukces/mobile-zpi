@@ -156,6 +156,12 @@ class ApiAuthRepository implements AuthRepository {
     }
   }
 
+  @override
+  Future<void> logout(String accessToken) => _dio.post<void>(
+    '/auth/logout',
+    options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+  );
+
   String? _problemCode(DioException e) => switch (e.response?.data) {
     {'code': final String code} => code,
     _ => null,
