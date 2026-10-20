@@ -21,6 +21,7 @@ abstract interface class AuthRepository {
   Future<PhoneChallenge> sendResetCode(String phoneNumber);
   Future<void> verifyResetCode(VerifyResetPassCodeRequest request);
   Future<void> setNewPassword(SetNewPassRequest request);
+  Future<void> logout(String accessToken);
 }
 
 @Riverpod(keepAlive: true)

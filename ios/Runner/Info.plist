@@ -27,7 +27,20 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Lokalizacja jest potrzebna, żeby wykryć adres domu.</string>
+	<string>Lokalizacja jest potrzebna do udostępnienia Twojemu opiekunowi.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Lokalizacja w tle umoliwi przekazywanie lokalizacji opiekunowi także gdy aplikacja jest zamknięta.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Czujnik ruchu pozwala wykryć, kiedy się przemieszczasz i oszczędza baterię.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.transistorsoft.fetch</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

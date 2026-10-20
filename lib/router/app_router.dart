@@ -17,7 +17,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(path: 'med-history', page: MedHistoryRoute.page),
       ],
     ),
-    AutoRoute(path: '/geozones', page: GeozonePreviewRoute.page),
+    AutoRoute(path: '/geozones', page: GeozoneRoute.page),
     AutoRoute(path: '/profile', page: ProfileRoute.page),
     AutoRoute(path: '/profile/edit', page: ProfileEditRoute.page),
     AutoRoute(path: '/routine/new', page: CreateRoutineTaskRoute.page),
