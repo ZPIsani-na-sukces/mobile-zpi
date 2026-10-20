@@ -18,7 +18,6 @@ class AppRouter extends RootStackRouter {
       ],
     ),
     AutoRoute(path: '/geozones', page: GeozoneRoute.page),
-    AutoRoute(path: '/geozones/preview', page: GeozonePreviewRoute.page),
     AutoRoute(path: '/profile', page: ProfileRoute.page),
     AutoRoute(path: '/profile/edit', page: ProfileEditRoute.page),
     AutoRoute(path: '/routine/new', page: CreateRoutineTaskRoute.page),
