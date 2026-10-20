@@ -11,8 +11,12 @@ class ApiContactsRepository implements ContactsRepository {
 
   @override
   Future<List<Contact>> getContacts(String seniorId) async {
-    final response = await _dio.get<List<dynamic>>(_contactsPath(seniorId));
-    return response.data!
+    final response = await _dio.get<Map<String, dynamic>>(
+      _contactsPath(seniorId),
+      queryParameters: {'limit': 100},
+    );
+    final items = response.data!['items'] as List<dynamic>;
+    return items
         .map((e) => Contact.fromJson(e as Map<String, dynamic>))
         .toList();
   }
