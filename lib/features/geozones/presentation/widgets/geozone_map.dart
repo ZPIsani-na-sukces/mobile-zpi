@@ -24,6 +24,9 @@ class GeozoneMap extends StatelessWidget {
   final ValueChanged<Geozone>? onGeozoneTap;
   final Widget? bottomPanel;
 
+  static const Duration _panelAnimationDuration = Duration(milliseconds: 350);
+  static const Offset _panelSlideOffset = Offset(0, 0.25);
+
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
@@ -57,13 +60,55 @@ class GeozoneMap extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: AppSpacing.md,
                 children: [
                   const Align(
                     alignment: Alignment.centerRight,
                     child: MapCompass(),
                   ),
-                  ?bottomPanel,
+                  AnimatedSize(
+                    duration: _panelAnimationDuration,
+                    curve: Curves.easeOut,
+                    alignment: Alignment.bottomCenter,
+                    clipBehavior: Clip.none,
+                    child: AnimatedSwitcher(
+                      duration: _panelAnimationDuration,
+                      switchInCurve: Curves.easeOut,
+                      switchOutCurve: Curves.easeIn,
+                      layoutBuilder: (currentChild, previousChildren) => Stack(
+                        fit: StackFit.passthrough,
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          for (final child in previousChildren)
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: child,
+                            ),
+                          ?currentChild,
+                        ],
+                      ),
+                      transitionBuilder: (child, animation) => FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween(
+                            begin: _panelSlideOffset,
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      ),
+                      child: bottomPanel == null
+                          ? const SizedBox.shrink()
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                top: AppSpacing.md,
+                              ),
+                              child: bottomPanel,
+                            ),
+                    ),
+                  ),
                 ],
               ),
             ),
