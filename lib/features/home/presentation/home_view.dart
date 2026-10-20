@@ -2,9 +2,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/home/controllers/home_controller.dart';
+import 'package:mobile_zpi/features/home/data/back_home.dart';
 import 'package:mobile_zpi/features/home/data/models/home_overview.dart';
 import 'package:mobile_zpi/features/home/data/phone_call.dart';
+import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
+import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
 import 'package:mobile_zpi/features/sos/presentation/sos_button.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
@@ -62,6 +65,8 @@ class _HomeBody extends ConsumerWidget {
                   context.router.push(SosRoute(seniorId: seniorId)),
             ),
           ),
+          const SizedBox(height: AppSpacing.xl),
+          _BackHomeButton(seniorId: seniorId),
           const SizedBox(height: AppSpacing.xl),
           _Section(
             title: 'Ostatnie kontakty',
@@ -125,6 +130,51 @@ class _HomeBody extends ConsumerWidget {
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
+  }
+}
+
+class _BackHomeButton extends ConsumerWidget {
+  const _BackHomeButton({required this.seniorId});
+
+  final String seniorId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = homeAddressControllerProvider(seniorId);
+    final address = ref.watch(provider);
+
+    return AppButton.primary(
+      label: 'Wróć do domu',
+      icon: Icons.home_rounded,
+      onPressed: switch (address) {
+        AsyncData(value: final home) => () => _navigate(context, home),
+        AsyncError() => () {
+          ref.invalidate(provider);
+          _showMessage(context, 'Nie udało się wczytać adresu domu.');
+        },
+        AsyncLoading() => null,
+      },
+    );
+  }
+
+  Future<void> _navigate(BuildContext context, HomeAddress? home) async {
+    if (home == null) {
+      _showMessage(
+        context,
+        'Adres domu nie jest ustawiony. Poproś opiekuna o jego dodanie.',
+      );
+      return;
+    }
+    try {
+      await navigateBackHome(home.coordinates);
+    } on BackHomeException {
+      if (!context.mounted) return;
+      _showMessage(context, 'Nie udało się otworzyć mapy.');
+    }
+  }
+
+  void _showMessage(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 }
 
