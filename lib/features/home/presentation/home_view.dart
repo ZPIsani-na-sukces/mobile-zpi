@@ -114,8 +114,9 @@ class _HomeBody extends ConsumerWidget {
                       ],
                       AppButton.text(
                         label: 'Podgląd geostref',
-                        onPressed: () =>
-                            context.router.push(const GeozoneRoute()),
+                        onPressed: () => context.router.push(
+                          GeozoneRoute(seniorId: seniorId),
+                        ),
                       ),
                     ],
                   ),

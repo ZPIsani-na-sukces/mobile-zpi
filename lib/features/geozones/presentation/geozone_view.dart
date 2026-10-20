@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/geozones_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_button.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
@@ -10,18 +11,24 @@ import 'package:mobile_zpi/theme/app_typography.dart';
 
 @RoutePage()
 class GeozoneView extends ConsumerWidget {
-  const GeozoneView({super.key});
+  const GeozoneView({super.key, required this.seniorId});
+
+  final String seniorId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final location = ref.watch(currentLocationControllerProvider);
+    final geozones = ref.watch(geozonesControllerProvider(seniorId));
 
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
           switch (location) {
-            AsyncData(value: final position) => GeozoneMap(position: position),
+            AsyncData(value: final position) => GeozoneMap(
+              position: position,
+              geozones: geozones.value ?? const [],
+            ),
             AsyncError() => Center(
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.lg),

@@ -22,4 +22,9 @@ abstract final class AppColors {
   static const Color disabled = Color(0xFFE0E0E0);
   static const Color onDisabled = Color(0xFF9E9E9E);
   static const Color surfacePressed = Color(0xFFEAECEE);
+
+  static const Color geozoneActive = Color(0xFF16A34A);
+  static const Color geozoneActiveFill = Color(0xFF22C55E);
+  static const Color geozoneInactive = Color(0xFF9CA3AF);
+  static const Color geozoneInactiveFill = Color(0xFFE5E7EB);
 }
