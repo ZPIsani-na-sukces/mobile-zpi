@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_sos_title">SOS</string>
+    <string name="widget_sos_hint">Dotknij, aby wezwać pomoc</string>
+    <string name="widget_sos_description">Wzywa pomoc opiekuna jednym dotknięciem.</string>
+    <string name="widget_back_home_title">Wróć do domu</string>
+    <string name="widget_back_home_missing">Brak adresu domu</string>
+    <string name="widget_back_home_description">Otwiera nawigację do domu w Google Maps.</string>
+</resources>
