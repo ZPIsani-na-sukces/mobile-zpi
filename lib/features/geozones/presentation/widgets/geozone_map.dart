@@ -5,6 +5,7 @@ import 'package:mobile_zpi/features/geozones/data/models/geozone.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/current_location_marker.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_circle_layer.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_attribution.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/map_compass.dart';
 
 class GeozoneMap extends StatelessWidget {
   const GeozoneMap({
@@ -37,6 +38,7 @@ class GeozoneMap extends StatelessWidget {
           ],
         ),
         const MapAttribution(),
+        const MapCompass(),
       ],
     );
   }

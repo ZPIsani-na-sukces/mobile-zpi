@@ -8,11 +8,13 @@ class MapCircleButton extends StatelessWidget {
     required this.tooltip,
     required this.icon,
     required this.onPressed,
+    this.size,
   });
 
   final String tooltip;
   final Widget icon;
   final VoidCallback onPressed;
+  final double? size;
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +24,14 @@ class MapCircleButton extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: AppShadows.md,
       ),
-      child: IconButton(
-        tooltip: tooltip,
-        color: AppColors.onBackground,
-        onPressed: onPressed,
-        icon: icon,
+      child: SizedBox.square(
+        dimension: size,
+        child: IconButton(
+          tooltip: tooltip,
+          color: AppColors.onBackground,
+          onPressed: onPressed,
+          icon: icon,
+        ),
       ),
     );
   }
