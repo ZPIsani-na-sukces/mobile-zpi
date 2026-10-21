@@ -19,7 +19,11 @@ class GeozoneView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final location = ref.watch(currentLocationControllerProvider);
+    final locationStatus = ref.watch(
+      currentLocationControllerProvider.select(
+        (state) => state.whenData((_) => true),
+      ),
+    );
     final geozones = ref.watch(geozonesControllerProvider(seniorId));
     final selectedZoneId = useState<String?>(null);
 
@@ -32,9 +36,12 @@ class GeozoneView extends HookConsumerWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          switch (location) {
-            AsyncData(value: final position) => GeozoneMap(
-              position: position,
+          switch (locationStatus) {
+            AsyncData() => GeozoneMap(
+              initialCenter: ref
+                  .read(currentLocationControllerProvider)
+                  .requireValue
+                  .latLng,
               geozones: zones,
               selectedZoneId: selectedZone?.zoneId,
               onGeozoneTap: (zone) => selectedZoneId.value = zone.zoneId,
