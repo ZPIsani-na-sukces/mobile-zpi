@@ -7,6 +7,7 @@ import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_circle
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_attribution.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_center_location_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_compass.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_layer.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 
 class GeozoneMap extends StatelessWidget {
@@ -17,6 +18,7 @@ class GeozoneMap extends StatelessWidget {
     this.selectedZoneId,
     this.onGeozoneTap,
     this.bottomPanel,
+    this.bottomLeftAction,
   });
 
   final LatLng initialCenter;
@@ -24,6 +26,7 @@ class GeozoneMap extends StatelessWidget {
   final String? selectedZoneId;
   final ValueChanged<Geozone>? onGeozoneTap;
   final Widget? bottomPanel;
+  final Widget? bottomLeftAction;
 
   static const Duration _panelAnimationDuration = Duration(milliseconds: 350);
   static const Offset _panelSlideOffset = Offset(0, 0.25);
@@ -42,6 +45,7 @@ class GeozoneMap extends StatelessWidget {
           selectedZoneId: selectedZoneId,
           onGeozoneTap: onGeozoneTap,
         ),
+        const WalkingRouteLayer(),
         const CurrentLocationMarkerLayer(),
         const MapAttribution(),
         SafeArea(
@@ -58,9 +62,13 @@ class GeozoneMap extends StatelessWidget {
                     child: MapCompass(),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  const Align(
-                    alignment: Alignment.centerRight,
-                    child: MapCenterLocationButton(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ?bottomLeftAction,
+                      const Spacer(),
+                      const MapCenterLocationButton(),
+                    ],
                   ),
                   AnimatedSize(
                     duration: _panelAnimationDuration,

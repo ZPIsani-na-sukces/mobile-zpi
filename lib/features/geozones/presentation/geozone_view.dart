@@ -7,6 +7,7 @@ import 'package:mobile_zpi/features/geozones/controllers/geozones_controller.dar
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_info_tile.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_button.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_home_button.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -51,6 +52,7 @@ class GeozoneView extends HookConsumerWidget {
                       geozone: selectedZone,
                       onClose: () => selectedZoneId.value = null,
                     ),
+              bottomLeftAction: MapBackHomeButton(seniorId: seniorId),
             ),
             AsyncError() => Center(
               child: Padding(
