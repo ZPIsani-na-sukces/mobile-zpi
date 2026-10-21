@@ -28,13 +28,17 @@ class GeozoneMap extends StatelessWidget {
   final Widget? bottomPanel;
   final Widget? bottomLeftAction;
 
+  static const double initialZoom = 16;
   static const Duration _panelAnimationDuration = Duration(milliseconds: 350);
   static const Offset _panelSlideOffset = Offset(0, 0.25);
 
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
-      options: MapOptions(initialCenter: initialCenter, initialZoom: 16),
+      options: MapOptions(
+        initialCenter: initialCenter,
+        initialZoom: initialZoom,
+      ),
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',

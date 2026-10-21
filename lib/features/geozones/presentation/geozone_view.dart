@@ -4,10 +4,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/geozones_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/walking_route_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_info_tile.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_home_button.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/map_cancel_route_button.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -26,6 +28,9 @@ class GeozoneView extends HookConsumerWidget {
       ),
     );
     final geozones = ref.watch(geozonesControllerProvider(seniorId));
+    final hasRoute = ref.watch(
+      walkingRouteControllerProvider.select((state) => state.value != null),
+    );
     final selectedZoneId = useState<String?>(null);
 
     final zones = geozones.value ?? const [];
@@ -52,7 +57,9 @@ class GeozoneView extends HookConsumerWidget {
                       geozone: selectedZone,
                       onClose: () => selectedZoneId.value = null,
                     ),
-              bottomLeftAction: MapBackHomeButton(seniorId: seniorId),
+              bottomLeftAction: hasRoute
+                  ? const MapCancelRouteButton()
+                  : MapBackHomeButton(seniorId: seniorId),
             ),
             AsyncError() => Center(
               child: Padding(

@@ -16,4 +16,6 @@ class WalkingRouteController extends _$WalkingRouteController {
       () => ref.read(geozonesRepositoryProvider).getWalkingRoute(destination),
     );
   }
+
+  void clear() => state = const AsyncData(null);
 }
