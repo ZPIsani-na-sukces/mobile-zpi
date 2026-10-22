@@ -12,6 +12,14 @@ abstract class WalkingRoute with _$WalkingRoute {
   }) = _WalkingRoute;
 }
 
+@freezed
+abstract class WalkingRouteProgress with _$WalkingRouteProgress {
+  const factory WalkingRouteProgress({
+    required double remainingMeters,
+    required double remainingSeconds,
+  }) = _WalkingRouteProgress;
+}
+
 class RouteNotFoundException implements Exception {
   const RouteNotFoundException();
 }

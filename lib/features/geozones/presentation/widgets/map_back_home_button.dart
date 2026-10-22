@@ -3,17 +3,15 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mobile_zpi/features/geozones/controllers/walking_route_controller.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
 import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
-import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
 
 class MapBackHomeButton extends ConsumerWidget {
   const MapBackHomeButton({super.key, required this.seniorId});
 
   final String seniorId;
-
-  static const EdgeInsets _routeFitPadding = EdgeInsets.all(AppSpacing.xxxl);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,7 +68,10 @@ class MapBackHomeButton extends ConsumerWidget {
     final points = route.value?.points ?? const [];
     if (points.length < 2) return;
     mapController.fitCamera(
-      CameraFit.coordinates(coordinates: points, padding: _routeFitPadding),
+      CameraFit.coordinates(
+        coordinates: points,
+        padding: GeozoneMap.routeFitPadding,
+      ),
     );
   }
 

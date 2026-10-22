@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/map_follow_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/current_location_marker.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 
@@ -29,8 +30,13 @@ class CurrentLocationMarkerLayer extends HookConsumerWidget {
       if (position != null) positions.add(position);
     });
 
+    final following = ref.watch(mapFollowControllerProvider);
+
     return CurrentLocationLayer(
       positionStream: positions.stream,
+      alignPositionOnUpdate: following
+          ? AlignOnUpdate.always
+          : AlignOnUpdate.never,
       style: LocationMarkerStyle(
         marker: const CurrentLocationMarker(),
         markerSize: const Size.square(CurrentLocationMarker.size),
