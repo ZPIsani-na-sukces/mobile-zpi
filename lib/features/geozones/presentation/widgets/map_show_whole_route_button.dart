@@ -21,12 +21,14 @@ class MapShowWholeRouteButton extends ConsumerWidget {
             ref.read(walkingRouteControllerProvider).value?.points ?? const [];
         if (points.length < 2) return;
         ref.read(mapFollowControllerProvider.notifier).pause();
-        controller.fitCamera(
-          CameraFit.coordinates(
-            coordinates: points,
-            padding: GeozoneMap.routeFitPadding,
-          ),
-        );
+        controller
+          ..rotate(0)
+          ..fitCamera(
+            CameraFit.coordinates(
+              coordinates: points,
+              padding: GeozoneMap.routeFitPadding,
+            ),
+          );
       },
     );
   }

@@ -3,12 +3,14 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mobile_zpi/features/geozones/controllers/map_follow_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/route_navigation_controller.dart';
 import 'package:mobile_zpi/features/geozones/data/models/geozone.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/current_location_marker_layer.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_circle_layer.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_attribution.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_center_location_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_compass.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/map_resume_navigation_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_layer.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 
@@ -38,6 +40,8 @@ class GeozoneMap extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isNavigating = ref.watch(routeNavigationControllerProvider);
+
     return FlutterMap(
       options: MapOptions(
         initialCenter: initialCenter,
@@ -79,7 +83,10 @@ class GeozoneMap extends ConsumerWidget {
                     children: [
                       ?bottomLeftAction,
                       const Spacer(),
-                      const MapCenterLocationButton(),
+                      if (isNavigating)
+                        const MapResumeNavigationButton()
+                      else
+                        const MapCenterLocationButton(),
                     ],
                   ),
                   AnimatedSize(

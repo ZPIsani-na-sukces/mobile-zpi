@@ -26,6 +26,7 @@ class MapCancelRouteButton extends ConsumerWidget {
       variant: variant,
       onPressed: () {
         ref.read(walkingRouteControllerProvider.notifier).clear();
+        controller.rotate(0);
         final position = ref.read(currentLocationControllerProvider).value;
         if (position == null) return;
         controller.move(position.latLng, GeozoneMap.initialZoom);
