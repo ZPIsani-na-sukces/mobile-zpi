@@ -8,6 +8,7 @@ import 'package:mobile_zpi/features/geozones/controllers/current_location_contro
 import 'package:mobile_zpi/features/geozones/controllers/map_follow_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/route_navigation_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/current_location_marker.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 
 class CurrentLocationMarkerLayer extends HookConsumerWidget {
@@ -44,7 +45,7 @@ class CurrentLocationMarkerLayer extends HookConsumerWidget {
         : AlignOnUpdate.never;
 
     useEffect(() {
-      if (following) alignPosition.add(null);
+      if (following) alignPosition.add(GeozoneMap.navigationZoom);
       return null;
     }, [following]);
 
