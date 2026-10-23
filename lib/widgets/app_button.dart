@@ -98,7 +98,7 @@ class AppButton extends HookWidget {
     final colors = _resolveColors(enabled: enabled, pressed: pressed);
     final horizontalPadding = variant == AppButtonVariant.text
         ? AppSpacing.sm
-        : AppSpacing.lg;
+        : AppSpacing.md;
     final duration = pressed ? _pressDuration : _releaseDuration;
     final curve = pressed ? _pressCurve : _releaseCurve;
 
@@ -140,17 +140,22 @@ class AppButton extends HookWidget {
               tween: ColorTween(end: colors.foreground),
               duration: duration,
               curve: curve,
-              builder: (context, color, child) => Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: AppSpacing.sm,
-                children: [
-                  if (icon != null) Icon(icon, color: color, size: 20),
-                  Text(
-                    label,
-                    style: AppTypography.labelLarge.copyWith(color: color),
+              builder: (context, color, child) => Center(
+                widthFactor: 1,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: AppSpacing.sm,
+                    children: [
+                      if (icon != null) Icon(icon, color: color, size: 20),
+                      Text(
+                        label,
+                        style: AppTypography.labelLarge.copyWith(color: color),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
