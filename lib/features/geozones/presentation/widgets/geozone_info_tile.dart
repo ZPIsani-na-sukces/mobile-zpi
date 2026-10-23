@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/geozones/data/models/geozone.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_info_row.dart';
+import 'package:mobile_zpi/features/geozones/utils/geozone_formatters.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_shadows.dart';
@@ -67,7 +68,7 @@ class GeozoneInfoTile extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             GeozoneInfoRow(
               label: 'Promień',
-              value: Text(_formatRadius(geozone.radiusMeters)),
+              value: Text(formatDistance(geozone.radiusMeters)),
             ),
             const SizedBox(height: AppSpacing.lg),
             AppButton.primary(label: 'Zamknij', onPressed: onClose),
@@ -75,11 +76,5 @@ class GeozoneInfoTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatRadius(double meters) {
-    if (meters < 1000) return '${meters.round()} m';
-    final kilometers = (meters / 1000).toStringAsFixed(1).replaceAll('.', ',');
-    return '$kilometers km';
   }
 }

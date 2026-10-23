@@ -51,3 +51,22 @@ Dio authDio(Ref ref) {
 
   return dio;
 }
+
+@Riverpod(keepAlive: true)
+Dio routingDio(Ref ref) {
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://routing.openstreetmap.de/routed-foot',
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 15),
+      responseType: ResponseType.json,
+      headers: {'User-Agent': 'mobile_zpi/1.0'},
+    ),
+  );
+
+  if (AppEnv.isDev) dio.interceptors.add(LogInterceptor());
+
+  ref.onDispose(dio.close);
+
+  return dio;
+}

@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:mobile_zpi/features/geozones/controllers/map_follow_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/route_navigation_controller.dart';
 import 'package:mobile_zpi/features/geozones/data/models/geozone.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/current_location_marker_layer.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_circle_layer.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_attribution.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_center_location_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_compass.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/map_resume_navigation_button.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_layer.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 
-class GeozoneMap extends StatelessWidget {
+class GeozoneMap extends ConsumerWidget {
   const GeozoneMap({
     super.key,
     required this.initialCenter,
@@ -17,6 +22,7 @@ class GeozoneMap extends StatelessWidget {
     this.selectedZoneId,
     this.onGeozoneTap,
     this.bottomPanel,
+    this.bottomLeftAction,
   });
 
   final LatLng initialCenter;
@@ -24,14 +30,27 @@ class GeozoneMap extends StatelessWidget {
   final String? selectedZoneId;
   final ValueChanged<Geozone>? onGeozoneTap;
   final Widget? bottomPanel;
+  final Widget? bottomLeftAction;
 
+  static const double initialZoom = 16;
+  static const double navigationZoom = 17.5;
+  static const EdgeInsets routeFitPadding = EdgeInsets.all(AppSpacing.xxxl);
   static const Duration _panelAnimationDuration = Duration(milliseconds: 350);
   static const Offset _panelSlideOffset = Offset(0, 0.25);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isNavigating = ref.watch(routeNavigationControllerProvider);
+
     return FlutterMap(
-      options: MapOptions(initialCenter: initialCenter, initialZoom: 16),
+      options: MapOptions(
+        initialCenter: initialCenter,
+        initialZoom: initialZoom,
+        onPositionChanged: (_, hasGesture) {
+          if (!hasGesture) return;
+          ref.read(mapFollowControllerProvider.notifier).pause();
+        },
+      ),
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -42,6 +61,7 @@ class GeozoneMap extends StatelessWidget {
           selectedZoneId: selectedZoneId,
           onGeozoneTap: onGeozoneTap,
         ),
+        const WalkingRouteLayer(),
         const CurrentLocationMarkerLayer(),
         const MapAttribution(),
         SafeArea(
@@ -58,9 +78,16 @@ class GeozoneMap extends StatelessWidget {
                     child: MapCompass(),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  const Align(
-                    alignment: Alignment.centerRight,
-                    child: MapCenterLocationButton(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ?bottomLeftAction,
+                      const Spacer(),
+                      if (isNavigating)
+                        const MapResumeNavigationButton()
+                      else
+                        const MapCenterLocationButton(),
+                    ],
                   ),
                   AnimatedSize(
                     duration: _panelAnimationDuration,

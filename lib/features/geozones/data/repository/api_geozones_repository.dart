@@ -1,11 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:mobile_zpi/features/geozones/data/current_position.dart';
 import 'package:mobile_zpi/features/geozones/data/models/geozone.dart';
+import 'package:mobile_zpi/features/geozones/data/models/walking_route.dart';
 import 'package:mobile_zpi/features/geozones/data/repository/geozones_repository.dart';
+import 'package:mobile_zpi/features/geozones/data/walking_route_client.dart';
 
 class ApiGeozonesRepository implements GeozonesRepository {
-  ApiGeozonesRepository(this._dio);
+  ApiGeozonesRepository(this._dio, this._routingDio);
 
   final Dio _dio;
+  final Dio _routingDio;
 
   String _geozonesPath(String seniorId) => '/seniors/$seniorId/geozones';
 
@@ -18,5 +23,11 @@ class ApiGeozonesRepository implements GeozonesRepository {
     return response.data!
         .map((e) => Geozone.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  @override
+  Future<WalkingRoute> getWalkingRoute(LatLng destination) async {
+    final origin = await readCurrentPosition();
+    return fetchWalkingRoute(_routingDio, origin, destination);
   }
 }

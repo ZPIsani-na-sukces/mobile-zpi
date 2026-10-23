@@ -1,7 +1,16 @@
+import 'package:dio/dio.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:mobile_zpi/features/geozones/data/current_position.dart';
 import 'package:mobile_zpi/features/geozones/data/models/geozone.dart';
+import 'package:mobile_zpi/features/geozones/data/models/walking_route.dart';
 import 'package:mobile_zpi/features/geozones/data/repository/geozones_repository.dart';
+import 'package:mobile_zpi/features/geozones/data/walking_route_client.dart';
 
 class MockGeozonesRepository implements GeozonesRepository {
+  MockGeozonesRepository(this._routingDio);
+
+  final Dio _routingDio;
+
   final _geozones = <Geozone>[
     Geozone(
       zoneId: '1',
@@ -49,5 +58,11 @@ class MockGeozonesRepository implements GeozonesRepository {
     return List.unmodifiable(
       _geozones.where((zone) => isActive == null || zone.isActive == isActive),
     );
+  }
+
+  @override
+  Future<WalkingRoute> getWalkingRoute(LatLng destination) async {
+    final origin = await readCurrentPosition();
+    return fetchWalkingRoute(_routingDio, origin, destination);
   }
 }

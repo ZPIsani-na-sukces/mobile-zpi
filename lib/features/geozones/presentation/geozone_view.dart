@@ -4,9 +4,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/geozones_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/route_navigation_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/walking_route_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_info_tile.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_button.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_home_button.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_navigation_tile.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_preview_tile.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -25,12 +30,26 @@ class GeozoneView extends HookConsumerWidget {
       ),
     );
     final geozones = ref.watch(geozonesControllerProvider(seniorId));
+    final hasRoute = ref.watch(
+      walkingRouteControllerProvider.select((state) => state.value != null),
+    );
+    final isNavigating = ref.watch(routeNavigationControllerProvider);
     final selectedZoneId = useState<String?>(null);
 
     final zones = geozones.value ?? const [];
     final selectedZone = zones
         .where((zone) => zone.zoneId == selectedZoneId.value)
         .firstOrNull;
+
+    final bottomPanel = switch (selectedZone) {
+      final zone? => GeozoneInfoTile(
+        geozone: zone,
+        onClose: () => selectedZoneId.value = null,
+      ),
+      _ when isNavigating => const WalkingRouteNavigationTile(),
+      _ when hasRoute => const WalkingRoutePreviewTile(),
+      _ => null,
+    };
 
     return Scaffold(
       body: Stack(
@@ -45,12 +64,10 @@ class GeozoneView extends HookConsumerWidget {
               geozones: zones,
               selectedZoneId: selectedZone?.zoneId,
               onGeozoneTap: (zone) => selectedZoneId.value = zone.zoneId,
-              bottomPanel: selectedZone == null
+              bottomPanel: bottomPanel,
+              bottomLeftAction: hasRoute
                   ? null
-                  : GeozoneInfoTile(
-                      geozone: selectedZone,
-                      onClose: () => selectedZoneId.value = null,
-                    ),
+                  : MapBackHomeButton(seniorId: seniorId),
             ),
             AsyncError() => Center(
               child: Padding(
