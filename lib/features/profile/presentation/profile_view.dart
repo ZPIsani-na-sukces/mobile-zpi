@@ -117,7 +117,7 @@ class _ProfileBody extends ConsumerWidget {
         const LogoutButton(),
         if (AppEnv.isDev) ...[
           const SizedBox(height: AppSpacing.xl),
-          const DevSection(),
+          DevSection(seniorId: account.userId),
         ],
       ],
     );
