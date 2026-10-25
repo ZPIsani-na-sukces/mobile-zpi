@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 
 class AppBottomNav extends StatelessWidget {
@@ -8,32 +9,42 @@ class AppBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tabsRouter = AutoTabsRouter.of(context, watch: true);
+    final colors = context.colors;
 
-    return BottomNavigationBar(
-      currentIndex: tabsRouter.activeIndex,
-      onTap: tabsRouter.setActiveIndex,
-      items: const [
-        BottomNavigationBarItem(
-          icon: _BottomNavIcon(Icons.home_outlined),
-          activeIcon: _BottomNavIcon(Icons.home_rounded),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: _BottomNavIcon(Icons.event_note_outlined),
-          activeIcon: _BottomNavIcon(Icons.event_note_rounded),
-          label: 'Routines',
-        ),
-        BottomNavigationBarItem(
-          icon: _BottomNavIcon(Icons.contacts_outlined),
-          activeIcon: _BottomNavIcon(Icons.contacts_rounded),
-          label: 'Contacts',
-        ),
-        BottomNavigationBarItem(
-          icon: _BottomNavIcon(Icons.assignment_outlined),
-          activeIcon: _BottomNavIcon(Icons.assignment_rounded),
-          label: 'Med history',
-        ),
-      ],
+    // In high contrast the bar is as white as the page, so it needs an edge.
+    return DecoratedBox(
+      position: DecorationPosition.foreground,
+      decoration: BoxDecoration(
+        border: colors.isHighContrast
+            ? Border(top: BorderSide(color: colors.outline, width: 2))
+            : null,
+      ),
+      child: BottomNavigationBar(
+        currentIndex: tabsRouter.activeIndex,
+        onTap: tabsRouter.setActiveIndex,
+        items: const [
+          BottomNavigationBarItem(
+            icon: _BottomNavIcon(Icons.home_outlined),
+            activeIcon: _BottomNavIcon(Icons.home_rounded),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: _BottomNavIcon(Icons.event_note_outlined),
+            activeIcon: _BottomNavIcon(Icons.event_note_rounded),
+            label: 'Routines',
+          ),
+          BottomNavigationBarItem(
+            icon: _BottomNavIcon(Icons.contacts_outlined),
+            activeIcon: _BottomNavIcon(Icons.contacts_rounded),
+            label: 'Contacts',
+          ),
+          BottomNavigationBarItem(
+            icon: _BottomNavIcon(Icons.assignment_outlined),
+            activeIcon: _BottomNavIcon(Icons.assignment_rounded),
+            label: 'Med history',
+          ),
+        ],
+      ),
     );
   }
 }

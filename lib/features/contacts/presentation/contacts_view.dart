@@ -76,8 +76,9 @@ class _ContactCard extends StatelessWidget {
     final creator = contact.createdBy;
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         borderRadius: AppRadius.lgAll,
         boxShadow: AppShadows.sm,
       ),
@@ -90,7 +91,7 @@ class _ContactCard extends StatelessWidget {
               Text(
                 relationship,
                 style: AppTypography.labelLarge.copyWith(
-                  color: AppColors.primary,
+                  color: context.colors.primary,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -98,7 +99,7 @@ class _ContactCard extends StatelessWidget {
             Text(
               contact.displayName,
               style: AppTypography.titleLarge.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
             if (fullName.isNotEmpty && fullName != contact.displayName) ...[
@@ -106,7 +107,7 @@ class _ContactCard extends StatelessWidget {
               Text(
                 fullName,
                 style: AppTypography.bodyLarge.copyWith(
-                  color: AppColors.onSurface,
+                  color: context.colors.onSurface,
                 ),
               ),
             ],
@@ -114,7 +115,7 @@ class _ContactCard extends StatelessWidget {
             Text(
               'Dodane przez: ${creator.firstName} ${creator.lastName}',
               style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.onSurface,
+                color: context.colors.onSurface,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -159,7 +160,7 @@ class _Message extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           if (actionLabel != null && onPressed != null) ...[

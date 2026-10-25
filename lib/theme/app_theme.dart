@@ -4,41 +4,44 @@ import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 
-class AppTheme {
-  static const ColorScheme _colorScheme = ColorScheme(
-    brightness: Brightness.light,
-    primary: AppColors.primary,
-    onPrimary: AppColors.onPrimary,
-    secondary: AppColors.secondary,
-    onSecondary: AppColors.onSecondary,
-    // Selected M3 chips use the container slot; keep them blue.
-    secondaryContainer: AppColors.primary,
-    onSecondaryContainer: AppColors.onPrimary,
-    error: AppColors.error,
-    onError: AppColors.onError,
-    surface: AppColors.surface,
-    onSurface: AppColors.onSurface,
-  );
+abstract final class AppTheme {
+  static final ThemeData standard = _build(AppColors.standard);
+  static final ThemeData highContrast = _build(AppColors.highContrast);
 
-  static ThemeData get light {
+  static ThemeData _build(AppColors colors) {
+    final colorScheme = ColorScheme(
+      brightness: Brightness.light,
+      primary: colors.primary,
+      onPrimary: colors.onPrimary,
+      secondary: colors.secondary,
+      onSecondary: colors.onSecondary,
+      // Selected M3 chips use the container slot; keep them blue.
+      secondaryContainer: colors.primary,
+      onSecondaryContainer: colors.onPrimary,
+      error: colors.error,
+      onError: colors.onError,
+      surface: colors.surface,
+      onSurface: colors.onSurface,
+    );
     final textTheme = AppTypography.textTheme.apply(
-      bodyColor: AppColors.onBackground,
-      displayColor: AppColors.onBackground,
+      bodyColor: colors.onBackground,
+      displayColor: colors.onBackground,
     );
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: _colorScheme,
+      colorScheme: colorScheme,
+      extensions: [colors],
       fontFamily: AppTypography.fontFamily,
       textTheme: textTheme,
-      scaffoldBackgroundColor: AppColors.background,
-      canvasColor: AppColors.background,
+      scaffoldBackgroundColor: colors.background,
+      canvasColor: colors.background,
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.surface,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.onSurface.withValues(alpha: 0.74),
+        backgroundColor: colors.surface,
+        selectedItemColor: colors.primary,
+        unselectedItemColor: colors.onSurface.withValues(alpha: 0.74),
         selectedIconTheme: const IconThemeData(size: 26),
         unselectedIconTheme: const IconThemeData(size: 26),
         selectedLabelStyle: AppTypography.labelSmall.copyWith(
@@ -56,15 +59,19 @@ class AppTheme {
         showSelectedLabels: true,
         showUnselectedLabels: true,
       ),
+      // The default month label is onSurface at 60%, below 7:1.
+      datePickerTheme: colors.isHighContrast
+          ? DatePickerThemeData(subHeaderForegroundColor: colors.onSurface)
+          : null,
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.onSurface,
+        backgroundColor: colors.onSurface,
         contentTextStyle: AppTypography.bodyMedium.copyWith(
-          color: AppColors.onPrimary,
+          color: colors.onPrimary,
         ),
-        actionTextColor: AppColors.secondary,
+        actionTextColor: colors.secondary,
         showCloseIcon: true,
-        closeIconColor: AppColors.onPrimary,
+        closeIconColor: colors.onPrimary,
         elevation: 4,
         insetPadding: const EdgeInsets.all(AppSpacing.md),
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgAll),

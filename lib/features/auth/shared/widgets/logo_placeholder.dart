@@ -12,14 +12,14 @@ class LogoPlaceholder extends StatelessWidget {
     return Container(
       width: _size,
       height: _size,
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
+      decoration: BoxDecoration(
+        color: context.colors.primary,
         borderRadius: AppRadius.xlAll,
       ),
-      child: const Icon(
+      child: Icon(
         Icons.home_rounded,
         size: _size / 2,
-        color: AppColors.onPrimary,
+        color: context.colors.onPrimary,
       ),
     );
   }

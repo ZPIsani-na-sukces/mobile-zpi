@@ -292,7 +292,7 @@ class RegisterView extends HookConsumerWidget {
                             _registerErrorMessage(error),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.error,
+                              color: context.colors.error,
                             ),
                           ),
                         const SizedBox(height: AppSpacing.sm),

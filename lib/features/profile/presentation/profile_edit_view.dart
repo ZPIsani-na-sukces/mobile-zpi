@@ -199,7 +199,7 @@ class _ProfileEditForm extends HookConsumerWidget {
         Text(
           'Telefon i e-mail zostają bez zmian.',
           style: AppTypography.bodyLarge.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -224,14 +224,14 @@ class _ProfileEditForm extends HookConsumerWidget {
         Text(
           'Adres domu',
           style: AppTypography.titleLarge.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
         Text(
           'Służy do wyznaczenia drogi powrotnej.',
           style: AppTypography.bodyLarge.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -294,7 +294,9 @@ class _ProfileEditForm extends HookConsumerWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             formError.value!,
-            style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
+            style: AppTypography.bodyMedium.copyWith(
+              color: context.colors.error,
+            ),
           ),
         ],
         const SizedBox(height: AppSpacing.xl),

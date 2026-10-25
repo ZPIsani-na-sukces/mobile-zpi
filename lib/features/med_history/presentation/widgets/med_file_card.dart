@@ -37,8 +37,9 @@ class MedFileCard extends StatelessWidget {
     );
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         borderRadius: AppRadius.lgAll,
         boxShadow: AppShadows.sm,
       ),
@@ -50,16 +51,23 @@ class MedFileCard extends StatelessWidget {
             ExcludeSemantics(
               child: GestureDetector(
                 onTap: open,
-                child: ClipRRect(
-                  borderRadius: AppRadius.mdAll,
-                  child: ColoredBox(
-                    color: AppColors.background,
-                    child: SizedBox(
-                      height: _previewHeight,
-                      child: _Thumbnail(
-                        seniorId: seniorId,
-                        recordId: recordId,
-                        file: file,
+                child: DecoratedBox(
+                  position: DecorationPosition.foreground,
+                  decoration: BoxDecoration(
+                    border: context.colors.cardBorder,
+                    borderRadius: AppRadius.mdAll,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: AppRadius.mdAll,
+                    child: ColoredBox(
+                      color: context.colors.background,
+                      child: SizedBox(
+                        height: _previewHeight,
+                        child: _Thumbnail(
+                          seniorId: seniorId,
+                          recordId: recordId,
+                          file: file,
+                        ),
                       ),
                     ),
                   ),
@@ -70,14 +78,14 @@ class MedFileCard extends StatelessWidget {
             Text(
               file.originalName,
               style: AppTypography.titleMedium.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               formatFileInfo(file),
               style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.onSurface,
+                color: context.colors.onSurface,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -167,7 +175,7 @@ class _PreviewError extends StatelessWidget {
           'Nie udało się wczytać podglądu.',
           textAlign: TextAlign.center,
           style: AppTypography.bodyLarge.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
       ),

@@ -27,16 +27,16 @@ class RoutineView extends ConsumerWidget {
 
     return switch (profile) {
       AsyncData(value: final account) => Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.colors.background,
         floatingActionButton: FloatingActionButton.extended(
           heroTag: 'new-routine-task',
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.onPrimary,
+          backgroundColor: context.colors.primary,
+          foregroundColor: context.colors.onPrimary,
           icon: const Icon(Icons.add),
           label: Text(
             'Nowe zadanie',
             style: AppTypography.labelLarge.copyWith(
-              color: AppColors.onPrimary,
+              color: context.colors.onPrimary,
             ),
           ),
           onPressed: () => context.router.push(
@@ -104,7 +104,9 @@ class _TaskList extends ConsumerWidget {
         if (error != null && index == 0) {
           return Text(
             error,
-            style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
+            style: AppTypography.bodyMedium.copyWith(
+              color: context.colors.error,
+            ),
           );
         }
         final task = items[error == null ? index : index - 1];
@@ -143,14 +145,15 @@ class _TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         borderRadius: AppRadius.lgAll,
         boxShadow: AppShadows.sm,
       ),
+      // Transparent, so the ink shows and the card outline stays visible.
       child: Material(
-        color: AppColors.surface,
-        borderRadius: AppRadius.lgAll,
+        type: MaterialType.transparency,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -169,21 +172,21 @@ class _TaskCard extends StatelessWidget {
                     Text(
                       routineTypeLabel(task.type),
                       style: AppTypography.labelLarge.copyWith(
-                        color: AppColors.primary,
+                        color: context.colors.primary,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       task.title,
                       style: AppTypography.titleLarge.copyWith(
-                        color: AppColors.onBackground,
+                        color: context.colors.onBackground,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       formatSchedule(task.schedule),
                       style: AppTypography.bodyLarge.copyWith(
-                        color: AppColors.onSurface,
+                        color: context.colors.onSurface,
                       ),
                     ),
                     if (!task.isActive) ...[
@@ -191,7 +194,7 @@ class _TaskCard extends StatelessWidget {
                       Text(
                         'Nieaktywne',
                         style: AppTypography.bodyMedium.copyWith(
-                          color: AppColors.error,
+                          color: context.colors.error,
                         ),
                       ),
                     ],
@@ -237,7 +240,7 @@ class _Message extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           if (actionLabel != null && onPressed != null) ...[

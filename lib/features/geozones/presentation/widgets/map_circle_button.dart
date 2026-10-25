@@ -19,8 +19,9 @@ class MapCircleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         shape: BoxShape.circle,
         boxShadow: AppShadows.md,
       ),
@@ -28,7 +29,7 @@ class MapCircleButton extends StatelessWidget {
         dimension: size,
         child: IconButton(
           tooltip: tooltip,
-          color: AppColors.onBackground,
+          color: context.colors.onBackground,
           onPressed: onPressed,
           icon: icon,
         ),

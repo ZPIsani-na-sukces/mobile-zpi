@@ -55,7 +55,7 @@ class _HomeBody extends ConsumerWidget {
           Text(
             'Dzień dobry, $firstName',
             style: AppTypography.headlineSmall.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
@@ -197,7 +197,7 @@ class _ContactTile extends StatelessWidget {
                 Text(
                   contact.displayName,
                   style: AppTypography.titleMedium.copyWith(
-                    color: AppColors.onBackground,
+                    color: context.colors.onBackground,
                   ),
                 ),
                 if (subtitle != null && subtitle.isNotEmpty) ...[
@@ -205,7 +205,7 @@ class _ContactTile extends StatelessWidget {
                   Text(
                     subtitle,
                     style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.onSurface,
+                      color: context.colors.onSurface,
                     ),
                   ),
                 ],
@@ -226,7 +226,7 @@ class _ContactTile extends StatelessWidget {
                 );
               }
             },
-            icon: const Icon(Icons.call, color: AppColors.primary, size: 28),
+            icon: Icon(Icons.call, color: context.colors.primary, size: 28),
           ),
         ],
       ),
@@ -250,14 +250,16 @@ class _TaskTile extends StatelessWidget {
         children: [
           Text(
             '$hour:$minute',
-            style: AppTypography.titleLarge.copyWith(color: AppColors.primary),
+            style: AppTypography.titleLarge.copyWith(
+              color: context.colors.primary,
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Text(
               task.title,
               style: AppTypography.titleMedium.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
           ),
@@ -277,19 +279,21 @@ class _ZoneTile extends StatelessWidget {
     return _Card(
       child: Row(
         children: [
-          const Icon(Icons.place_outlined, color: AppColors.primary, size: 28),
+          Icon(Icons.place_outlined, color: context.colors.primary, size: 28),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Text(
               zone.name,
               style: AppTypography.titleMedium.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
           ),
           Text(
             '${zone.radiusMeters.round()} m',
-            style: AppTypography.bodyLarge.copyWith(color: AppColors.onSurface),
+            style: AppTypography.bodyLarge.copyWith(
+              color: context.colors.onSurface,
+            ),
           ),
         ],
       ),
@@ -311,7 +315,7 @@ class _Section extends StatelessWidget {
         Text(
           title,
           style: AppTypography.titleLarge.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -329,8 +333,9 @@ class _Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         borderRadius: AppRadius.lgAll,
         boxShadow: AppShadows.sm,
       ),
@@ -354,7 +359,7 @@ class _EmptyText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: AppTypography.bodyLarge.copyWith(color: AppColors.onSurface),
+      style: AppTypography.bodyLarge.copyWith(color: context.colors.onSurface),
     );
   }
 }
@@ -377,7 +382,7 @@ class _StatusMessage extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           if (actionLabel != null && onPressed != null) ...[

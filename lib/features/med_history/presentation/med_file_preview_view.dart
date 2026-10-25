@@ -90,8 +90,8 @@ class _PdfPages extends HookWidget {
 
     return PdfViewPinch(
       controller: controller,
-      backgroundDecoration: const BoxDecoration(
-        color: AppColors.surface,
+      backgroundDecoration: BoxDecoration(
+        color: context.colors.surface,
         boxShadow: AppShadows.sm,
       ),
       builders: const PdfViewPinchBuilders<DefaultBuilderOptions>(
@@ -123,7 +123,7 @@ class _Message extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           if (actionLabel != null && onPressed != null) ...[

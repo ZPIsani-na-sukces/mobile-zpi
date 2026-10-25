@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
-import 'package:mobile_zpi/theme/app_spacing.dart';
-import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
 
-enum PassStrengthLevel implements PasswordStrengthItem {
+enum PassStrengthLevel {
   exposed,
   weak,
   medium,
@@ -50,14 +48,12 @@ enum PassStrengthLevel implements PasswordStrengthItem {
     strong || secure => Icons.check_circle_outline,
   };
 
-  @override
-  Color get statusColor => switch (this) {
-    exposed || weak => AppColors.error,
-    medium => AppColors.warning,
-    strong || secure => AppColors.success,
+  Color color(AppColors colors) => switch (this) {
+    exposed || weak => colors.error,
+    medium => colors.warning,
+    strong || secure => colors.success,
   };
 
-  @override
   double get widthPerc => switch (this) {
     exposed => 0.1,
     weak => 0.25,
@@ -65,17 +61,4 @@ enum PassStrengthLevel implements PasswordStrengthItem {
     strong => 0.75,
     secure => 1,
   };
-
-  @override
-  Widget get statusWidget => Row(
-    mainAxisSize: MainAxisSize.min,
-    spacing: AppSpacing.xs,
-    children: [
-      Icon(icon, color: statusColor, size: 20),
-      Text(
-        'Siła hasła: $label',
-        style: AppTypography.labelLarge.copyWith(color: AppColors.onSurface),
-      ),
-    ],
-  );
 }

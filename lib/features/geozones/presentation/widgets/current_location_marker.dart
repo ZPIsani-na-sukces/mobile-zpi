@@ -16,15 +16,15 @@ class CurrentLocationMarker extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: context.colors.primary,
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.surface, width: 3),
+        border: Border.all(color: context.colors.surface, width: 3),
         boxShadow: AppShadows.md,
       ),
       child: showDirection
-          ? const Icon(
+          ? Icon(
               Icons.navigation,
-              color: AppColors.onPrimary,
+              color: context.colors.onPrimary,
               size: _directionIconSize,
             )
           : null,

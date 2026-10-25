@@ -7,6 +7,7 @@ import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart'
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
 import 'package:mobile_zpi/features/profile/presentation/profile_messages.dart';
 import 'package:mobile_zpi/features/profile/presentation/widgets/dev_section.dart';
+import 'package:mobile_zpi/features/profile/presentation/widgets/high_contrast_switch.dart';
 import 'package:mobile_zpi/features/profile/presentation/widgets/logout_button.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
@@ -54,13 +55,15 @@ class _ProfileBody extends ConsumerWidget {
         Text(
           '${account.firstName} ${account.lastName}',
           style: AppTypography.headlineSmall.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
         Text(
           accountStatusLabel(account.status),
-          style: AppTypography.bodyLarge.copyWith(color: AppColors.onSurface),
+          style: AppTypography.bodyLarge.copyWith(
+            color: context.colors.onSurface,
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         _InfoCard(
@@ -84,7 +87,7 @@ class _ProfileBody extends ConsumerWidget {
         Text(
           'Adres domu',
           style: AppTypography.titleLarge.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -108,6 +111,15 @@ class _ProfileBody extends ConsumerWidget {
             child: Center(child: CircularProgressIndicator()),
           ),
         },
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          'Dostępność',
+          style: AppTypography.titleLarge.copyWith(
+            color: context.colors.onBackground,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        const HighContrastSwitch(),
         const SizedBox(height: AppSpacing.xl),
         AppButton.primary(
           label: 'Edytuj',
@@ -132,8 +144,9 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         borderRadius: AppRadius.lgAll,
       ),
       child: Padding(
@@ -166,7 +179,7 @@ class _InfoRow extends StatelessWidget {
           child: Text(
             label,
             style: AppTypography.labelLarge.copyWith(
-              color: AppColors.onSurface,
+              color: context.colors.onSurface,
             ),
           ),
         ),
@@ -176,7 +189,7 @@ class _InfoRow extends StatelessWidget {
             value,
             textAlign: TextAlign.end,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
         ),
@@ -207,7 +220,7 @@ class _Message extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),

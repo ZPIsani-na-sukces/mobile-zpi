@@ -47,8 +47,9 @@ class MapAttribution extends HookWidget {
               if (isOpen.value) ...[
                 const SizedBox(height: AppSpacing.sm),
                 DecoratedBox(
-                  decoration: const BoxDecoration(
-                    color: AppColors.surface,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface,
+                    border: context.colors.cardBorder,
                     borderRadius: AppRadius.mdAll,
                     boxShadow: AppShadows.md,
                   ),
@@ -60,7 +61,7 @@ class MapAttribution extends HookWidget {
                     child: Text(
                       '© OpenStreetMap contributors',
                       style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.onSurface,
+                        color: context.colors.onSurface,
                       ),
                     ),
                   ),

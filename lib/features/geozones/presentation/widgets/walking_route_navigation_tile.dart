@@ -21,8 +21,9 @@ class WalkingRouteNavigationTile extends ConsumerWidget {
     if (progress == null) return const SizedBox.shrink();
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         borderRadius: AppRadius.xlAll,
         boxShadow: AppShadows.lg,
       ),
@@ -35,19 +36,19 @@ class WalkingRouteNavigationTile extends ConsumerWidget {
             Text(
               isRerouting ? 'Wyznaczam nową trasę…' : 'Do domu',
               style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.onSurface.withValues(alpha: 0.7),
+                color: context.colors.onSurface.withValues(alpha: 0.7),
               ),
             ),
             Text(
               formatWalkingDuration(progress.remainingSeconds),
               style: AppTypography.headlineMedium.copyWith(
-                color: AppColors.onSurface,
+                color: context.colors.onSurface,
               ),
             ),
             Text(
               formatDistance(progress.remainingMeters),
               style: AppTypography.bodyLarge.copyWith(
-                color: AppColors.onSurface,
+                color: context.colors.onSurface,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
