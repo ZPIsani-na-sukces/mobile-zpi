@@ -2,6 +2,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/walking_route_controller.dart';
 import 'package:mobile_zpi/features/geozones/data/models/walking_route.dart';
+import 'package:mobile_zpi/features/geozones/utils/route_geometry.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'walking_route_progress_controller.g.dart';
@@ -12,7 +13,10 @@ WalkingRouteProgress? walkingRouteProgress(Ref ref) {
   if (route == null || route.points.isEmpty) return null;
 
   final position = ref.watch(currentLocationControllerProvider).value;
-  if (position == null) {
+  final projection = position == null
+      ? null
+      : projectOntoRoute(position.latLng, route.points);
+  if (projection == null) {
     return WalkingRouteProgress(
       remainingMeters: route.distanceMeters,
       remainingSeconds: route.durationSeconds,
@@ -21,18 +25,10 @@ WalkingRouteProgress? walkingRouteProgress(Ref ref) {
 
   const distance = Distance();
   final points = route.points;
-  var nearestIndex = 0;
-  var nearestMeters = double.infinity;
-  for (var i = 0; i < points.length; i++) {
-    final meters = distance(position.latLng, points[i]);
-    if (meters < nearestMeters) {
-      nearestIndex = i;
-      nearestMeters = meters;
-    }
-  }
-
-  var remainingMeters = nearestMeters;
-  for (var i = nearestIndex; i < points.length - 1; i++) {
+  final nextIndex = projection.segmentIndex + 1;
+  var remainingMeters =
+      projection.distanceMeters + distance(projection.point, points[nextIndex]);
+  for (var i = nextIndex; i < points.length - 1; i++) {
     remainingMeters += distance(points[i], points[i + 1]);
   }
 

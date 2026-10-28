@@ -7,6 +7,7 @@ part 'walking_route.freezed.dart';
 abstract class WalkingRoute with _$WalkingRoute {
   const factory WalkingRoute({
     required List<LatLng> points,
+    required LatLng destination,
     required double distanceMeters,
     required double durationSeconds,
   }) = _WalkingRoute;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mobile_zpi/features/geozones/controllers/route_reroute_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/walking_route_progress_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_cancel_route_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_show_whole_route_button.dart';
@@ -16,6 +17,7 @@ class WalkingRouteNavigationTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(walkingRouteProgressProvider);
+    final isRerouting = ref.watch(routeRerouteControllerProvider);
     if (progress == null) return const SizedBox.shrink();
 
     return DecoratedBox(
@@ -31,7 +33,7 @@ class WalkingRouteNavigationTile extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Do domu',
+              isRerouting ? 'Wyznaczam nową trasę…' : 'Do domu',
               style: AppTypography.bodyMedium.copyWith(
                 color: AppColors.onSurface.withValues(alpha: 0.7),
               ),

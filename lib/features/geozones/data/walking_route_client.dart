@@ -32,6 +32,7 @@ Future<WalkingRoute> fetchWalkingRoute(
       final point = e as List<dynamic>;
       return LatLng((point[1] as num).toDouble(), (point[0] as num).toDouble());
     }).toList(),
+    destination: destination,
     distanceMeters: (route['distance'] as num).toDouble(),
     durationSeconds: (route['duration'] as num).toDouble(),
   );
