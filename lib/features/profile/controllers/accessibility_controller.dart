@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
+import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/profile/data/accessibility_storage.dart';
 import 'package:mobile_zpi/features/profile/data/models/accessibility_preferences.dart';
 import 'package:mobile_zpi/features/profile/data/repository/profile_repository.dart';
@@ -9,7 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'accessibility_controller.g.dart';
 
-/// Accessibility preferences of the signed-in senior. `null` when signed out.
+/// Accessibility preferences of the senior from the profile.
 @Riverpod(keepAlive: true)
 class AccessibilityController extends _$AccessibilityController {
   // A caregiver can change the preferences remotely and no live event covers
@@ -17,11 +17,10 @@ class AccessibilityController extends _$AccessibilityController {
   static const Duration _refreshInterval = Duration(seconds: 15);
 
   @override
-  Future<AccessibilityPreferences?> build() async {
+  Future<AccessibilityPreferences> build() async {
     final seniorId = await ref.watch(
-      authControllerProvider.selectAsync((session) => session?.user.userId),
+      profileControllerProvider.selectAsync((account) => account.userId),
     );
-    if (seniorId == null) return null;
 
     _scheduleRefresh();
     return ref
@@ -31,8 +30,6 @@ class AccessibilityController extends _$AccessibilityController {
 
   Future<void> setHighContrast(bool enabled) async {
     final current = await future;
-    if (current == null) return;
-
     final changed = current.copyWith(highContrastEnabled: enabled);
     state = AsyncData(changed);
     try {

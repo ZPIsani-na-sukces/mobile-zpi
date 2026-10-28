@@ -40,7 +40,7 @@ class HighContrastSwitch extends ConsumerWidget {
         type: MaterialType.transparency,
         child: SwitchListTile(
           value: enabled,
-          onChanged: preferences.value == null ? null : onChanged,
+          onChanged: preferences.hasValue ? onChanged : null,
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgAll),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
