@@ -38,21 +38,21 @@ class RoutineTaskView extends ConsumerWidget {
             Text(
               routineTypeLabel(value.type),
               style: AppTypography.labelLarge.copyWith(
-                color: AppColors.primary,
+                color: context.colors.primary,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               value.title,
               style: AppTypography.headlineSmall.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               value.instructions,
               style: AppTypography.bodyLarge.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -67,11 +67,11 @@ class RoutineTaskView extends ConsumerWidget {
             Text(
               'Dziś',
               style: AppTypography.titleMedium.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            ..._today(confirmation, seniorId, value.taskId),
+            ..._today(context.colors, confirmation, seniorId, value.taskId),
           ],
         ),
         AsyncError() => const Center(
@@ -84,16 +84,17 @@ class RoutineTaskView extends ConsumerWidget {
 }
 
 List<Widget> _today(
+  AppColors colors,
   AsyncValue<TaskConfirmationState> confirmation,
   String seniorId,
   String taskId,
 ) {
   return switch (confirmation) {
-    AsyncData(:final value) => _todayItems(value, seniorId, taskId),
+    AsyncData(:final value) => _todayItems(colors, value, seniorId, taskId),
     AsyncError() => [
       Text(
         'Nie udało się wczytać dzisiejszych zadań.',
-        style: AppTypography.bodyLarge.copyWith(color: AppColors.onBackground),
+        style: AppTypography.bodyLarge.copyWith(color: colors.onBackground),
       ),
     ],
     AsyncLoading() => const [Center(child: CircularProgressIndicator())],
@@ -101,6 +102,7 @@ List<Widget> _today(
 }
 
 List<Widget> _todayItems(
+  AppColors colors,
   TaskConfirmationState state,
   String seniorId,
   String taskId,
@@ -113,7 +115,7 @@ List<Widget> _todayItems(
     return [
       Text(
         'Dziś nie ma tego zadania.',
-        style: AppTypography.bodyLarge.copyWith(color: AppColors.onBackground),
+        style: AppTypography.bodyLarge.copyWith(color: colors.onBackground),
       ),
     ];
   }
@@ -121,7 +123,7 @@ List<Widget> _todayItems(
     if (state.error != null)
       Text(
         state.error!,
-        style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
+        style: AppTypography.bodyMedium.copyWith(color: colors.error),
       ),
     for (final item in items)
       RoutineOccurrenceMark(
@@ -148,14 +150,14 @@ class _Row extends StatelessWidget {
           Text(
             label,
             style: AppTypography.labelLarge.copyWith(
-              color: AppColors.onSurface,
+              color: context.colors.onSurface,
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             value,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
         ],

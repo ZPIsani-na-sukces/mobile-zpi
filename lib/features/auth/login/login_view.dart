@@ -83,8 +83,9 @@ class LoginView extends HookConsumerWidget {
                 const LogoPlaceholder(),
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.lg),
-                  decoration: const BoxDecoration(
-                    color: AppColors.surface,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface,
+                    border: context.colors.cardBorder,
                     borderRadius: AppRadius.xxlAll,
                     boxShadow: AppShadows.sm,
                   ),
@@ -159,7 +160,7 @@ class LoginView extends HookConsumerWidget {
                             _loginErrorMessage(error),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.error,
+                              color: context.colors.error,
                             ),
                           ),
                         Column(

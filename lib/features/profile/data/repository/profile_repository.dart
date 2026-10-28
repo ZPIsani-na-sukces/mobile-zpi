@@ -1,4 +1,5 @@
 import 'package:mobile_zpi/config/app_env.dart';
+import 'package:mobile_zpi/features/profile/data/models/accessibility_preferences.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
 import 'package:mobile_zpi/features/profile/data/models/detected_address.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
@@ -31,6 +32,12 @@ abstract interface class ProfileRepository {
     required double latitude,
     required double longitude,
   });
+
+  Future<AccessibilityPreferences> getAccessibilityPreferences(String seniorId);
+
+  Future<AccessibilityPreferences> saveAccessibilityPreferences(
+    AccessibilityPreferences preferences,
+  );
 }
 
 @Riverpod(keepAlive: true)

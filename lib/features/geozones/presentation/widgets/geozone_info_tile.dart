@@ -24,12 +24,13 @@ class GeozoneInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = geozone.isActive
-        ? AppColors.geozoneActive
-        : AppColors.geozoneInactive;
+        ? context.colors.geozoneActive
+        : context.colors.geozoneInactive;
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         borderRadius: AppRadius.xlAll,
         boxShadow: AppShadows.lg,
       ),
@@ -44,7 +45,7 @@ class GeozoneInfoTile extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppTypography.titleLarge.copyWith(
-                color: AppColors.onSurface,
+                color: context.colors.onSurface,
               ),
             ),
             const Divider(height: AppSpacing.xl),

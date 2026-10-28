@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:mobile_zpi/features/profile/data/models/accessibility_preferences.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
 import 'package:mobile_zpi/features/profile/data/models/detected_address.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
@@ -72,5 +73,31 @@ class ApiProfileRepository implements ProfileRepository {
       data: {'latitude': latitude, 'longitude': longitude},
     );
     return DetectedAddress.fromJson(response.data!);
+  }
+
+  @override
+  Future<AccessibilityPreferences> getAccessibilityPreferences(
+    String seniorId,
+  ) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/seniors/$seniorId/accessibility-preferences',
+    );
+    return AccessibilityPreferences.fromJson(response.data!);
+  }
+
+  @override
+  Future<AccessibilityPreferences> saveAccessibilityPreferences(
+    AccessibilityPreferences preferences,
+  ) async {
+    final response = await _dio.put<Map<String, dynamic>>(
+      '/seniors/${preferences.seniorId}/accessibility-preferences',
+      data: {
+        'fontScalePercent': preferences.fontScalePercent,
+        'highContrastEnabled': preferences.highContrastEnabled,
+        'largeButtonsEnabled': preferences.largeButtonsEnabled,
+      },
+      options: Options(headers: {'If-Match': '"${preferences.version}"'}),
+    );
+    return AccessibilityPreferences.fromJson(response.data!);
   }
 }

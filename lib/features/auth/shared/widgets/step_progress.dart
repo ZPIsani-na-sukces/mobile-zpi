@@ -37,8 +37,12 @@ class StepProgress extends StatelessWidget {
                     height: _barHeight,
                     decoration: BoxDecoration(
                       color: i <= currentStep
-                          ? AppColors.primary
-                          : AppColors.disabled,
+                          ? context.colors.primary
+                          : context.colors.disabled,
+                      // Light gray alone is too faint for high contrast.
+                      border: i <= currentStep
+                          ? null
+                          : context.colors.cardBorder,
                       borderRadius: AppRadius.fullAll,
                     ),
                   ),

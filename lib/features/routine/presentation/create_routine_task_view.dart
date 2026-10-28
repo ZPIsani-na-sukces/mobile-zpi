@@ -140,7 +140,7 @@ class CreateRoutineTaskView extends HookConsumerWidget {
           Text(
             'Rodzaj',
             style: AppTypography.titleMedium.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -192,7 +192,7 @@ class CreateRoutineTaskView extends HookConsumerWidget {
           Text(
             'Dni',
             style: AppTypography.titleMedium.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -258,7 +258,9 @@ class CreateRoutineTaskView extends HookConsumerWidget {
             const SizedBox(height: AppSpacing.md),
             Text(
               formError.value!,
-              style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
+              style: AppTypography.bodyMedium.copyWith(
+                color: context.colors.error,
+              ),
             ),
           ],
           const SizedBox(height: AppSpacing.xl),

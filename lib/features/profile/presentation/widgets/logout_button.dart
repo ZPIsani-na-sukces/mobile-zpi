@@ -17,18 +17,20 @@ class LogoutButton extends ConsumerWidget {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          backgroundColor: AppColors.surface,
+          backgroundColor: context.colors.surface,
           surfaceTintColor: Colors.transparent,
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgAll),
           title: Text(
             'Wylogować się?',
             style: AppTypography.headlineSmall.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
           content: Text(
             'Aby wrócić do aplikacji, trzeba będzie zalogować się ponownie.',
-            style: AppTypography.bodyLarge.copyWith(color: AppColors.onSurface),
+            style: AppTypography.bodyLarge.copyWith(
+              color: context.colors.onSurface,
+            ),
           ),
           actions: [
             AppButton.text(

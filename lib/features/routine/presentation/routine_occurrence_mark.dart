@@ -30,15 +30,15 @@ class RoutineOccurrenceMark extends ConsumerWidget {
       children: [
         Checkbox(
           value: occurrence.status == 'confirmed',
-          checkColor: AppColors.onSuccess,
+          checkColor: context.colors.onSuccess,
           fillColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return AppColors.success;
+              return context.colors.success;
             }
-            return AppColors.surface;
+            return context.colors.surface;
           }),
           overlayColor: WidgetStateProperty.all(Colors.transparent),
-          side: const BorderSide(color: AppColors.primary, width: 2),
+          side: BorderSide(color: context.colors.primary, width: 2),
           onChanged: (checked) {
             if (busy) return;
             ref
@@ -53,7 +53,7 @@ class RoutineOccurrenceMark extends ConsumerWidget {
           child: Text(
             status.isEmpty ? time : '$time · $status',
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
         ),

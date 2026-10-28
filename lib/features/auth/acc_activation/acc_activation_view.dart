@@ -177,7 +177,7 @@ class AccActivationView extends HookConsumerWidget {
                 _accountVerificationErrorMessage(generalError),
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.error,
+                  color: context.colors.error,
                 ),
               ),
             const SizedBox(height: AppSpacing.sm),

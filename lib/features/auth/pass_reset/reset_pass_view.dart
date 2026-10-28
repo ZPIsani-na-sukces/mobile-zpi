@@ -258,7 +258,7 @@ class ResetPassView extends HookConsumerWidget {
                             _resetPasswordErrorMessage(requestState.error!),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.error,
+                              color: context.colors.error,
                             ),
                           ),
                         const SizedBox(height: AppSpacing.sm),
@@ -333,7 +333,7 @@ class ResetPassView extends HookConsumerWidget {
                             _resetPasswordErrorMessage(codeStepError),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.error,
+                              color: context.colors.error,
                             ),
                           ),
                         const SizedBox(height: AppSpacing.sm),
@@ -412,7 +412,7 @@ class ResetPassView extends HookConsumerWidget {
                             _resetPasswordErrorMessage(passwordStepError),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.error,
+                              color: context.colors.error,
                             ),
                           ),
                         const SizedBox(height: AppSpacing.sm),

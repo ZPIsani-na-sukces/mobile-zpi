@@ -10,19 +10,21 @@ class HomeReachedDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.colors.surface,
       surfaceTintColor: Colors.transparent,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgAll),
-      icon: const Icon(Icons.home_outlined, color: AppColors.primary),
+      icon: Icon(Icons.home_outlined, color: context.colors.primary),
       title: Text(
         'Jesteś w domu',
         style: AppTypography.headlineSmall.copyWith(
-          color: AppColors.onBackground,
+          color: context.colors.onBackground,
         ),
       ),
       content: Text(
         'Nawigacja do domu została zakończona.',
-        style: AppTypography.bodyLarge.copyWith(color: AppColors.onSurface),
+        style: AppTypography.bodyLarge.copyWith(
+          color: context.colors.onSurface,
+        ),
       ),
       actions: [
         AppButton.text(

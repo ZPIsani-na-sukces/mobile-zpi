@@ -44,37 +44,37 @@ class AppCodeInput extends StatelessWidget {
   static const double _maxFieldSize = 56;
   static const double _boxSpacing = 10;
 
-  static const Color _borderDefault = Color(0xFFCBD5E1);
-  static const Color _borderDisabled = Color(0xFFE2E8F0);
-  static const Color _disabledContent = Color(0xFF94A3B8);
-  static const Color _helper = Color(0xFF596573);
-  static const Color _errorBackground = Color(0xFFFFF5F5);
-
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final hasError = errorText != null && enabled;
+    final borderWidth = colors.isHighContrast ? 2.0 : 1.5;
+    final activeBorderWidth = colors.isHighContrast ? 3.0 : 2.0;
     final bottomText = errorText ?? helperText;
 
     final borderColor = switch ((enabled, hasError)) {
-      (false, _) => _borderDisabled,
-      (_, true) => AppColors.error,
-      _ => _borderDefault,
+      (false, _) => colors.inputBorderDisabled,
+      (_, true) => colors.error,
+      _ => colors.inputBorder,
     };
     final border = OutlineInputBorder(
       borderRadius: AppRadius.mdAll,
-      borderSide: BorderSide(color: borderColor, width: hasError ? 2 : 1.5),
+      borderSide: BorderSide(
+        color: borderColor,
+        width: hasError ? activeBorderWidth : borderWidth,
+      ),
     );
     final focusedBorder = OutlineInputBorder(
       borderRadius: AppRadius.mdAll,
       borderSide: BorderSide(
-        color: hasError ? AppColors.error : AppColors.primary,
-        width: 2,
+        color: hasError ? colors.error : colors.primary,
+        width: activeBorderWidth,
       ),
     );
     final fillColor = switch ((enabled, hasError)) {
-      (false, _) => AppColors.background,
-      (_, true) => _errorBackground,
-      _ => AppColors.surface,
+      (false, _) => colors.background,
+      (_, true) => colors.inputErrorBackground,
+      _ => colors.surface,
     };
 
     return Column(
@@ -86,7 +86,7 @@ class AppCodeInput extends StatelessWidget {
           Text(
             label!,
             style: AppTypography.labelMedium.copyWith(
-              color: hasError ? AppColors.error : AppColors.onSurface,
+              color: hasError ? colors.error : colors.onSurface,
             ),
           ),
         LayoutBuilder(
@@ -106,14 +106,16 @@ class AppCodeInput extends StatelessWidget {
                 autoFocus: autoFocus,
                 clearOnTap: false,
                 showCursor: true,
-                cursorColor: AppColors.primary,
+                cursorColor: colors.primary,
                 filled: true,
                 fillColor: fillColor,
-                focusedFillColor: hasError ? _errorBackground : null,
+                focusedFillColor: hasError ? colors.inputErrorBackground : null,
                 border: border,
                 focusedBorder: focusedBorder,
                 textStyle: AppTypography.headlineSmall.copyWith(
-                  color: enabled ? AppColors.onSurface : _disabledContent,
+                  color: enabled
+                      ? colors.onSurface
+                      : colors.inputContentDisabled,
                 ),
                 onChanged: onChanged,
                 onSubmit: onCompleted,
@@ -125,7 +127,7 @@ class AppCodeInput extends StatelessWidget {
           Text(
             bottomText,
             style: AppTypography.caption.copyWith(
-              color: hasError ? AppColors.error : _helper,
+              color: hasError ? colors.error : colors.inputHelper,
             ),
           ),
       ],

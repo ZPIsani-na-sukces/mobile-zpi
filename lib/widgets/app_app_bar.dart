@@ -18,11 +18,14 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: _height,
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.colors.surface,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
-      shape: const Border(
-        bottom: BorderSide(color: AppColors.disabled, width: 1),
+      shape: Border(
+        bottom: BorderSide(
+          color: context.colors.outline,
+          width: context.colors.isHighContrast ? 2 : 1,
+        ),
       ),
       titleSpacing: AppSpacing.md,
       title: Text(
@@ -30,7 +33,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: AppTypography.headlineMedium.copyWith(
-          color: AppColors.onBackground,
+          color: context.colors.onBackground,
         ),
       ),
       actions: actions,

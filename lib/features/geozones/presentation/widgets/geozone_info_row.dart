@@ -18,12 +18,14 @@ class GeozoneInfoRow extends StatelessWidget {
           child: Text(
             label,
             style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.onSurface.withValues(alpha: 0.7),
+              color: context.colors.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ),
         DefaultTextStyle(
-          style: AppTypography.labelLarge.copyWith(color: AppColors.onSurface),
+          style: AppTypography.labelLarge.copyWith(
+            color: context.colors.onSurface,
+          ),
           child: value,
         ),
       ],

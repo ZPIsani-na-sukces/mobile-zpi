@@ -21,7 +21,7 @@ class SosButton extends StatelessWidget {
           boxShadow: AppShadows.lg,
         ),
         child: Material(
-          color: AppColors.error,
+          color: context.colors.error,
           shape: const CircleBorder(),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
@@ -32,7 +32,7 @@ class SosButton extends StatelessWidget {
                 child: Text(
                   'SOS',
                   style: AppTypography.displaySmall.copyWith(
-                    color: AppColors.onError,
+                    color: context.colors.onError,
                   ),
                 ),
               ),

@@ -95,7 +95,11 @@ class AppButton extends HookWidget {
 
     final pressed = enabled && pressedState.value;
 
-    final colors = _resolveColors(enabled: enabled, pressed: pressed);
+    final palette = context.colors;
+    final colors = _resolveColors(palette, enabled: enabled, pressed: pressed);
+    // In high contrast a text button differs from body text by more than hue.
+    final underline =
+        palette.isHighContrast && variant == AppButtonVariant.text;
     final horizontalPadding = variant == AppButtonVariant.text
         ? AppSpacing.sm
         : AppSpacing.md;
@@ -151,7 +155,13 @@ class AppButton extends HookWidget {
                       if (icon != null) Icon(icon, color: color, size: 20),
                       Text(
                         label,
-                        style: AppTypography.labelLarge.copyWith(color: color),
+                        style: AppTypography.labelLarge.copyWith(
+                          color: color,
+                          decoration: underline
+                              ? TextDecoration.underline
+                              : null,
+                          decorationColor: color,
+                        ),
                       ),
                     ],
                   ),
@@ -164,43 +174,42 @@ class AppButton extends HookWidget {
     );
   }
 
-  _ButtonColors _resolveColors({required bool enabled, required bool pressed}) {
+  _ButtonColors _resolveColors(
+    AppColors colors, {
+    required bool enabled,
+    required bool pressed,
+  }) {
     if (!enabled) {
       return switch (variant) {
-        AppButtonVariant.primary => const _ButtonColors(
-          background: AppColors.disabled,
-          foreground: AppColors.onDisabled,
+        AppButtonVariant.primary => _ButtonColors(
+          background: colors.disabled,
+          foreground: colors.onDisabled,
         ),
-        AppButtonVariant.secondary => const _ButtonColors(
-          foreground: AppColors.onDisabled,
-          border: AppColors.disabled,
+        AppButtonVariant.secondary => _ButtonColors(
+          foreground: colors.onDisabled,
+          border: colors.disabled,
         ),
-        AppButtonVariant.text => const _ButtonColors(
-          foreground: AppColors.onDisabled,
-        ),
+        AppButtonVariant.text => _ButtonColors(foreground: colors.onDisabled),
       };
     }
 
     return switch (variant) {
       AppButtonVariant.primary => _ButtonColors(
-        background: pressed ? AppColors.primaryVariant : AppColors.primary,
-        foreground: AppColors.onPrimary,
+        background: pressed ? colors.primaryVariant : colors.primary,
+        foreground: colors.onPrimary,
         shadow: pressed ? const [] : AppShadows.xs,
       ),
       AppButtonVariant.secondary =>
         pressed
-            ? const _ButtonColors(
-                background: AppColors.primary,
-                foreground: AppColors.onPrimary,
-                border: AppColors.primary,
+            ? _ButtonColors(
+                background: colors.primary,
+                foreground: colors.onPrimary,
+                border: colors.primary,
               )
-            : const _ButtonColors(
-                foreground: AppColors.primary,
-                border: AppColors.primary,
-              ),
+            : _ButtonColors(foreground: colors.primary, border: colors.primary),
       AppButtonVariant.text => _ButtonColors(
-        background: pressed ? AppColors.surfacePressed : Colors.transparent,
-        foreground: pressed ? AppColors.primaryVariant : AppColors.primary,
+        background: pressed ? colors.surfacePressed : Colors.transparent,
+        foreground: pressed ? colors.primaryVariant : colors.primary,
       ),
     };
   }

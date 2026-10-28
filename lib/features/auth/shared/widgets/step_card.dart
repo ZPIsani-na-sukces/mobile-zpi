@@ -24,8 +24,9 @@ class StepCard extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            border: context.colors.cardBorder,
             borderRadius: AppRadius.xxlAll,
             boxShadow: AppShadows.sm,
           ),

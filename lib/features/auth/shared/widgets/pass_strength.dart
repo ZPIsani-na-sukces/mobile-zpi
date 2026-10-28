@@ -4,53 +4,85 @@ import 'package:mobile_zpi/features/auth/shared/validation/pass_strength_level.d
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
-import 'package:password_strength_checker/password_strength_checker.dart';
+import 'package:mobile_zpi/theme/app_typography.dart';
 
 class PassStrength extends HookWidget {
   const PassStrength({super.key, required this.controller});
 
   final TextEditingController controller;
 
-  static const _configuration = PasswordStrengthCheckerConfiguration(
-    height: 16,
-    borderWidth: 2,
-    inactiveBorderColor: AppColors.disabled,
-    externalBorderRadius: AppRadius.fullAll,
-    internalBorderRadius: AppRadius.fullAll,
-    statusMargin: EdgeInsets.only(top: AppSpacing.sm),
-    animationDuration: _animationDuration,
-  );
-
-  static const _animationDuration = Duration(milliseconds: 300);
+  static const double _barHeight = 16;
+  static const double _borderWidth = 2;
+  static const Duration _animationDuration = Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
-    final strength = useValueNotifier(
-      PassStrengthLevel.calculate(controller.text),
+    final level = useListenableSelector(
+      controller,
+      () => PassStrengthLevel.calculate(controller.text),
     );
-
-    useEffect(() {
-      void update() =>
-          strength.value = PassStrengthLevel.calculate(controller.text);
-      controller.addListener(update);
-      return () => controller.removeListener(update);
-    }, [controller]);
-
-    final isEmpty = useValueListenable(strength) == null;
 
     return AnimatedSize(
       duration: _animationDuration,
       curve: Curves.easeInOut,
       alignment: Alignment.topCenter,
-      child: isEmpty
+      child: level == null
           ? const SizedBox(width: double.infinity)
           : Padding(
               padding: const EdgeInsets.only(top: AppSpacing.md),
-              child: PasswordStrengthChecker<PassStrengthLevel>(
-                strength: strength,
-                configuration: _configuration,
+              child: _Meter(level: level),
+            ),
+    );
+  }
+}
+
+class _Meter extends StatelessWidget {
+  const _Meter({required this.level});
+
+  final PassStrengthLevel level;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final color = level.color(colors);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppSpacing.sm,
+      children: [
+        AnimatedContainer(
+          duration: PassStrength._animationDuration,
+          height: PassStrength._barHeight,
+          padding: const EdgeInsets.all(PassStrength._borderWidth),
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            borderRadius: AppRadius.fullAll,
+            border: Border.all(color: color, width: PassStrength._borderWidth),
+          ),
+          child: AnimatedFractionallySizedBox(
+            duration: PassStrength._animationDuration,
+            widthFactor: level.widthPerc,
+            child: AnimatedContainer(
+              duration: PassStrength._animationDuration,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: AppRadius.fullAll,
               ),
             ),
+          ),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: AppSpacing.xs,
+          children: [
+            Icon(level.icon, color: color, size: 20),
+            Text(
+              'Siła hasła: ${level.label}',
+              style: AppTypography.labelLarge.copyWith(color: colors.onSurface),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

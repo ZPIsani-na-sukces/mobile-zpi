@@ -66,19 +66,6 @@ class AppTextInput extends HookWidget {
   static const Duration _animationDuration = Duration(milliseconds: 200);
   static const Curve _animationCurve = Curves.easeInOut;
 
-  static const Color _borderDefault = Color(0xFFCBD5E1);
-  static const Color _borderFilled = Color(0xFF64748B);
-  static const Color _borderDisabled = Color(0xFFE2E8F0);
-  static const Color _disabledContent = Color(0xFF94A3B8);
-  static const Color _placeholder = Color(0xFF718096);
-  static const Color _helper = Color(0xFF596573);
-  static const Color _icon = Color(0xFF596573);
-  static const Color _errorBackground = Color(0xFFFFF5F5);
-  static const Color _successBackground = Color(0xFFF6FFF8);
-  static const Color _readOnlyBackground = Color(0xFFF8FAFC);
-  static const Color _focusGlow = Color(0x330067B8);
-  static const Color _errorGlow = Color(0x26C62828);
-
   @override
   Widget build(BuildContext context) {
     final fallbackController = useTextEditingController();
@@ -95,11 +82,17 @@ class AppTextInput extends HookWidget {
       () => effectiveController.text.length,
     );
 
+    final palette = context.colors;
     final colors = _resolveColors(
+      palette,
       _resolveState(focused: focused, filled: length > 0),
     );
-    final contentColor = enabled ? AppColors.onSurface : _disabledContent;
-    final iconColor = enabled ? _icon : _disabledContent;
+    final contentColor = enabled
+        ? palette.onSurface
+        : palette.inputContentDisabled;
+    final iconColor = enabled
+        ? palette.inputHelper
+        : palette.inputContentDisabled;
     final hasTrailingAction =
         trailingIcon != null && onTrailingIconPressed != null;
     final topTrailingText = maxLength != null
@@ -162,11 +155,13 @@ class AppTextInput extends HookWidget {
                   onChanged: onChanged,
                   onSubmitted: onSubmitted,
                   style: AppTypography.bodyMedium.copyWith(color: contentColor),
-                  cursorColor: AppColors.primary,
+                  cursorColor: palette.primary,
                   decoration: InputDecoration.collapsed(
                     hintText: hintText,
                     hintStyle: AppTypography.bodyMedium.copyWith(
-                      color: enabled ? _placeholder : _disabledContent,
+                      color: enabled
+                          ? palette.inputPlaceholder
+                          : palette.inputContentDisabled,
                     ),
                   ),
                 ),
@@ -182,7 +177,7 @@ class AppTextInput extends HookWidget {
                     padding: EdgeInsets.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     foregroundColor: iconColor,
-                    disabledForegroundColor: _disabledContent,
+                    disabledForegroundColor: palette.inputContentDisabled,
                   ),
                 )
               else if (trailingIcon != null) ...[
@@ -217,7 +212,9 @@ class AppTextInput extends HookWidget {
               if (topTrailingText != null)
                 Text(
                   topTrailingText,
-                  style: AppTypography.caption.copyWith(color: _placeholder),
+                  style: AppTypography.caption.copyWith(
+                    color: palette.inputPlaceholder,
+                  ),
                 ),
             ],
           ),
@@ -227,7 +224,9 @@ class AppTextInput extends HookWidget {
             duration: _animationDuration,
             curve: _animationCurve,
             style: AppTypography.caption.copyWith(
-              color: errorText != null && enabled ? AppColors.error : _helper,
+              color: errorText != null && enabled
+                  ? palette.error
+                  : palette.inputHelper,
             ),
             child: Text(bottomText),
           ),
@@ -245,37 +244,57 @@ class AppTextInput extends HookWidget {
     return _InputState.idle;
   }
 
-  static _InputColors _resolveColors(_InputState state) {
+  static _InputColors _resolveColors(AppColors palette, _InputState state) {
+    // High contrast also thickens borders, so focus and errors differ from
+    // the idle field by width and not only by hue.
+    final width = palette.isHighContrast ? 2.0 : 1.5;
+    final activeWidth = palette.isHighContrast ? 3.0 : 2.0;
+
     return switch (state) {
-      _InputState.idle => const _InputColors(border: _borderDefault),
-      _InputState.focused => const _InputColors(
-        border: AppColors.primary,
-        borderWidth: 2,
-        label: AppColors.primary,
-        shadow: [BoxShadow(color: _focusGlow, spreadRadius: 3)],
+      _InputState.idle => _InputColors(
+        palette,
+        border: palette.inputBorder,
+        borderWidth: width,
       ),
-      _InputState.filled => const _InputColors(border: _borderFilled),
-      _InputState.error => const _InputColors(
-        background: _errorBackground,
-        border: AppColors.error,
-        borderWidth: 2,
-        label: AppColors.error,
-        shadow: [BoxShadow(color: _errorGlow, spreadRadius: 3)],
+      _InputState.focused => _InputColors(
+        palette,
+        border: palette.primary,
+        borderWidth: activeWidth,
+        label: palette.primary,
+        shadow: [BoxShadow(color: palette.inputFocusGlow, spreadRadius: 3)],
       ),
-      _InputState.success => const _InputColors(
-        background: _successBackground,
-        border: AppColors.success,
-        borderWidth: 2,
-        label: AppColors.success,
+      _InputState.filled => _InputColors(
+        palette,
+        border: palette.inputBorderFilled,
+        borderWidth: width,
       ),
-      _InputState.disabled => const _InputColors(
-        background: AppColors.background,
-        border: _borderDisabled,
-        label: _disabledContent,
+      _InputState.error => _InputColors(
+        palette,
+        background: palette.inputErrorBackground,
+        border: palette.error,
+        borderWidth: activeWidth,
+        label: palette.error,
+        shadow: [BoxShadow(color: palette.inputErrorGlow, spreadRadius: 3)],
       ),
-      _InputState.readOnly => const _InputColors(
-        background: _readOnlyBackground,
-        border: _borderDefault,
+      _InputState.success => _InputColors(
+        palette,
+        background: palette.inputSuccessBackground,
+        border: palette.success,
+        borderWidth: activeWidth,
+        label: palette.success,
+      ),
+      _InputState.disabled => _InputColors(
+        palette,
+        background: palette.background,
+        border: palette.inputBorderDisabled,
+        borderWidth: width,
+        label: palette.inputContentDisabled,
+      ),
+      _InputState.readOnly => _InputColors(
+        palette,
+        background: palette.inputReadOnlyBackground,
+        border: palette.inputBorder,
+        borderWidth: width,
         dashed: true,
       ),
     };
@@ -292,14 +311,16 @@ class AppTextInput extends HookWidget {
 enum _InputState { idle, focused, filled, error, success, disabled, readOnly }
 
 class _InputColors {
-  const _InputColors({
+  _InputColors(
+    AppColors palette, {
     required this.border,
-    this.background = AppColors.surface,
-    this.borderWidth = 1.5,
-    this.label = AppColors.onSurface,
+    required this.borderWidth,
+    Color? background,
+    Color? label,
     this.shadow = const [],
     this.dashed = false,
-  });
+  }) : background = background ?? palette.surface,
+       label = label ?? palette.onSurface;
 
   final Color background;
   final Color border;

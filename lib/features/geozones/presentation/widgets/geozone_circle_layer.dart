@@ -50,8 +50,8 @@ class GeozoneCircleLayer extends HookWidget {
               hitValue: zone,
               color:
                   (zone.isActive
-                          ? AppColors.geozoneActiveFill
-                          : AppColors.geozoneInactiveFill)
+                          ? context.colors.geozoneActiveFill
+                          : context.colors.geozoneInactiveFill)
                       .withValues(
                         alpha: switch (selectedZoneId) {
                           null => _fillAlpha,
@@ -60,8 +60,8 @@ class GeozoneCircleLayer extends HookWidget {
                         },
                       ),
               borderColor: zone.isActive
-                  ? AppColors.geozoneActive
-                  : AppColors.geozoneInactive,
+                  ? context.colors.geozoneActive
+                  : context.colors.geozoneInactive,
               borderStrokeWidth: zone.zoneId == selectedZoneId
                   ? _selectedBorderWidth
                   : _borderWidth,

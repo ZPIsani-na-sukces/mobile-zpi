@@ -13,14 +13,14 @@ class WalkingRouteDestinationMarker extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: context.colors.primary,
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.surface, width: _borderWidth),
+        border: Border.all(color: context.colors.surface, width: _borderWidth),
         boxShadow: AppShadows.md,
       ),
-      child: const Icon(
+      child: Icon(
         Icons.home_rounded,
-        color: AppColors.onPrimary,
+        color: context.colors.onPrimary,
         size: _iconSize,
       ),
     );

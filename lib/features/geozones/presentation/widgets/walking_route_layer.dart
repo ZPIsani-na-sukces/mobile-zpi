@@ -22,9 +22,9 @@ class WalkingRouteLayer extends ConsumerWidget {
           polylines: [
             Polyline(
               points: route.points,
-              color: AppColors.primary,
+              color: context.colors.primary,
               strokeWidth: _strokeWidth,
-              borderColor: AppColors.surface,
+              borderColor: context.colors.surface,
               borderStrokeWidth: _borderStrokeWidth,
             ),
           ],

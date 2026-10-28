@@ -60,10 +60,10 @@ class CurrentLocationMarkerLayer extends HookConsumerWidget {
         markerDirection: isNavigating
             ? MarkerDirection.heading
             : MarkerDirection.top,
-        accuracyCircleColor: AppColors.primary.withValues(
+        accuracyCircleColor: context.colors.primary.withValues(
           alpha: _accuracyCircleAlpha,
         ),
-        headingSectorColor: AppColors.primary.withValues(
+        headingSectorColor: context.colors.primary.withValues(
           alpha: _headingSectorAlpha,
         ),
       ),

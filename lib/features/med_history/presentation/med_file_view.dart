@@ -33,14 +33,14 @@ class MedFileView extends ConsumerWidget {
             Text(
               medicalRecordTypeLabel(value.recordType),
               style: AppTypography.labelLarge.copyWith(
-                color: AppColors.primary,
+                color: context.colors.primary,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               value.title,
               style: AppTypography.headlineSmall.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
             if (value.description case final description?
@@ -49,7 +49,7 @@ class MedFileView extends ConsumerWidget {
               Text(
                 description,
                 style: AppTypography.bodyLarge.copyWith(
-                  color: AppColors.onBackground,
+                  color: context.colors.onBackground,
                 ),
               ),
             ],
@@ -66,7 +66,7 @@ class MedFileView extends ConsumerWidget {
             Text(
               'Pliki',
               style: AppTypography.titleMedium.copyWith(
-                color: AppColors.onBackground,
+                color: context.colors.onBackground,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -74,7 +74,7 @@ class MedFileView extends ConsumerWidget {
               Text(
                 'Brak plików.',
                 style: AppTypography.bodyLarge.copyWith(
-                  color: AppColors.onBackground,
+                  color: context.colors.onBackground,
                 ),
               ),
             for (final file in value.files)
@@ -113,14 +113,14 @@ class _Row extends StatelessWidget {
           Text(
             label,
             style: AppTypography.labelLarge.copyWith(
-              color: AppColors.onSurface,
+              color: context.colors.onSurface,
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             value,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.onBackground,
+              color: context.colors.onBackground,
             ),
           ),
         ],

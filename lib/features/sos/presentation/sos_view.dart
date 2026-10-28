@@ -133,7 +133,7 @@ class _Message extends StatelessWidget {
           title,
           textAlign: TextAlign.center,
           style: AppTypography.headlineSmall.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -141,7 +141,7 @@ class _Message extends StatelessWidget {
           body,
           textAlign: TextAlign.center,
           style: AppTypography.bodyLarge.copyWith(
-            color: AppColors.onBackground,
+            color: context.colors.onBackground,
           ),
         ),
         if (detail != null) ...[
@@ -149,7 +149,9 @@ class _Message extends StatelessWidget {
           Text(
             detail!,
             textAlign: TextAlign.center,
-            style: AppTypography.bodyLarge.copyWith(color: AppColors.onSurface),
+            style: AppTypography.bodyLarge.copyWith(
+              color: context.colors.onSurface,
+            ),
           ),
         ],
         if (actionLabel != null && onPressed != null) ...[

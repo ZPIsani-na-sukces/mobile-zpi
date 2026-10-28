@@ -1,3 +1,4 @@
+import 'package:mobile_zpi/features/profile/data/models/accessibility_preferences.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
 import 'package:mobile_zpi/features/profile/data/models/detected_address.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
@@ -25,6 +26,15 @@ class MockProfileRepository implements ProfileRepository {
     coordinates: const Coordinates(latitude: 51.10745, longitude: 17.06200),
     seniorId: '11111111-1111-4111-8111-111111111111',
     formattedAddress: 'Wybrzeże Stanisława Wyspiańskiego 27, 50-370 Wrocław',
+    updatedAt: DateTime.utc(2026, 9, 27, 8),
+    version: 1,
+  );
+
+  AccessibilityPreferences _accessibility = AccessibilityPreferences(
+    fontScalePercent: 100,
+    highContrastEnabled: false,
+    largeButtonsEnabled: false,
+    seniorId: '11111111-1111-4111-8111-111111111111',
     updatedAt: DateTime.utc(2026, 9, 27, 8),
     version: 1,
   );
@@ -90,6 +100,22 @@ class MockProfileRepository implements ProfileRepository {
         countryCode: 'PL',
       ),
     );
+  }
+
+  @override
+  Future<AccessibilityPreferences> getAccessibilityPreferences(
+    String seniorId,
+  ) async => _accessibility;
+
+  @override
+  Future<AccessibilityPreferences> saveAccessibilityPreferences(
+    AccessibilityPreferences preferences,
+  ) async {
+    _accessibility = preferences.copyWith(
+      updatedAt: DateTime.now().toUtc(),
+      version: preferences.version + 1,
+    );
+    return _accessibility;
   }
 
   String _format(HomeAddressInput input) {

@@ -21,8 +21,9 @@ class WalkingRoutePreviewTile extends ConsumerWidget {
     if (route == null) return const SizedBox.shrink();
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: context.colors.cardBorder,
         borderRadius: AppRadius.xlAll,
         boxShadow: AppShadows.lg,
       ),
@@ -35,7 +36,7 @@ class WalkingRoutePreviewTile extends ConsumerWidget {
             Text(
               'Trasa do domu',
               style: AppTypography.titleLarge.copyWith(
-                color: AppColors.onSurface,
+                color: context.colors.onSurface,
               ),
             ),
             const Divider(height: AppSpacing.xl),
