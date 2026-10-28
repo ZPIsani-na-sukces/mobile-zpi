@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/geozones_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/route_navigation_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/route_reroute_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/walking_route_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_info_tile.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
@@ -34,6 +35,7 @@ class GeozoneView extends HookConsumerWidget {
       walkingRouteControllerProvider.select((state) => state.value != null),
     );
     final isNavigating = ref.watch(routeNavigationControllerProvider);
+    ref.watch(routeRerouteControllerProvider);
     final selectedZoneId = useState<String?>(null);
 
     final zones = geozones.value ?? const [];

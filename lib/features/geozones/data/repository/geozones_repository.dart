@@ -12,7 +12,7 @@ part 'geozones_repository.g.dart';
 abstract interface class GeozonesRepository {
   Future<List<Geozone>> getGeozones(String seniorId, {bool? isActive});
 
-  Future<WalkingRoute> getWalkingRoute(LatLng destination);
+  Future<WalkingRoute> getWalkingRoute(LatLng destination, {LatLng? origin});
 }
 
 @Riverpod(keepAlive: true)

@@ -7,7 +7,9 @@ part 'route_navigation_controller.g.dart';
 class RouteNavigationController extends _$RouteNavigationController {
   @override
   bool build() {
-    ref.watch(walkingRouteControllerProvider);
+    ref.listen(walkingRouteControllerProvider, (_, next) {
+      if (next.value == null) state = false;
+    });
     return false;
   }
 

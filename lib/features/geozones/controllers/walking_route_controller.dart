@@ -17,5 +17,19 @@ class WalkingRouteController extends _$WalkingRouteController {
     );
   }
 
+  Future<void> reroute(LatLng origin) async {
+    final route = state.value;
+    if (route == null) return;
+
+    final rerouted = await AsyncValue.guard(
+      () => ref
+          .read(geozonesRepositoryProvider)
+          .getWalkingRoute(route.destination, origin: origin),
+    );
+
+    if (!ref.mounted || !identical(state.value, route)) return;
+    if (rerouted case AsyncData(:final value)) state = AsyncData(value);
+  }
+
   void clear() => state = const AsyncData(null);
 }

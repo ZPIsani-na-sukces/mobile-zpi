@@ -26,8 +26,11 @@ class ApiGeozonesRepository implements GeozonesRepository {
   }
 
   @override
-  Future<WalkingRoute> getWalkingRoute(LatLng destination) async {
-    final origin = await readCurrentPosition();
-    return fetchWalkingRoute(_routingDio, origin, destination);
+  Future<WalkingRoute> getWalkingRoute(
+    LatLng destination, {
+    LatLng? origin,
+  }) async {
+    final start = origin ?? await readCurrentPosition();
+    return fetchWalkingRoute(_routingDio, start, destination);
   }
 }
