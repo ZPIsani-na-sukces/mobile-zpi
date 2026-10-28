@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/displayed_location_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/map_follow_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/route_navigation_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/current_location_marker.dart';
@@ -24,7 +24,7 @@ class CurrentLocationMarkerLayer extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final positions = useMemoized(() {
       final controller = StreamController<LocationMarkerPosition>();
-      final current = ref.read(currentLocationControllerProvider).value;
+      final current = ref.read(displayedLocationProvider);
       if (current != null) controller.add(current);
       return controller;
     });
@@ -33,9 +33,8 @@ class CurrentLocationMarkerLayer extends HookConsumerWidget {
     final alignPosition = useMemoized(StreamController<double?>.new);
     useEffect(() => alignPosition.close, [alignPosition]);
 
-    ref.listen(currentLocationControllerProvider, (_, next) {
-      final position = next.value;
-      if (position != null) positions.add(position);
+    ref.listen(displayedLocationProvider, (_, next) {
+      if (next != null) positions.add(next);
     });
 
     final isNavigating = ref.watch(routeNavigationControllerProvider);
