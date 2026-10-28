@@ -11,6 +11,7 @@ import 'package:mobile_zpi/features/geozones/presentation/widgets/map_attributio
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_center_location_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_compass.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_resume_navigation_button.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/route_arrival_listener.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_layer.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 
@@ -63,6 +64,7 @@ class GeozoneMap extends ConsumerWidget {
         ),
         const WalkingRouteLayer(),
         const CurrentLocationMarkerLayer(),
+        const RouteArrivalListener(),
         const MapAttribution(),
         SafeArea(
           child: Padding(

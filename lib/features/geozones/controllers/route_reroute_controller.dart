@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
+import 'package:mobile_zpi/features/geozones/controllers/route_arrival_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/route_navigation_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/walking_route_controller.dart';
 import 'package:mobile_zpi/features/geozones/utils/route_geometry.dart';
@@ -14,7 +15,6 @@ part 'route_reroute_controller.g.dart';
 class RouteRerouteController extends _$RouteRerouteController {
   static const double _maxAccuracyMeters = 50;
   static const double _minOffRouteMeters = 30;
-  static const double _arrivalRadiusMeters = 25;
   static const int _requiredOffRouteReadings = 2;
   static const Duration _cooldown = Duration(seconds: 20);
 
@@ -42,7 +42,7 @@ class RouteRerouteController extends _$RouteRerouteController {
 
     const distance = Distance();
     final toDestination = distance(position.latLng, route.destination);
-    if (toDestination < _arrivalRadiusMeters) return;
+    if (toDestination < RouteArrivalController.arrivalRadiusMeters) return;
 
     final projection = projectOntoRoute(position.latLng, route.points);
     if (projection == null) return;
