@@ -26,14 +26,14 @@ class LocationUnavailable extends StatelessWidget {
                   'Nie udało się odczytać lokalizacji',
                   textAlign: TextAlign.center,
                   style: AppTypography.titleLarge.copyWith(
-                    color: AppColors.onBackground,
+                    color: context.colors.onBackground,
                   ),
                 ),
                 Text(
                   'Sprawdź, czy lokalizacja jest włączona.',
                   textAlign: TextAlign.center,
                   style: AppTypography.bodyLarge.copyWith(
-                    color: AppColors.onBackground,
+                    color: context.colors.onBackground,
                   ),
                 ),
               ],
