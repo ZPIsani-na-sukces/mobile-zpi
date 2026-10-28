@@ -10,13 +10,12 @@ import 'package:mobile_zpi/features/geozones/controllers/route_reroute_controlle
 import 'package:mobile_zpi/features/geozones/controllers/walking_route_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_info_tile.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/location_unavailable.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_home_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_navigation_tile.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_preview_tile.dart';
-import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
-import 'package:mobile_zpi/theme/app_typography.dart';
 
 @RoutePage()
 class GeozoneView extends HookConsumerWidget {
@@ -77,17 +76,8 @@ class GeozoneView extends HookConsumerWidget {
                   ? null
                   : MapBackHomeButton(seniorId: seniorId),
             ),
-            AsyncError() => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Text(
-                  'Nie udało się odczytać lokalizacji. Sprawdź, czy lokalizacja jest włączona.',
-                  textAlign: TextAlign.center,
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: AppColors.onBackground,
-                  ),
-                ),
-              ),
+            AsyncError() || AsyncLoading(hasError: true) => LocationUnavailable(
+              onRetry: () => ref.invalidate(currentLocationControllerProvider),
             ),
             AsyncLoading() => const Center(child: CircularProgressIndicator()),
           },
