@@ -21,6 +21,7 @@ class HomeMarkerLayer extends ConsumerWidget {
           point: LatLng(home.coordinates.latitude, home.coordinates.longitude),
           width: HomeMarker.size,
           height: HomeMarker.size,
+          rotate: true,
           child: const HomeMarker(),
         ),
       ],
