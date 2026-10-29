@@ -66,6 +66,7 @@ class GeozoneView extends HookConsumerWidget {
         children: [
           switch (locationStatus) {
             AsyncData() => GeozoneMap(
+              seniorId: seniorId,
               initialCenter: ref
                   .read(currentLocationControllerProvider)
                   .requireValue
