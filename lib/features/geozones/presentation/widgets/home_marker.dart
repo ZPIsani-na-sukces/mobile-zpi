@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_shadows.dart';
 
-class WalkingRouteDestinationMarker extends StatelessWidget {
-  const WalkingRouteDestinationMarker({super.key});
+class HomeMarker extends StatelessWidget {
+  const HomeMarker({super.key});
 
   static const double size = 40;
   static const double _borderWidth = 3;
