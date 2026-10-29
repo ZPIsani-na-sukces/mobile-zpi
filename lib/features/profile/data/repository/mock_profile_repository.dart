@@ -19,13 +19,13 @@ class MockProfileRepository implements ProfileRepository {
 
   HomeAddress? _address = HomeAddress(
     countryCode: 'PL',
-    postalCode: '50-370',
+    postalCode: '50-377',
     city: 'Wrocław',
-    street: 'Wybrzeże Stanisława Wyspiańskiego',
-    buildingNumber: '27',
-    coordinates: const Coordinates(latitude: 51.10745, longitude: 17.06200),
+    street: 'plac Grunwaldzki',
+    buildingNumber: '13',
+    coordinates: const Coordinates(latitude: 51.11028, longitude: 17.05824),
     seniorId: '11111111-1111-4111-8111-111111111111',
-    formattedAddress: 'Wybrzeże Stanisława Wyspiańskiego 27, 50-370 Wrocław',
+    formattedAddress: 'plac Grunwaldzki 13, 50-377 Wrocław',
     updatedAt: DateTime.utc(2026, 9, 27, 8),
     version: 1,
   );
