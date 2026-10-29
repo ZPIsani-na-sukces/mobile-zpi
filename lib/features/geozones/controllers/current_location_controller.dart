@@ -8,21 +8,29 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'current_location_controller.g.dart';
 
-@riverpod
+Duration? _noRetry(int retryCount, Object error) => null;
+
+@Riverpod(retry: _noRetry)
 class CurrentLocationController extends _$CurrentLocationController {
   @override
   Stream<LocationMarkerPosition> build() async* {
-    final providerChange = bg.BackgroundGeolocation.onProviderChange((event) {
-      if (event.enabled && state.hasError) ref.invalidateSelf();
-    });
-    ref.onDispose(providerChange.remove);
-
-    final initial = await bg.BackgroundGeolocation.getCurrentPosition(
-      samples: 1,
-      persist: false,
-      maximumAge: maximumLocationAgeMillis,
-      timeout: locationTimeoutSeconds,
+    final deadline = DateTime.now().add(
+      const Duration(seconds: locationTimeoutSeconds),
     );
+
+    final bg.Location initial;
+    try {
+      initial = await bg.BackgroundGeolocation.getCurrentPosition(
+        samples: 1,
+        persist: false,
+        maximumAge: initialLocationMaximumAgeMillis,
+        timeout: locationTimeoutSeconds,
+      );
+    } catch (_) {
+      final remaining = deadline.difference(DateTime.now());
+      if (remaining > Duration.zero) await Future<void>.delayed(remaining);
+      rethrow;
+    }
     yield _toMarkerPosition(initial);
 
     final locations = StreamController<LocationMarkerPosition>();

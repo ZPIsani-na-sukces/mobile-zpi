@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/geozones/controllers/current_location_controller.dart';
 import 'package:mobile_zpi/features/geozones/controllers/geozones_controller.dart';
@@ -10,6 +11,7 @@ import 'package:mobile_zpi/features/geozones/controllers/route_reroute_controlle
 import 'package:mobile_zpi/features/geozones/controllers/walking_route_controller.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_info_tile.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_map.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/location_loading.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/location_unavailable.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_home_button.dart';
@@ -76,10 +78,14 @@ class GeozoneView extends HookConsumerWidget {
                   ? null
                   : MapBackHomeButton(seniorId: seniorId),
             ),
-            AsyncError() || AsyncLoading(hasError: true) => LocationUnavailable(
-              onRetry: () => ref.invalidate(currentLocationControllerProvider),
+            AsyncError() => LocationUnavailable(
+              onRetry: () => ref.invalidate(
+                currentLocationControllerProvider,
+                asReload: true,
+              ),
+              onOpenSettings: Geolocator.openLocationSettings,
             ),
-            AsyncLoading() => const Center(child: CircularProgressIndicator()),
+            AsyncLoading() => const LocationLoading(),
           },
           Positioned(
             top: MediaQuery.paddingOf(context).top + AppSpacing.md,

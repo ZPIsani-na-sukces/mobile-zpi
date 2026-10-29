@@ -3,7 +3,8 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:latlong2/latlong.dart';
 
 const maximumLocationAgeMillis = 10000;
-const locationTimeoutSeconds = 15;
+const initialLocationMaximumAgeMillis = 120000;
+const locationTimeoutSeconds = 10;
 
 Future<LatLng> readCurrentPosition() async {
   final location = await bg.BackgroundGeolocation.getCurrentPosition(
