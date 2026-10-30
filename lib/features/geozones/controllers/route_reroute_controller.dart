@@ -14,9 +14,9 @@ part 'route_reroute_controller.g.dart';
 @riverpod
 class RouteRerouteController extends _$RouteRerouteController {
   static const double _maxAccuracyMeters = 50;
-  static const double _minOffRouteMeters = 30;
+  static const double offRouteMeters = 20;
   static const int _requiredOffRouteReadings = 2;
-  static const Duration _cooldown = Duration(seconds: 20);
+  static const Duration _cooldown = Duration(seconds: 15);
 
   var _offRouteReadings = 0;
   DateTime? _lastRerouteAt;
@@ -46,7 +46,7 @@ class RouteRerouteController extends _$RouteRerouteController {
 
     final projection = projectOntoRoute(position.latLng, route.points);
     if (projection == null) return;
-    if (projection.distanceMeters <= math.max(_minOffRouteMeters, accuracy)) {
+    if (projection.distanceMeters <= math.max(offRouteMeters, accuracy)) {
       _offRouteReadings = 0;
       return;
     }
