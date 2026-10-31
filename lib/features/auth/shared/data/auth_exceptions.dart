@@ -35,3 +35,7 @@ class PhoneVerificationRequiredException implements Exception {
 class VerificationExpiredException implements Exception {
   const VerificationExpiredException();
 }
+
+class SessionExpiredException implements Exception {
+  const SessionExpiredException();
+}

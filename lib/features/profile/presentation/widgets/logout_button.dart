@@ -1,8 +1,6 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
-import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -47,8 +45,6 @@ class LogoutButton extends ConsumerWidget {
       if (confirmed != true) return;
 
       await ref.read(authControllerProvider.notifier).logout();
-      if (!context.mounted) return;
-      await context.router.replaceAll([const LoginRoute()]);
     }
 
     return AppButton.secondary(

@@ -23,6 +23,12 @@ class MockHomeRepository implements HomeRepository {
         relationshipLabel: 'Lekarz rodzinny',
         phoneNumber: '+48225551234',
       ),
+      HomeContact(
+        contactId: '4',
+        displayName: 'Maria (sąsiadka)',
+        relationshipLabel: 'Sąsiadka',
+        phoneNumber: '+48600500600',
+      ),
     ];
   }
 

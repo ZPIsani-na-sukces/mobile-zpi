@@ -45,12 +45,6 @@ class SosController extends _$SosController {
           );
       if (!ref.mounted) return;
       state = SosFlow(phase: SosPhase.waiting, position: position);
-    } on SosDeviceMissingException {
-      if (!ref.mounted) return;
-      state = const SosFlow(
-        phase: SosPhase.failed,
-        message: 'To urządzenie nie jest zarejestrowane.',
-      );
     } catch (_) {
       if (!ref.mounted) return;
       state = const SosFlow(

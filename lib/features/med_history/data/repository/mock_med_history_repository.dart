@@ -12,6 +12,11 @@ class MockMedHistoryRepository implements MedHistoryRepository {
   };
 
   @override
+  Future<List<MedicalRecord>> records(String seniorId) async => [
+    await record(seniorId, mockMedicalRecordId),
+  ];
+
+  @override
   Future<MedicalRecord> record(String seniorId, String recordId) async {
     if (recordId != mockMedicalRecordId) {
       throw StateError('Unknown medical record: $recordId');

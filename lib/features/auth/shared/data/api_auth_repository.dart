@@ -49,7 +49,7 @@ class ApiAuthRepository implements AuthRepository {
   Future<RegisterResponse> register(RegisterRequest request) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
-        '/auth/register',
+        '/auth/registrations',
         data: request.toJson(),
       );
       return RegisterResponse.fromJson(response.data!);
@@ -157,10 +157,29 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> logout(String accessToken) => _dio.post<void>(
-    '/auth/logout',
-    options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
-  );
+  Future<AuthSession> refresh(String refreshToken) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/auth/refresh',
+        data: {'clientType': 'mobile', 'refreshToken': refreshToken},
+      );
+      return AuthSession.fromJson(response.data!);
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 401 || 403:
+          throw const SessionExpiredException();
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> logout(String accessToken) async {
+    await _dio.post<void>(
+      '/auth/logout',
+      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+    );
+  }
 
   String? _problemCode(DioException e) => switch (e.response?.data) {
     {'code': final String code} => code,

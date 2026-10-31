@@ -14,7 +14,7 @@ abstract class MedicalRecord with _$MedicalRecord {
     required String recordType,
     required String documentDate,
     required List<MedicalFile> files,
-    required ContactCreator createdBy,
+    ContactCreator? createdBy,
     required DateTime createdAt,
     required DateTime updatedAt,
     required int version,

@@ -1,14 +1,13 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:mobile_zpi/config/app_env.dart';
 import 'package:mobile_zpi/features/sos/data/sos_location.dart';
 import 'package:mobile_zpi/network/dio_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 part 'sos_repository.g.dart';
-
-class SosDeviceMissingException implements Exception {
-  const SosDeviceMissingException();
-}
 
 abstract interface class SosRepository {
   Future<void> trigger({
@@ -50,7 +49,14 @@ class ApiSosRepository implements SosRepository {
                 },
                 'accuracyMeters': position.accuracyMeters,
                 'speedMps': position.speedMps,
-                'capturedAt': position.capturedAt.toUtc().toIso8601String(),
+                // The API rejects a fix newer than the trigger. A fresh fix or
+                // a GPS clock ahead of the phone would otherwise lose the SOS.
+                'capturedAt':
+                    (position.capturedAt.isAfter(triggeredAt)
+                            ? triggeredAt
+                            : position.capturedAt)
+                        .toUtc()
+                        .toIso8601String(),
               },
       },
     );
@@ -68,11 +74,23 @@ class ApiSosRepository implements SosRepository {
       }
       chosen ??= device;
     }
-    final deviceId = chosen?['deviceId'];
-    if (deviceId is! String || deviceId.isEmpty) {
-      throw const SosDeviceMissingException();
-    }
-    return deviceId;
+    return chosen?['deviceId'] as String? ?? await _registerDevice();
+  }
+
+  Future<String> _registerDevice() async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/me/devices',
+      data: {
+        'installationId': const Uuid().v4(),
+        'platform': Platform.isIOS ? 'ios' : 'android',
+        'appVersion': const String.fromEnvironment(
+          'FLUTTER_BUILD_NAME',
+          defaultValue: '1.0.0',
+        ),
+        'monitoringEnabled': true,
+      },
+    );
+    return response.data!['deviceId'] as String;
   }
 }
 

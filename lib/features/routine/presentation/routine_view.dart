@@ -28,25 +28,30 @@ class RoutineView extends ConsumerWidget {
     return switch (profile) {
       AsyncData(value: final account) => Scaffold(
         backgroundColor: context.colors.background,
-        floatingActionButton: FloatingActionButton.extended(
-          heroTag: 'new-routine-task',
-          backgroundColor: context.colors.primary,
-          foregroundColor: context.colors.onPrimary,
-          icon: const Icon(Icons.add),
-          label: Text(
-            'Nowe zadanie',
-            style: AppTypography.labelLarge.copyWith(
-              color: context.colors.onPrimary,
-            ),
-          ),
-          onPressed: () => context.router.push(
-            CreateRoutineTaskRoute(seniorId: account.userId),
-          ),
-        ),
+        // The API lets only a caregiver create tasks.
+        floatingActionButton: account.role == 'senior'
+            ? null
+            : FloatingActionButton.extended(
+                heroTag: 'new-routine-task',
+                backgroundColor: context.colors.primary,
+                foregroundColor: context.colors.onPrimary,
+                icon: const Icon(Icons.add),
+                label: Text(
+                  'Nowe zadanie',
+                  style: AppTypography.labelLarge.copyWith(
+                    color: context.colors.onPrimary,
+                  ),
+                ),
+                onPressed: () => context.router.push(
+                  CreateRoutineTaskRoute(seniorId: account.userId),
+                ),
+              ),
         body: _TaskList(seniorId: account.userId),
       ),
-      AsyncError() => const Center(
-        child: Text('Nie udało się wczytać profilu.'),
+      AsyncError() => _Message(
+        text: 'Nie udało się wczytać profilu.',
+        actionLabel: 'Spróbuj ponownie',
+        onPressed: () => ref.invalidate(profileControllerProvider),
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };

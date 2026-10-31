@@ -30,8 +30,10 @@ class HomePage extends ConsumerWidget {
         firstName: account.firstName,
         seniorId: account.userId,
       ),
-      AsyncError() => const _StatusMessage(
+      AsyncError() => _StatusMessage(
         text: 'Nie udało się wczytać ekranu głównego.',
+        actionLabel: 'Spróbuj ponownie',
+        onPressed: () => ref.invalidate(profileControllerProvider),
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
@@ -74,10 +76,7 @@ class _HomeBody extends ConsumerWidget {
                 ? const _EmptyText('Brak kontaktów.')
                 : Column(
                     children: [
-                      for (final contact in overview.contacts) ...[
-                        _ContactTile(contact: contact),
-                        const SizedBox(height: AppSpacing.sm),
-                      ],
+                      _ContactGrid(contacts: overview.contacts),
                       AppButton.text(
                         label: 'Wszystkie kontakty',
                         onPressed: () =>
@@ -178,6 +177,44 @@ class _BackHomeButton extends ConsumerWidget {
   }
 }
 
+class _ContactGrid extends StatelessWidget {
+  const _ContactGrid({required this.contacts});
+
+  final List<HomeContact> contacts;
+
+  @override
+  Widget build(BuildContext context) {
+    // Two columns would break words in half at a large font size.
+    final columns = MediaQuery.textScalerOf(context).scale(16) > 24 ? 1 : 2;
+
+    return Column(
+      children: [
+        for (var i = 0; i < contacts.length; i += columns) ...[
+          // Rows instead of GridView, which has a fixed height and would clip
+          // the text at a large font size.
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: _ContactTile(contact: contacts[i])),
+                if (columns == 2) ...[
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: i + 1 < contacts.length
+                        ? _ContactTile(contact: contacts[i + 1])
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+        ],
+      ],
+    );
+  }
+}
+
 class _ContactTile extends StatelessWidget {
   const _ContactTile({required this.contact});
 
@@ -188,32 +225,35 @@ class _ContactTile extends StatelessWidget {
     final subtitle = contact.relationshipLabel;
 
     return _Card(
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                contact.displayName,
+                style: AppTypography.titleLarge.copyWith(
+                  color: context.colors.onBackground,
+                ),
+              ),
+              if (subtitle != null && subtitle.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.xs),
                 Text(
-                  contact.displayName,
-                  style: AppTypography.titleMedium.copyWith(
-                    color: context.colors.onBackground,
+                  subtitle,
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: context.colors.onSurface,
                   ),
                 ),
-                if (subtitle != null && subtitle.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    subtitle,
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: context.colors.onSurface,
-                    ),
-                  ),
-                ],
               ],
-            ),
+              const SizedBox(height: AppSpacing.md),
+            ],
           ),
-          IconButton(
-            tooltip: 'Zadzwoń',
+          AppButton.primary(
+            label: 'Zadzwoń',
+            icon: Icons.call,
             onPressed: () async {
               try {
                 await callPhone(contact.phoneNumber);
@@ -226,7 +266,6 @@ class _ContactTile extends StatelessWidget {
                 );
               }
             },
-            icon: Icon(Icons.call, color: context.colors.primary, size: 28),
           ),
         ],
       ),

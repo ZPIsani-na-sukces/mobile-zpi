@@ -14,7 +14,7 @@ abstract class Contact with _$Contact {
     String? relationshipLabel,
     required String phoneNumber,
     required bool isActive,
-    required ContactCreator createdBy,
+    ContactCreator? createdBy,
     required DateTime createdAt,
     required DateTime updatedAt,
     required int version,

@@ -10,6 +10,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'med_history_repository.g.dart';
 
 abstract interface class MedHistoryRepository {
+  Future<List<MedicalRecord>> records(String seniorId);
+
   Future<MedicalRecord> record(String seniorId, String recordId);
 
   Future<Uint8List> fileContent(
