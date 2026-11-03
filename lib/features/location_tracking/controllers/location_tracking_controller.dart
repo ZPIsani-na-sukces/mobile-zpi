@@ -4,6 +4,8 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
 import 'package:mobile_zpi/features/auth/shared/data/jwt_issued_at.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
+import 'package:mobile_zpi/features/devices/data/device_storage.dart';
+import 'package:mobile_zpi/features/devices/data/repository/device_repository.dart';
 import 'package:mobile_zpi/features/location_tracking/data/location_tracking_config.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,6 +16,8 @@ class LocationTrackingController extends _$LocationTrackingController {
   var _isReady = false;
   var _isFirstSync = true;
   var _syncQueue = Future<void>.value();
+  String? _deviceUserId;
+  String? _deviceId;
 
   @override
   void build() {
@@ -76,6 +80,8 @@ class LocationTrackingController extends _$LocationTrackingController {
     _isFirstSync = false;
 
     if (session == null || session.user.role.toUpperCase() != 'SENIOR') {
+      _deviceUserId = null;
+      _deviceId = null;
       await bg.BackgroundGeolocation.stop();
       await bg.BackgroundGeolocation.destroyLocations();
       await bg.BackgroundGeolocation.reset();
@@ -84,7 +90,8 @@ class LocationTrackingController extends _$LocationTrackingController {
 
     if (isFirstSync && await _hasNewerPluginTokens(session)) return;
 
-    final config = buildLocationTrackingConfig(session);
+    final deviceId = await _registerDevice(session.user.userId);
+    final config = buildLocationTrackingConfig(session, deviceId);
     if (_isReady) {
       await bg.BackgroundGeolocation.setConfig(config);
     } else {
@@ -92,6 +99,20 @@ class LocationTrackingController extends _$LocationTrackingController {
       _isReady = true;
     }
     await bg.BackgroundGeolocation.start();
+  }
+
+  Future<String?> _registerDevice(String userId) async {
+    if (_deviceUserId == userId) return _deviceId;
+    try {
+      _deviceId = await ref
+          .read(deviceRepositoryProvider)
+          .registerMonitoring(userId);
+      _deviceUserId = userId;
+    } catch (e) {
+      debugPrint('Device registration failed: $e');
+      _deviceId = await ref.read(deviceStorageProvider).deviceId(userId);
+    }
+    return _deviceId;
   }
 
   Future<bool> _hasNewerPluginTokens(AuthSession session) async {
