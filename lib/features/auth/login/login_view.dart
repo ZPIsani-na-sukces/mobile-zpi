@@ -205,6 +205,10 @@ class LoginView extends HookConsumerWidget {
 
 String _loginErrorMessage(Object error) => switch (error) {
   InvalidCredentialsException() => 'Nieprawidłowy login lub hasło',
+  AccountUnavailableException() =>
+    'To konto jest zablokowane lub czeka na usunięcie.',
+  TooManyAttemptsException() =>
+    'Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.',
   DioException(
     type: DioExceptionType.connectionError ||
         DioExceptionType.connectionTimeout ||

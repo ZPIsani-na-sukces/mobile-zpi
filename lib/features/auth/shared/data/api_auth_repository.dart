@@ -40,6 +40,10 @@ class ApiAuthRepository implements AuthRepository {
             verificationTicket: verificationTicket,
             phoneChallenge: _phoneChallenge(e),
           );
+        case Response(statusCode: 403, data: {'code': 'operationForbidden'}):
+          throw const AccountUnavailableException();
+        case Response(statusCode: 429):
+          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
       }
       rethrow;
     }

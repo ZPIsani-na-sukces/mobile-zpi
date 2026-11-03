@@ -39,3 +39,7 @@ class VerificationExpiredException implements Exception {
 class SessionExpiredException implements Exception {
   const SessionExpiredException();
 }
+
+class AccountUnavailableException implements Exception {
+  const AccountUnavailableException();
+}
