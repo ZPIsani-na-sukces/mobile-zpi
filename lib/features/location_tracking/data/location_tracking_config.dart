@@ -71,8 +71,7 @@ bg.Config buildLocationTrackingConfig(AuthSession session, String? deviceId) =>
         locationTemplate: _sampleTemplate,
       ),
       activity: const bg.ActivityConfig(
-        motionTriggerDelay:
-            10000, // wait 10 s before treating it as movement, so walking around at home doesn't count
+        motionTriggerDelay: 10000, // wait 10 s before treating it as movement, so walking around at home doesn't count
         disableStopDetection: false,
         stopOnStationary: false,
       ),
@@ -80,15 +79,18 @@ bg.Config buildLocationTrackingConfig(AuthSession session, String? deviceId) =>
         debug: AppEnv.isDev,
         logLevel: AppEnv.isDev ? bg.LogLevel.debug : bg.LogLevel.error,
       ),
-      authorization: bg.Authorization(
-        strategy: 'jwt',
-        accessToken: session.accessToken,
-        refreshToken: session.refreshToken,
-        refreshUrl: '${AppEnv.apiBaseUrl}/auth/refresh',
-        refreshPayload: {
-          'clientType': 'mobile',
-          'refreshToken': '{refreshToken}',
-        },
-        refreshHeaders: {'Content-Type': 'application/json'},
-      ),
+      authorization: buildLocationTrackingAuthorization(session),
+    );
+
+bg.Authorization buildLocationTrackingAuthorization(AuthSession session) =>
+    bg.Authorization(
+      strategy: 'jwt',
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
+      refreshUrl: '${AppEnv.apiBaseUrl}/auth/refresh',
+      refreshPayload: {
+        'clientType': 'mobile',
+        'refreshToken': '{refreshToken}',
+      },
+      refreshHeaders: {'Content-Type': 'application/json'},
     );

@@ -5,6 +5,7 @@ import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
 import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
 import 'package:mobile_zpi/features/auth/shared/data/session_storage.dart';
+import 'package:mobile_zpi/features/location_tracking/data/plugin_tokens.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_controller.g.dart';
@@ -31,19 +32,21 @@ class AuthController extends _$AuthController {
           .whenComplete(() => _renewal = null);
 
   Future<AuthSession?> _renewSession(String rejectedToken) async {
-    final session = await ref.read(sessionStorageProvider).read();
-    if (session == null) return null;
+    final stored = await ref.read(sessionStorageProvider).read();
+    if (stored == null) return null;
 
-    if (session.accessToken != rejectedToken) {
-      state = AsyncData(session);
-      return session;
+    if (stored.accessToken != rejectedToken) {
+      state = AsyncData(stored);
+      return stored;
     }
 
+    final session = await sessionWithNewerPluginTokens(stored) ?? stored;
     try {
       final renewed = await ref
           .read(authRepositoryProvider)
           .refresh(session.refreshToken);
       await setSession(renewed);
+      await sendTokensToPlugin(renewed);
       return renewed;
     } on SessionExpiredException {
       await logout();

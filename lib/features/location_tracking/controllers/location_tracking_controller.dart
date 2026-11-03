@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
-import 'package:mobile_zpi/features/auth/shared/data/jwt_issued_at.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
 import 'package:mobile_zpi/features/devices/data/device_storage.dart';
 import 'package:mobile_zpi/features/devices/data/repository/device_repository.dart';
 import 'package:mobile_zpi/features/location_tracking/data/location_tracking_config.dart';
+import 'package:mobile_zpi/features/location_tracking/data/plugin_tokens.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'location_tracking_controller.g.dart';
@@ -116,28 +116,10 @@ class LocationTrackingController extends _$LocationTrackingController {
   }
 
   Future<bool> _hasNewerPluginTokens(AuthSession session) async {
-    final pluginAuth = (await bg.BackgroundGeolocation.state).authorization;
-    final accessToken = pluginAuth?.accessToken;
-    final refreshToken = pluginAuth?.refreshToken;
+    final newer = await sessionWithNewerPluginTokens(session);
+    if (newer == null) return false;
 
-    if (accessToken == null || refreshToken == null) return false;
-
-    final pluginIssuedAt = jwtIssuedAt(accessToken);
-    final appIssuedAt = jwtIssuedAt(session.accessToken);
-    if (pluginIssuedAt == null ||
-        appIssuedAt == null ||
-        !pluginIssuedAt.isAfter(appIssuedAt)) {
-      return false;
-    }
-
-    await ref
-        .read(authControllerProvider.notifier)
-        .setSession(
-          session.copyWith(
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-          ),
-        );
+    await ref.read(authControllerProvider.notifier).setSession(newer);
     return true;
   }
 }
