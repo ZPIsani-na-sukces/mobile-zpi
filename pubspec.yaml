@@ -54,6 +54,7 @@ dependencies:
   flutter_map_location_marker: ^10.3.0
   pdfx: ^2.11.0
   home_widget: ^0.10.0
+  uuid: ^4.6.0
 
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to

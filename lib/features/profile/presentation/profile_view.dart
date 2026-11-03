@@ -126,6 +126,13 @@ class _ProfileBody extends ConsumerWidget {
           onPressed: () => context.router.push(const ProfileEditRoute()),
         ),
         const SizedBox(height: AppSpacing.md),
+        AppButton.secondary(
+          label: 'Opiekunowie i zaproszenia',
+          icon: Icons.group,
+          onPressed: () =>
+              context.router.push(InvitationsRoute(seniorId: account.userId)),
+        ),
+        const SizedBox(height: AppSpacing.md),
         const LogoutButton(),
         if (AppEnv.isDev) ...[
           const SizedBox(height: AppSpacing.xl),

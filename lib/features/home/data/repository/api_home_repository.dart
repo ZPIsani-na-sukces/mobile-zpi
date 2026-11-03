@@ -11,7 +11,7 @@ class ApiHomeRepository implements HomeRepository {
   Future<List<HomeContact>> recentContacts(String seniorId) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/seniors/$seniorId/contacts',
-      queryParameters: {'isActive': true, 'sort': '-createdAt', 'limit': 3},
+      queryParameters: {'isActive': true, 'sort': '-createdAt', 'limit': 4},
     );
     final items = response.data!['items'] as List<dynamic>;
     return items

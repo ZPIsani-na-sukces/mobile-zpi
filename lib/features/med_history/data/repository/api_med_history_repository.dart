@@ -10,6 +10,18 @@ class ApiMedHistoryRepository implements MedHistoryRepository {
   final Dio _dio;
 
   @override
+  Future<List<MedicalRecord>> records(String seniorId) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/seniors/$seniorId/medical-records',
+      queryParameters: {'sort': '-documentDate', 'limit': 100},
+    );
+    final items = response.data!['items'] as List<dynamic>;
+    return items
+        .map((item) => MedicalRecord.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
   Future<MedicalRecord> record(String seniorId, String recordId) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/seniors/$seniorId/medical-records/$recordId',

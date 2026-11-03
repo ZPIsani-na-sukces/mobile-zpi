@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile_zpi/features/profile/data/device_location.dart';
+
+const _fixTimeout = Duration(seconds: 15);
 
 class SosFix {
   const SosFix({
@@ -9,6 +13,18 @@ class SosFix {
     required this.speedMps,
     required this.capturedAt,
   });
+
+  factory SosFix.fromPosition(Position position) {
+    final accuracy = position.accuracy;
+    final speed = position.speed;
+    return SosFix(
+      latitude: position.latitude,
+      longitude: position.longitude,
+      accuracyMeters: accuracy < 0 ? null : accuracy,
+      speedMps: speed < 0 ? null : speed,
+      capturedAt: position.timestamp,
+    );
+  }
 
   final double latitude;
   final double longitude;
@@ -38,13 +54,11 @@ Future<SosFix> readSosFix() async {
     );
   }
 
-  final position = await Geolocator.getCurrentPosition();
-  final speed = position.speed;
-  return SosFix(
-    latitude: position.latitude,
-    longitude: position.longitude,
-    accuracyMeters: position.accuracy,
-    speedMps: speed < 0 ? null : speed,
-    capturedAt: position.timestamp,
+  final position = await Geolocator.getCurrentPosition().timeout(
+    _fixTimeout,
+    onTimeout: () => throw const LocationException(
+      'Nie udało się ustalić lokalizacji. Możesz wysłać SOS bez niej.',
+    ),
   );
+  return SosFix.fromPosition(position);
 }

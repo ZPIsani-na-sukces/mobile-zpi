@@ -4,12 +4,22 @@ import 'package:mobile_zpi/router/app_router.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Page|Screen|View|Scaffold,Route')
 class AppRouter extends RootStackRouter {
+  AppRouter({required this._isSignedIn});
+
+  final bool Function() _isSignedIn;
+
+  // Mocks show Home without a session, so they skip this.
+  late final _signedInGuard = AutoRouteGuard.redirect(
+    (_) => _isSignedIn() || AppEnv.useMocks ? null : const LoginRoute(),
+  );
+
   @override
   List<AutoRoute> get routes => [
     AutoRoute(
       path: '/',
       page: AppRoute.page,
       initial: true,
+      guards: [_signedInGuard],
       children: [
         AutoRoute(path: 'home', page: HomeRoute.page, initial: true),
         AutoRoute(path: 'routine', page: RoutineRoute.page),
@@ -28,6 +38,8 @@ class AppRouter extends RootStackRouter {
       page: MedFilePreviewRoute.page,
     ),
     AutoRoute(path: '/sos', page: SosRoute.page),
+    AutoRoute(path: '/invitations', page: InvitationsRoute.page),
+    AutoRoute(path: '/invitations/send', page: SendInvitationRoute.page),
     AutoRoute(path: '/login', page: LoginRoute.page),
     AutoRoute(path: '/register', page: RegisterRoute.page),
     AutoRoute(path: '/reset-password', page: ResetPassRoute.page),

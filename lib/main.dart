@@ -13,7 +13,9 @@ import 'package:mobile_zpi/features/profile/controllers/accessibility_controller
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final container = ProviderContainer();
+  // Riverpod retries failed providers for about 40 seconds and stays in
+  // loading meanwhile, which hides errors behind a spinner.
+  final container = ProviderContainer(retry: (_, _) => null);
   await container.read(authControllerProvider.future);
   await container.read(highContrastControllerProvider.future);
   container.read(locationTrackingControllerProvider);
@@ -24,7 +26,7 @@ Future<void> main() async {
   // widgets follow login and logout.
   container.listen(homeWidgetsControllerProvider, (_, _) {});
 
-  runApp(UncontrolledProviderScope(container: container, child: MyApp()));
+  runApp(UncontrolledProviderScope(container: container, child: MyApp(container: container)));
   await bg.BackgroundGeolocation.registerHeadlessTask(
     locationTrackingHeadlessTask,
   );

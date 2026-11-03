@@ -42,7 +42,9 @@ class LoginView extends HookConsumerWidget {
             :final phoneChallenge,
           ),
         ):
-          final identifier = identifierController.text.trim();
+          final identifier = AuthValidators.normalizeLoginIdentifier(
+            identifierController.text,
+          );
           context.router.push(
             AccActivationRoute(
               verificationTicket: verificationTicket,
@@ -66,7 +68,9 @@ class LoginView extends HookConsumerWidget {
       if (identifier.isEmpty || password.isEmpty) return;
 
       FocusScope.of(context).unfocus();
-      ref.read(loginControllerProvider.notifier).login(identifier, password);
+      ref
+          .read(loginControllerProvider.notifier)
+          .login(AuthValidators.normalizeLoginIdentifier(identifier), password);
     }
 
     void onForgotPassword() => context.router.push(const ResetPassRoute());
@@ -201,6 +205,10 @@ class LoginView extends HookConsumerWidget {
 
 String _loginErrorMessage(Object error) => switch (error) {
   InvalidCredentialsException() => 'Nieprawidłowy login lub hasło',
+  AccountUnavailableException() =>
+    'To konto jest zablokowane lub czeka na usunięcie.',
+  TooManyAttemptsException() =>
+    'Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.',
   DioException(
     type: DioExceptionType.connectionError ||
         DioExceptionType.connectionTimeout ||

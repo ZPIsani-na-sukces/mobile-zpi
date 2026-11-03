@@ -126,5 +126,9 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> logout(String accessToken) => Future<void>.delayed(_delay);
+  Future<AuthSession> refresh(String refreshToken) async =>
+      throw const SessionExpiredException();
+
+  @override
+  Future<void> logout(AuthSession session) => Future<void>.delayed(_delay);
 }

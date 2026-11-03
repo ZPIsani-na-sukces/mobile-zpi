@@ -40,6 +40,10 @@ class ApiAuthRepository implements AuthRepository {
             verificationTicket: verificationTicket,
             phoneChallenge: _phoneChallenge(e),
           );
+        case Response(statusCode: 403, data: {'code': 'operationForbidden'}):
+          throw const AccountUnavailableException();
+        case Response(statusCode: 429):
+          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
       }
       rethrow;
     }
@@ -49,7 +53,7 @@ class ApiAuthRepository implements AuthRepository {
   Future<RegisterResponse> register(RegisterRequest request) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
-        '/auth/register',
+        '/auth/registrations',
         data: request.toJson(),
       );
       return RegisterResponse.fromJson(response.data!);
@@ -157,7 +161,34 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> logout(String accessToken) => _dio.post<void>(
+  Future<AuthSession> refresh(String refreshToken) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/auth/refresh',
+        data: {'clientType': 'mobile', 'refreshToken': refreshToken},
+      );
+      return AuthSession.fromJson(response.data!);
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 401 || 403:
+          throw const SessionExpiredException();
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> logout(AuthSession session) async {
+    try {
+      await _logout(session.accessToken);
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 401) rethrow;
+      final renewed = await refresh(session.refreshToken);
+      await _logout(renewed.accessToken);
+    }
+  }
+
+  Future<void> _logout(String accessToken) => _dio.post<void>(
     '/auth/logout',
     options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
   );

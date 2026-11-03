@@ -1,14 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:mobile_zpi/config/app_env.dart';
+import 'package:mobile_zpi/features/devices/data/repository/device_repository.dart';
 import 'package:mobile_zpi/features/sos/data/sos_location.dart';
 import 'package:mobile_zpi/network/dio_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sos_repository.g.dart';
-
-class SosDeviceMissingException implements Exception {
-  const SosDeviceMissingException();
-}
 
 abstract interface class SosRepository {
   Future<void> trigger({
@@ -21,13 +18,17 @@ abstract interface class SosRepository {
 @Riverpod(keepAlive: true)
 SosRepository sosRepository(Ref ref) {
   if (AppEnv.useMocks) return MockSosRepository();
-  return ApiSosRepository(ref.watch(authDioProvider));
+  return ApiSosRepository(
+    ref.watch(authDioProvider),
+    ref.watch(deviceRepositoryProvider),
+  );
 }
 
 class ApiSosRepository implements SosRepository {
-  ApiSosRepository(this._dio);
+  ApiSosRepository(this._dio, this._devices);
 
   final Dio _dio;
+  final DeviceRepository _devices;
 
   @override
   Future<void> trigger({
@@ -35,7 +36,22 @@ class ApiSosRepository implements SosRepository {
     required DateTime triggeredAt,
     SosFix? position,
   }) async {
-    final deviceId = await _deviceId();
+    final deviceId = await _devices.deviceId(seniorId);
+    try {
+      await _send(seniorId, deviceId, triggeredAt, position);
+    } on DioException catch (error) {
+      if (error.response?.statusCode != 404) rethrow;
+      final registered = await _devices.registerMonitoring(seniorId);
+      await _send(seniorId, registered, triggeredAt, position);
+    }
+  }
+
+  Future<void> _send(
+    String seniorId,
+    String deviceId,
+    DateTime triggeredAt,
+    SosFix? position,
+  ) async {
     await _dio.post<Map<String, dynamic>>(
       '/seniors/$seniorId/sos-incidents',
       data: {
@@ -50,29 +66,17 @@ class ApiSosRepository implements SosRepository {
                 },
                 'accuracyMeters': position.accuracyMeters,
                 'speedMps': position.speedMps,
-                'capturedAt': position.capturedAt.toUtc().toIso8601String(),
+                // The API rejects a fix newer than the trigger. A fresh fix or
+                // a GPS clock ahead of the phone would otherwise lose the SOS.
+                'capturedAt':
+                    (position.capturedAt.isAfter(triggeredAt)
+                            ? triggeredAt
+                            : position.capturedAt)
+                        .toUtc()
+                        .toIso8601String(),
               },
       },
     );
-  }
-
-  Future<String> _deviceId() async {
-    final response = await _dio.get<List<dynamic>>('/me/devices');
-    final devices = response.data!;
-    Map<String, dynamic>? chosen;
-    for (final item in devices) {
-      final device = item as Map<String, dynamic>;
-      if (device['monitoringEnabled'] == true) {
-        chosen = device;
-        break;
-      }
-      chosen ??= device;
-    }
-    final deviceId = chosen?['deviceId'];
-    if (deviceId is! String || deviceId.isEmpty) {
-      throw const SosDeviceMissingException();
-    }
-    return deviceId;
   }
 }
 

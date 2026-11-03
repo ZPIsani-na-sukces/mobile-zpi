@@ -50,7 +50,9 @@ Future<String> _send(ProviderContainer container) async {
 }
 
 /// The widget runs in the background, so it never asks for permission and
-/// sends without location when there is none.
+/// sends without location when there is none. Android cuts the network of a
+/// background app within seconds, so it takes the last fix instead of waiting
+/// for a new one.
 Future<SosFix?> _readFix() async {
   try {
     final permission = await Geolocator.checkPermission();
@@ -58,7 +60,8 @@ Future<SosFix?> _readFix() async {
         permission == LocationPermission.deniedForever) {
       return null;
     }
-    return await readSosFix().timeout(const Duration(seconds: 10));
+    final position = await Geolocator.getLastKnownPosition();
+    return position == null ? null : SosFix.fromPosition(position);
   } catch (error) {
     debugPrint('Widget SOS location failed: $error');
     return null;

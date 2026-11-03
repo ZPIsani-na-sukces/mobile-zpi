@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
 import 'package:mobile_zpi/features/profile/controllers/accessibility_controller.dart';
 import 'package:mobile_zpi/router/app_router.dart';
+import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_theme.dart';
 
 class MyApp extends ConsumerWidget {
-  MyApp({super.key});
+  MyApp({super.key, required ProviderContainer container})
+    : _appRouter = AppRouter(
+        isSignedIn: () => container.read(authControllerProvider).value != null,
+      );
 
-  final _appRouter = AppRouter();
+  final AppRouter _appRouter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(authControllerProvider.select((auth) => auth.value != null), (
+      wasSignedIn,
+      isSignedIn,
+    ) {
+      if (wasSignedIn == true && !isSignedIn) {
+        _appRouter.replaceAll([const LoginRoute()]);
+      }
+    });
+
     final highContrast =
         ref.watch(highContrastControllerProvider).value ?? false;
 

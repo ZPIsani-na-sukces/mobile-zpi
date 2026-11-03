@@ -7,6 +7,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'med_record_controller.g.dart';
 
 @riverpod
+class MedRecordsController extends _$MedRecordsController {
+  @override
+  Future<List<MedicalRecord>> build(String seniorId) =>
+      ref.watch(medHistoryRepositoryProvider).records(seniorId);
+}
+
+@riverpod
 class MedRecordController extends _$MedRecordController {
   @override
   Future<MedicalRecord> build(String seniorId, String recordId) =>

@@ -5,6 +5,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dio_provider.g.dart';
 
+const _sentTokenKey = 'sentToken';
+const _renewedKey = 'renewed';
+
 Dio _createDio() {
   final dio = Dio(
     BaseOptions(
@@ -41,8 +44,37 @@ Dio authDio(Ref ref) {
     InterceptorsWrapper(
       onRequest: (options, handler) {
         final token = ref.read(authControllerProvider).value?.accessToken;
-        if (token != null) options.headers['Authorization'] = 'Bearer $token';
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+          options.extra[_sentTokenKey] = token;
+        }
         handler.next(options);
+      },
+      onError: (error, handler) async {
+        final request = error.requestOptions;
+        final sentToken = request.extra[_sentTokenKey];
+        if (error.response?.statusCode != 401 ||
+            sentToken is! String ||
+            request.extra[_renewedKey] == true) {
+          handler.next(error);
+          return;
+        }
+
+        try {
+          final session = await ref
+              .read(authControllerProvider.notifier)
+              .renewSession(sentToken);
+          if (session == null) {
+            handler.next(error);
+            return;
+          }
+          request.extra[_renewedKey] = true;
+          handler.resolve(await dio.fetch<dynamic>(request));
+        } on DioException catch (failure) {
+          handler.next(failure);
+        } catch (_) {
+          handler.next(error);
+        }
       },
     ),
   );

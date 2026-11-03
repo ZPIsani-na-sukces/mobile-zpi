@@ -11,6 +11,7 @@ import 'package:mobile_zpi/theme/app_shadows.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_message.dart';
 
 @RoutePage()
 class ContactsView extends ConsumerWidget {
@@ -22,7 +23,11 @@ class ContactsView extends ConsumerWidget {
 
     return switch (profile) {
       AsyncData(value: final account) => _ContactList(seniorId: account.userId),
-      AsyncError() => const _Message(text: 'Nie udało się wczytać profilu.'),
+      AsyncError() => AppMessage(
+        text: 'Nie udało się wczytać profilu.',
+        actionLabel: 'Spróbuj ponownie',
+        onPressed: () => ref.invalidate(profileControllerProvider),
+      ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
   }
@@ -39,7 +44,7 @@ class _ContactList extends ConsumerWidget {
     final contacts = ref.watch(provider);
 
     return switch (contacts) {
-      AsyncData(value: final items) when items.isEmpty => const _Message(
+      AsyncData(value: final items) when items.isEmpty => const AppMessage(
         text: 'Brak kontaktów.',
       ),
       AsyncData(value: final items) => RefreshIndicator(
@@ -51,7 +56,7 @@ class _ContactList extends ConsumerWidget {
           itemBuilder: (context, index) => _ContactCard(contact: items[index]),
         ),
       ),
-      AsyncError() => _Message(
+      AsyncError() => AppMessage(
         text: 'Nie udało się wczytać kontaktów.',
         actionLabel: 'Spróbuj ponownie',
         onPressed: () => ref.invalidate(provider),
@@ -111,13 +116,15 @@ class _ContactCard extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Dodane przez: ${creator.firstName} ${creator.lastName}',
-              style: AppTypography.bodyMedium.copyWith(
-                color: context.colors.onSurface,
+            if (creator != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                'Dodane przez: ${creator.firstName} ${creator.lastName}',
+                style: AppTypography.bodyMedium.copyWith(
+                  color: context.colors.onSurface,
+                ),
               ),
-            ),
+            ],
             const SizedBox(height: AppSpacing.md),
             AppButton.primary(
               label: 'Zadzwoń',
@@ -137,37 +144,6 @@ class _ContactCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Message extends StatelessWidget {
-  const _Message({required this.text, this.actionLabel, this.onPressed});
-
-  final String text;
-  final String? actionLabel;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyLarge.copyWith(
-              color: context.colors.onBackground,
-            ),
-          ),
-          if (actionLabel != null && onPressed != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            AppButton.primary(label: actionLabel!, onPressed: onPressed),
-          ],
-        ],
       ),
     );
   }

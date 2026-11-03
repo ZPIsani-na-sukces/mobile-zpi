@@ -58,10 +58,11 @@ class MedFileView extends ConsumerWidget {
               label: 'Data dokumentu',
               value: formatDocumentDate(value.documentDate),
             ),
-            _Row(
-              label: 'Dodane przez',
-              value: '${value.createdBy.firstName} ${value.createdBy.lastName}',
-            ),
+            if (value.createdBy case final creator?)
+              _Row(
+                label: 'Dodane przez',
+                value: '${creator.firstName} ${creator.lastName}',
+              ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               'Pliki',
