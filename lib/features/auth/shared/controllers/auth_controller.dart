@@ -61,7 +61,7 @@ class AuthController extends _$AuthController {
     unawaited(
       ref
           .read(authRepositoryProvider)
-          .logout(session.accessToken)
+          .logout(session)
           .catchError((Object e) => debugPrint('Server logout failed: $e')),
     );
   }

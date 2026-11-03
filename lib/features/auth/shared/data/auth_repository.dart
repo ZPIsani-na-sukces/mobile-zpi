@@ -22,7 +22,7 @@ abstract interface class AuthRepository {
   Future<void> verifyResetCode(VerifyResetPassCodeRequest request);
   Future<void> setNewPassword(SetNewPassRequest request);
   Future<AuthSession> refresh(String refreshToken);
-  Future<void> logout(String accessToken);
+  Future<void> logout(AuthSession session);
 }
 
 @Riverpod(keepAlive: true)

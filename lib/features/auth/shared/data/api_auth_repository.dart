@@ -178,12 +178,20 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> logout(String accessToken) async {
-    await _dio.post<void>(
-      '/auth/logout',
-      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
-    );
+  Future<void> logout(AuthSession session) async {
+    try {
+      await _logout(session.accessToken);
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 401) rethrow;
+      final renewed = await refresh(session.refreshToken);
+      await _logout(renewed.accessToken);
+    }
   }
+
+  Future<void> _logout(String accessToken) => _dio.post<void>(
+    '/auth/logout',
+    options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+  );
 
   String? _problemCode(DioException e) => switch (e.response?.data) {
     {'code': final String code} => code,
