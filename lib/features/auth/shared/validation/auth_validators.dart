@@ -71,6 +71,12 @@ abstract final class AuthValidators {
     return _e164.hasMatch(phone) ? phone : null;
   }
 
+  static String normalizeLoginIdentifier(String value) {
+    final identifier = value.trim();
+    if (identifier.contains('@')) return identifier;
+    return normalizePhoneNumber(identifier) ?? identifier;
+  }
+
   static String? normalizeEmail(String value) {
     final email = value.trim();
     return email.isEmpty ? null : email;
