@@ -5,6 +5,7 @@ import 'package:mobile_zpi/features/home/controllers/home_controller.dart';
 import 'package:mobile_zpi/features/home/data/back_home.dart';
 import 'package:mobile_zpi/features/home/data/models/home_overview.dart';
 import 'package:mobile_zpi/features/home/data/phone_call.dart';
+import 'package:mobile_zpi/features/home/presentation/widgets/empty_zones_card.dart';
 import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
@@ -49,6 +50,8 @@ class _HomeBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final home = ref.watch(homeControllerProvider(seniorId));
+
+    void openMap() => context.router.push(GeozoneRoute(seniorId: seniorId));
 
     return switch (home) {
       AsyncData(value: final overview) => ListView(
@@ -103,9 +106,8 @@ class _HomeBody extends ConsumerWidget {
           _Section(
             title: 'Geostrefy',
             child: overview.zones.isEmpty
-                ? const _EmptyText('Brak ustawionych geostref.')
+                ? EmptyZonesCard(onOpenMap: openMap)
                 : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       for (final zone in overview.zones.take(3)) ...[
                         _ZoneTile(zone: zone),
@@ -113,9 +115,7 @@ class _HomeBody extends ConsumerWidget {
                       ],
                       AppButton.text(
                         label: 'Podgląd geostref',
-                        onPressed: () => context.router.push(
-                          GeozoneRoute(seniorId: seniorId),
-                        ),
+                        onPressed: openMap,
                       ),
                     ],
                   ),
