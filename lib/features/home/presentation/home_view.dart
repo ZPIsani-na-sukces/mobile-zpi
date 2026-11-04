@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:mobile_zpi/features/home/controllers/home_controller.dart';
-import 'package:mobile_zpi/features/home/data/back_home.dart';
 import 'package:mobile_zpi/features/home/data/models/home_overview.dart';
 import 'package:mobile_zpi/features/home/data/phone_call.dart';
 import 'package:mobile_zpi/features/home/presentation/widgets/empty_zones_card.dart';
@@ -156,7 +156,7 @@ class _BackHomeButton extends ConsumerWidget {
     );
   }
 
-  Future<void> _navigate(BuildContext context, HomeAddress? home) async {
+  void _navigate(BuildContext context, HomeAddress? home) {
     if (home == null) {
       _showMessage(
         context,
@@ -164,12 +164,13 @@ class _BackHomeButton extends ConsumerWidget {
       );
       return;
     }
-    try {
-      await navigateBackHome(home.coordinates);
-    } on BackHomeException {
-      if (!context.mounted) return;
-      _showMessage(context, 'Nie udało się otworzyć mapy.');
-    }
+    final coordinates = home.coordinates;
+    context.router.push(
+      GeozoneRoute(
+        seniorId: seniorId,
+        navigateTo: LatLng(coordinates.latitude, coordinates.longitude),
+      ),
+    );
   }
 
   void _showMessage(BuildContext context, String text) {
