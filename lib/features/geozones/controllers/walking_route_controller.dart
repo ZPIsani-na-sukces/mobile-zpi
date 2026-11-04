@@ -10,10 +10,12 @@ class WalkingRouteController extends _$WalkingRouteController {
   @override
   FutureOr<WalkingRoute?> build() => null;
 
-  Future<void> fetch(LatLng destination) async {
+  Future<void> fetch(LatLng destination, {LatLng? origin}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(geozonesRepositoryProvider).getWalkingRoute(destination),
+      () => ref
+          .read(geozonesRepositoryProvider)
+          .getWalkingRoute(destination, origin: origin),
     );
   }
 
