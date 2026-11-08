@@ -18,6 +18,12 @@ abstract interface class RoutineRepository {
 
   Future<List<TaskOccurrence>> occurrencesToday(String seniorId);
 
+  /// Pending occurrences in the next [days] days, for local reminders.
+  Future<List<TaskOccurrence>> upcomingOccurrences(
+    String seniorId, {
+    int days = 7,
+  });
+
   Future<void> decide(String seniorId, String occurrenceId, String decision);
 }
 

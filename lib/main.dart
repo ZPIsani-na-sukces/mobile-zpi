@@ -9,6 +9,8 @@ import 'package:mobile_zpi/features/home_widgets/data/home_widgets.dart';
 import 'package:mobile_zpi/features/location_tracking/controllers/location_tracking_controller.dart';
 import 'package:mobile_zpi/features/location_tracking/data/location_tracking_headless_task.dart';
 import 'package:mobile_zpi/features/profile/controllers/accessibility_controller.dart';
+import 'package:mobile_zpi/features/routine/controllers/routine_reminders_controller.dart';
+import 'package:mobile_zpi/features/routine/data/routine_reminders.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +27,19 @@ Future<void> main() async {
   // Listened, not read: Riverpod only rebuilds listened providers, so the
   // widgets follow login and logout.
   container.listen(homeWidgetsControllerProvider, (_, _) {});
+
+  await setUpRoutineReminders().catchError(
+    (Object e) => debugPrint('Routine reminders setup failed: $e'),
+  );
+  container.listen(routineRemindersControllerProvider, (_, next) {
+    if (next case AsyncError(:final error)) {
+      debugPrint('Routine reminders update failed: $error');
+    }
+  });
+  // The caretaker can change tasks while the app is in the background.
+  AppLifecycleListener(
+    onResume: () => container.invalidate(routineRemindersControllerProvider),
+  );
 
   runApp(UncontrolledProviderScope(container: container, child: MyApp(container: container)));
   await bg.BackgroundGeolocation.registerHeadlessTask(

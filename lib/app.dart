@@ -8,6 +8,7 @@ import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart
 import 'package:mobile_zpi/features/home_widgets/data/home_widgets.dart';
 import 'package:mobile_zpi/features/profile/controllers/accessibility_controller.dart';
 import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
+import 'package:mobile_zpi/features/routine/controllers/routine_reminders_controller.dart';
 import 'package:mobile_zpi/router/app_router.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_theme.dart';
@@ -37,6 +38,16 @@ class MyApp extends HookConsumerWidget {
       });
       return launches.cancel;
     }, const []);
+
+    ref.listen(routineReminderTapProvider, (_, next) async {
+      if (next is! AsyncData ||
+          ref.read(authControllerProvider).value == null) {
+        return;
+      }
+      // On a cold start the tap can come before the router shows a page.
+      await WidgetsBinding.instance.endOfFrame;
+      await _appRouter.navigate(const AppRoute(children: [RoutineRoute()]));
+    });
 
     final highContrast =
         ref.watch(highContrastControllerProvider).value ?? false;

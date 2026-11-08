@@ -62,6 +62,36 @@ class ApiRoutineRepository implements RoutineRepository {
   }
 
   @override
+  Future<List<TaskOccurrence>> upcomingOccurrences(
+    String seniorId, {
+    int days = 7,
+  }) async {
+    final now = DateTime.now().toUtc();
+    final occurrences = <TaskOccurrence>[];
+    String? cursor;
+    do {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/seniors/$seniorId/task-occurrences',
+        queryParameters: {
+          'from': now.toIso8601String(),
+          'to': now.add(Duration(days: days)).toIso8601String(),
+          'status': 'pending',
+          'limit': 100,
+          'cursor': ?cursor,
+        },
+      );
+      final data = response.data!;
+      occurrences.addAll(
+        (data['items'] as List<dynamic>).map(
+          (item) => TaskOccurrence.fromJson(item as Map<String, dynamic>),
+        ),
+      );
+      cursor = data['nextCursor'] as String?;
+    } while (cursor != null);
+    return occurrences;
+  }
+
+  @override
   Future<void> decide(
     String seniorId,
     String occurrenceId,

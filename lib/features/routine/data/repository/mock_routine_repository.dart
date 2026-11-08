@@ -121,6 +121,23 @@ class MockRoutineRepository implements RoutineRepository {
   }
 
   @override
+  Future<List<TaskOccurrence>> upcomingOccurrences(
+    String seniorId, {
+    int days = 7,
+  }) async {
+    return [
+      for (final occurrence in _occurrences)
+        if (occurrence.status == 'pending')
+          occurrence.copyWith(
+            reminderAt: [
+              occurrence.scheduledAt.subtract(const Duration(minutes: 15)),
+              occurrence.scheduledAt,
+            ],
+          ),
+    ];
+  }
+
+  @override
   Future<void> decide(
     String seniorId,
     String occurrenceId,
