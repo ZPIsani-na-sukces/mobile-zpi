@@ -13,6 +13,9 @@ abstract class TaskOccurrence with _$TaskOccurrence {
     required String type,
     required DateTime scheduledAt,
     required String status,
+
+    /// When to remind: 15 minutes before [scheduledAt] and at [scheduledAt].
+    @Default([]) List<DateTime> reminderAt,
   }) = _TaskOccurrence;
 
   factory TaskOccurrence.fromJson(Map<String, dynamic> json) =>

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:mobile_zpi/features/routine/controllers/routine_reminders_controller.dart';
 import 'package:mobile_zpi/features/routine/data/repository/routine_repository.dart';
 import 'package:mobile_zpi/features/routine/data/task_confirmation_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -26,6 +27,8 @@ class TaskConfirmationController extends _$TaskConfirmationController {
       await ref
           .read(routineRepositoryProvider)
           .decide(seniorId, occurrenceId, decision);
+      // No more reminders for a task the senior already decided on.
+      ref.invalidate(routineRemindersControllerProvider);
       state = AsyncData(
         current.copyWith(
           submittingId: null,

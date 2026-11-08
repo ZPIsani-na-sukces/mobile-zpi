@@ -1,3 +1,4 @@
+import 'package:mobile_zpi/features/routine/controllers/routine_reminders_controller.dart';
 import 'package:mobile_zpi/features/routine/data/repository/routine_repository.dart';
 import 'package:mobile_zpi/features/routine/data/routine_task_draft.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,5 +15,6 @@ class CreateRoutineTaskController extends _$CreateRoutineTaskController {
     state = await AsyncValue.guard(
       () => ref.read(routineRepositoryProvider).createTask(seniorId, draft),
     );
+    if (!state.hasError) ref.invalidate(routineRemindersControllerProvider);
   }
 }
