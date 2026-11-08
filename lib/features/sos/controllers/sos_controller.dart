@@ -1,4 +1,5 @@
 import 'package:mobile_zpi/features/profile/data/device_location.dart';
+import 'package:mobile_zpi/features/sos/data/sos_alarm.dart';
 import 'package:mobile_zpi/features/sos/data/sos_location.dart';
 import 'package:mobile_zpi/features/sos/data/sos_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -8,11 +9,14 @@ part 'sos_controller.g.dart';
 enum SosPhase { locating, gpsError, sending, waiting, failed }
 
 class SosFlow {
-  const SosFlow({required this.phase, this.position, this.message});
+  const SosFlow({required this.phase, this.position, this.message, this.alarm});
 
   final SosPhase phase;
   final SosFix? position;
   final String? message;
+
+  /// Set once the API accepted the press.
+  final SosAlarm? alarm;
 }
 
 @riverpod
@@ -36,7 +40,7 @@ class SosController extends _$SosController {
   Future<void> _send(String seniorId, SosFix? position) async {
     state = SosFlow(phase: SosPhase.sending, position: position);
     try {
-      await ref
+      final alarm = await ref
           .read(sosRepositoryProvider)
           .trigger(
             seniorId: seniorId,
@@ -44,7 +48,11 @@ class SosController extends _$SosController {
             position: position,
           );
       if (!ref.mounted) return;
-      state = SosFlow(phase: SosPhase.waiting, position: position);
+      state = SosFlow(
+        phase: SosPhase.waiting,
+        position: position,
+        alarm: alarm,
+      );
     } catch (_) {
       if (!ref.mounted) return;
       state = const SosFlow(

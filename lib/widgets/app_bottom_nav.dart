@@ -26,22 +26,22 @@ class AppBottomNav extends StatelessWidget {
           BottomNavigationBarItem(
             icon: _BottomNavIcon(Icons.home_outlined),
             activeIcon: _BottomNavIcon(Icons.home_rounded),
-            label: 'Home',
+            label: 'Start',
           ),
           BottomNavigationBarItem(
             icon: _BottomNavIcon(Icons.event_note_outlined),
             activeIcon: _BottomNavIcon(Icons.event_note_rounded),
-            label: 'Routines',
+            label: 'Zadania',
           ),
           BottomNavigationBarItem(
             icon: _BottomNavIcon(Icons.contacts_outlined),
             activeIcon: _BottomNavIcon(Icons.contacts_rounded),
-            label: 'Contacts',
+            label: 'Kontakty',
           ),
           BottomNavigationBarItem(
             icon: _BottomNavIcon(Icons.assignment_outlined),
             activeIcon: _BottomNavIcon(Icons.assignment_rounded),
-            label: 'Med history',
+            label: 'Dokumenty',
           ),
         ],
       ),
