@@ -11,7 +11,7 @@ import 'package:mobile_zpi/features/geozones/presentation/widgets/home_marker_la
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_attribution.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_center_location_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_compass.dart';
-import 'package:mobile_zpi/features/geozones/presentation/widgets/map_resume_navigation_button.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/map_show_whole_route_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/route_arrival_listener.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_layer.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -90,7 +90,7 @@ class GeozoneMap extends ConsumerWidget {
                       ?bottomLeftAction,
                       const Spacer(),
                       if (isNavigating)
-                        const MapResumeNavigationButton()
+                        const MapShowWholeRouteButton()
                       else
                         const MapCenterLocationButton(),
                     ],
