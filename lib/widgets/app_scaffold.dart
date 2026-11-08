@@ -9,10 +9,10 @@ class AppScaffold extends StatelessWidget {
   const AppScaffold({super.key});
 
   static const List<String> _tabTitles = [
-    'Home',
-    'Routines',
-    'Contacts',
-    'Med history',
+    'Start',
+    'Zadania',
+    'Kontakty',
+    'Dokumenty',
   ];
 
   @override

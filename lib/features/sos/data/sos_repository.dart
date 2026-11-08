@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:mobile_zpi/config/app_env.dart';
 import 'package:mobile_zpi/features/devices/data/repository/device_repository.dart';
+import 'package:mobile_zpi/features/sos/data/sos_alarm.dart';
 import 'package:mobile_zpi/features/sos/data/sos_location.dart';
 import 'package:mobile_zpi/network/dio_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -8,7 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'sos_repository.g.dart';
 
 abstract interface class SosRepository {
-  Future<void> trigger({
+  Future<SosAlarm> trigger({
     required String seniorId,
     required DateTime triggeredAt,
     SosFix? position,
@@ -31,28 +32,30 @@ class ApiSosRepository implements SosRepository {
   final DeviceRepository _devices;
 
   @override
-  Future<void> trigger({
+  Future<SosAlarm> trigger({
     required String seniorId,
     required DateTime triggeredAt,
     SosFix? position,
   }) async {
     final deviceId = await _devices.deviceId(seniorId);
     try {
-      await _send(seniorId, deviceId, triggeredAt, position);
+      return await _send(seniorId, deviceId, triggeredAt, position);
     } on DioException catch (error) {
       if (error.response?.statusCode != 404) rethrow;
       final registered = await _devices.registerMonitoring(seniorId);
-      await _send(seniorId, registered, triggeredAt, position);
+      return _send(seniorId, registered, triggeredAt, position);
     }
   }
 
-  Future<void> _send(
+  /// The API answers 201 for a new incident and 200 when the press joined
+  /// the incident that is still open.
+  Future<SosAlarm> _send(
     String seniorId,
     String deviceId,
     DateTime triggeredAt,
     SosFix? position,
   ) async {
-    await _dio.post<Map<String, dynamic>>(
+    final response = await _dio.post<Map<String, dynamic>>(
       '/seniors/$seniorId/sos-incidents',
       data: {
         'deviceId': deviceId,
@@ -77,14 +80,18 @@ class ApiSosRepository implements SosRepository {
               },
       },
     );
+    return SosAlarm(
+      isNew: response.statusCode == 201,
+      occurredAt: DateTime.parse(response.data!['occurredAt'] as String),
+    );
   }
 }
 
 class MockSosRepository implements SosRepository {
   @override
-  Future<void> trigger({
+  Future<SosAlarm> trigger({
     required String seniorId,
     required DateTime triggeredAt,
     SosFix? position,
-  }) async {}
+  }) async => SosAlarm(isNew: true, occurredAt: triggeredAt);
 }

@@ -14,21 +14,27 @@ struct HomeWidgets: WidgetBundle {
   }
 }
 
+/// Values saved from Dart with `HomeWidget.saveWidgetData` (`HomeWidgetKeys`).
 struct StoredEntry: TimelineEntry {
   let date = Date()
-  let value: String?
+  var sosStatus: String? = nil
+  var signedIn = true
+  var hasHome = false
 }
 
-/// Reads one value saved from Dart with `HomeWidget.saveWidgetData`.
 struct StoredProvider: TimelineProvider {
-  let key: String
-
   func placeholder(in context: Context) -> StoredEntry {
-    StoredEntry(value: nil)
+    StoredEntry()
   }
 
   func getSnapshot(in context: Context, completion: @escaping (StoredEntry) -> Void) {
-    completion(StoredEntry(value: UserDefaults(suiteName: homeWidgetsAppGroup)?.string(forKey: key)))
+    let defaults = UserDefaults(suiteName: homeWidgetsAppGroup)
+    completion(
+      StoredEntry(
+        sosStatus: defaults?.string(forKey: "sos_status"),
+        signedIn: defaults?.object(forKey: "signed_in") as? Bool ?? true,
+        hasHome: defaults?.bool(forKey: "has_home") ?? false
+      ))
   }
 
   func getTimeline(in context: Context, completion: @escaping (Timeline<StoredEntry>) -> Void) {
@@ -38,21 +44,10 @@ struct StoredProvider: TimelineProvider {
 
 struct SosWidget: Widget {
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: "SosWidget", provider: StoredProvider(key: "sos_status")) { entry in
-      Button(intent: SosIntent()) {
-        VStack(spacing: 4) {
-          Text("SOS").font(.system(size: 44, weight: .bold))
-          Text(entry.value ?? "Dotknij, aby wezwać pomoc")
-            .font(.subheadline)
-            .multilineTextAlignment(.center)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .contentShape(Rectangle())
-      }
-      .buttonStyle(.plain)
-      .foregroundStyle(.white)
-      .containerBackground(error, for: .widget)
+    StaticConfiguration(kind: "SosWidget", provider: StoredProvider()) { entry in
+      SosWidgetView(entry: entry)
+        .foregroundStyle(.white)
+        .containerBackground(error, for: .widget)
     }
     .configurationDisplayName("SOS")
     .description("Wzywa pomoc opiekuna jednym dotknięciem.")
@@ -61,52 +56,54 @@ struct SosWidget: Widget {
   }
 }
 
+/// Signed in, a tap sends SOS in the background. Signed out, the widget has
+/// no button, so a tap opens the app on the login screen.
+struct SosWidgetView: View {
+  let entry: StoredEntry
+
+  var body: some View {
+    if entry.signedIn {
+      Button(intent: SosIntent()) { content }
+        .buttonStyle(.plain)
+    } else {
+      content
+    }
+  }
+
+  private var content: some View {
+    VStack(spacing: 4) {
+      Text("SOS").font(.system(size: 44, weight: .bold))
+      Text(entry.sosStatus ?? "Dotknij, aby wezwać pomoc")
+        .font(.subheadline)
+        .multilineTextAlignment(.center)
+    }
+    .padding(12)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .contentShape(Rectangle())
+  }
+}
+
 struct BackHomeWidget: Widget {
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: "BackHomeWidget", provider: StoredProvider(key: "back_home_url")) {
-      entry in
-      Button(intent: BackHomeIntent(url: entry.value.flatMap(URL.init(string:)))) {
-        VStack(spacing: 4) {
-          Image(systemName: "house.fill").font(.system(size: 40))
-          Text("Wróć do domu").font(.headline)
-          if entry.value == nil {
-            Text("Brak adresu domu").font(.subheadline)
-          }
+    StaticConfiguration(kind: "BackHomeWidget", provider: StoredProvider()) { entry in
+      VStack(spacing: 4) {
+        Image(systemName: "house.fill").font(.system(size: 40))
+        Text("Wróć do domu").font(.headline)
+        if !entry.hasHome {
+          Text("Brak adresu domu").font(.subheadline)
         }
-        .multilineTextAlignment(.center)
-        .padding(12)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .contentShape(Rectangle())
       }
-      .buttonStyle(.plain)
+      .multilineTextAlignment(.center)
+      .padding(12)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
       .foregroundStyle(.white)
       .containerBackground(primary, for: .widget)
+      // `backHomeWidgetHost` in Dart opens the walk home in the app.
+      .widgetURL(URL(string: "zpi://back-home?homeWidget"))
     }
     .configurationDisplayName("Wróć do domu")
-    .description("Otwiera nawigację do domu w Google Maps.")
+    .description("Otwiera w aplikacji nawigację do domu.")
     .supportedFamilies([.systemSmall])
     .contentMarginsDisabled()
   }
 }
-
-/// Opens Google Maps straight from the widget, without the app.
-struct BackHomeIntent: AppIntent {
-  static var title: LocalizedStringResource = "Wróć do domu"
-  static var isDiscoverable = false
-
-  @Parameter(title: "URL")
-  var url: URL?
-
-  init() {}
-
-  init(url: URL?) {
-    self.url = url
-  }
-
-  func perform() async throws -> some IntentResult & OpensIntent {
-    guard let url else { throw MissingHomeError() }
-    return .result(opensIntent: OpenURLIntent(url))
-  }
-}
-
-struct MissingHomeError: Error {}

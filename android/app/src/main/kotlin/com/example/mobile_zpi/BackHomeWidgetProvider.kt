@@ -1,16 +1,15 @@
 package com.example.mobile_zpi
 
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
+import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
-/** Opens walking navigation home in Google Maps without opening the app. */
+/** Opens the app on the walk home (`backHomeWidgetHost` in Dart). */
 class BackHomeWidgetProvider : HomeWidgetProvider() {
   override fun onUpdate(
       context: Context,
@@ -18,25 +17,22 @@ class BackHomeWidgetProvider : HomeWidgetProvider() {
       appWidgetIds: IntArray,
       widgetData: SharedPreferences,
   ) {
-    val url = widgetData.getString("back_home_url", null)
+    val hasHome = widgetData.getBoolean("has_home", false)
     val views =
         RemoteViews(context.packageName, R.layout.widget_back_home).apply {
           setViewVisibility(
               R.id.widget_back_home_missing,
-              if (url == null) View.VISIBLE else View.GONE,
+              if (hasHome) View.GONE else View.VISIBLE,
           )
-          if (url != null) setOnClickPendingIntent(R.id.widget_back_home, mapsIntent(context, url))
+          setOnClickPendingIntent(
+              R.id.widget_back_home,
+              HomeWidgetLaunchIntent.getActivity(
+                  context,
+                  MainActivity::class.java,
+                  Uri.parse("zpi://back-home?homeWidget"),
+              ),
+          )
         }
     appWidgetManager.updateAppWidget(appWidgetIds, views)
-  }
-
-  private fun mapsIntent(context: Context, url: String): PendingIntent {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    return PendingIntent.getActivity(
-        context,
-        0,
-        intent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-    )
   }
 }

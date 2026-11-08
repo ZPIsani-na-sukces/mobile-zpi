@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
-import 'package:mobile_zpi/features/home/data/back_home.dart';
 import 'package:mobile_zpi/features/home_widgets/data/home_widgets.dart';
 import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,22 +17,14 @@ class HomeWidgetsController extends _$HomeWidgetsController {
     );
 
     if (seniorId == null) {
-      _run(() async {
-        await saveSosWidgetStatus(sosLoggedOutStatus);
-        await saveBackHomeWidgetUrl(null);
-      });
+      _run(saveWidgetsLoggedOut);
       return;
     }
 
     _run(resetSosWidget);
     ref.listen(homeAddressControllerProvider(seniorId), (_, next) {
       if (next case AsyncData(:final value)) {
-        final home = value?.coordinates;
-        _run(
-          () => saveBackHomeWidgetUrl(
-            home == null ? null : googleMapsDirections(home),
-          ),
-        );
+        _run(() => saveBackHomeWidgetHasHome(hasHome: value != null));
       }
     }, fireImmediately: true);
   }
