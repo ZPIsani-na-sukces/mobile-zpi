@@ -32,17 +32,14 @@ Future<String> _send(ProviderContainer container) async {
     final session = await container.read(authControllerProvider.future);
     if (session == null) return sosLoggedOutStatus;
 
-    await container
+    final alarm = await container
         .read(sosRepositoryProvider)
         .trigger(
           seniorId: session.user.userId,
           triggeredAt: DateTime.now().toUtc(),
           position: await _readFix(),
         );
-    final now = DateTime.now();
-    final hour = now.hour.toString().padLeft(2, '0');
-    final minute = now.minute.toString().padLeft(2, '0');
-    return 'Wysłano o $hour:$minute';
+    return alarm.status;
   } catch (error) {
     debugPrint('Widget SOS failed: $error');
     return 'Nie wysłano. Dotknij ponownie';

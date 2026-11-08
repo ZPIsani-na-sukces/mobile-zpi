@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/sos/controllers/sos_controller.dart';
+import 'package:mobile_zpi/features/sos/data/sos_alarm.dart';
 import 'package:mobile_zpi/features/sos/data/sos_location.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -88,7 +89,11 @@ class _SosBody extends ConsumerWidget {
       ),
       SosPhase.waiting => _Message(
         title: 'Czekamy na pomoc',
-        body: 'Wezwanie zostało wysłane do opiekuna.',
+        body: switch (flow.alarm) {
+          SosAlarm(isNew: false, :final status) =>
+            '$status. Opiekun już je otrzymał.',
+          _ => 'Wezwanie zostało wysłane do opiekuna.',
+        },
         detail: _locationLabel(flow.position),
       ),
       SosPhase.failed => _Message(
