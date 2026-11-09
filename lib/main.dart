@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/app.dart';
 import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
 import 'package:mobile_zpi/features/home_widgets/controllers/home_widgets_controller.dart';
+import 'package:mobile_zpi/features/home_widgets/controllers/widget_launch_controller.dart';
 import 'package:mobile_zpi/features/home_widgets/data/home_widgets.dart';
 import 'package:mobile_zpi/features/location_tracking/controllers/location_tracking_controller.dart';
 import 'package:mobile_zpi/features/location_tracking/data/location_tracking_headless_task.dart';
@@ -20,10 +21,16 @@ Future<void> main() async {
   final container = ProviderContainer(retry: (_, _) => null);
   await container.read(authControllerProvider.future);
   await container.read(highContrastControllerProvider.future);
+  // Before location tracking, which hides its location alert after a tap on
+  // the SOS widget. Also before runApp, so a later tap is not missed.
+  await container
+      .read(widgetLaunchControllerProvider.notifier)
+      .readInitialLaunch();
   container.read(locationTrackingControllerProvider);
   await setUpHomeWidgets().catchError(
     (Object e) => debugPrint('Home widgets setup failed: $e'),
   );
+
   // Listened, not read: Riverpod only rebuilds listened providers, so the
   // widgets follow login and logout.
   container.listen(homeWidgetsControllerProvider, (_, _) {});
@@ -41,7 +48,12 @@ Future<void> main() async {
     onResume: () => container.invalidate(routineRemindersControllerProvider),
   );
 
-  runApp(UncontrolledProviderScope(container: container, child: MyApp(container: container)));
+  runApp(
+    UncontrolledProviderScope(
+      container: container,
+      child: MyApp(container: container),
+    ),
+  );
   await bg.BackgroundGeolocation.registerHeadlessTask(
     locationTrackingHeadlessTask,
   );

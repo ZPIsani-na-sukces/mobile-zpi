@@ -2,7 +2,7 @@
 <resources>
     <string name="widget_sos_title">SOS</string>
     <string name="widget_sos_hint">Dotknij, aby wezwać pomoc</string>
-    <string name="widget_sos_description">Wzywa pomoc opiekuna jednym dotknięciem.</string>
+    <string name="widget_sos_description">Otwiera aplikację i wzywa pomoc opiekuna.</string>
     <string name="widget_back_home_title">Wróć do domu</string>
     <string name="widget_back_home_missing">Brak adresu domu</string>
     <string name="widget_back_home_description">Otwiera w aplikacji nawigację do domu.</string>

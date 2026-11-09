@@ -1,6 +1,8 @@
-import AppIntents
 import SwiftUI
 import WidgetKit
+
+/// Shared with `homeWidgetsAppGroup` in Dart and both entitlements files.
+private let homeWidgetsAppGroup = "group.com.example.mobileZpi"
 
 // Mirrors AppColors in lib/theme/app_colors.dart.
 private let primary = Color(red: 0x00 / 255, green: 0x67 / 255, blue: 0xB8 / 255)
@@ -14,82 +16,85 @@ struct HomeWidgets: WidgetBundle {
   }
 }
 
-/// Values saved from Dart with `HomeWidget.saveWidgetData` (`HomeWidgetKeys`).
-struct StoredEntry: TimelineEntry {
+struct StoredEntry<Value>: TimelineEntry {
   let date = Date()
-  var sosStatus: String? = nil
-  var signedIn = true
-  var hasHome = false
+  let value: Value?
 }
 
-struct StoredProvider: TimelineProvider {
-  func placeholder(in context: Context) -> StoredEntry {
-    StoredEntry()
+/// Reads one value saved from Dart with `HomeWidget.saveWidgetData`.
+struct StoredProvider<Value>: TimelineProvider {
+  let key: String
+
+  func placeholder(in context: Context) -> StoredEntry<Value> {
+    StoredEntry(value: nil)
   }
 
-  func getSnapshot(in context: Context, completion: @escaping (StoredEntry) -> Void) {
-    let defaults = UserDefaults(suiteName: homeWidgetsAppGroup)
-    completion(
-      StoredEntry(
-        sosStatus: defaults?.string(forKey: "sos_status"),
-        signedIn: defaults?.object(forKey: "signed_in") as? Bool ?? true,
-        hasHome: defaults?.bool(forKey: "has_home") ?? false
-      ))
+  func getSnapshot(in context: Context, completion: @escaping (StoredEntry<Value>) -> Void) {
+    let value = UserDefaults(suiteName: homeWidgetsAppGroup)?.object(forKey: key) as? Value
+    completion(StoredEntry(value: value))
   }
 
-  func getTimeline(in context: Context, completion: @escaping (Timeline<StoredEntry>) -> Void) {
+  func getTimeline(in context: Context, completion: @escaping (Timeline<StoredEntry<Value>>) -> Void) {
     getSnapshot(in: context) { completion(Timeline(entries: [$0], policy: .never)) }
   }
 }
 
+struct StaticEntry: TimelineEntry {
+  let date = Date()
+}
+
+/// For widgets that show no saved data.
+struct StaticProvider: TimelineProvider {
+  func placeholder(in context: Context) -> StaticEntry {
+    StaticEntry()
+  }
+
+  func getSnapshot(in context: Context, completion: @escaping (StaticEntry) -> Void) {
+    completion(StaticEntry())
+  }
+
+  func getTimeline(in context: Context, completion: @escaping (Timeline<StaticEntry>) -> Void) {
+    completion(Timeline(entries: [StaticEntry()], policy: .never))
+  }
+}
+
+/// Opens the app on the SOS screen, handled by HomeWidgetLaunchListener in Dart.
+/// The `homeWidget` query item lets the home_widget plugin recognise the URL.
+private let sosUrl = URL(string: "mobilezpi://sos?homeWidget")
+
 struct SosWidget: Widget {
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: "SosWidget", provider: StoredProvider()) { entry in
-      SosWidgetView(entry: entry)
-        .foregroundStyle(.white)
-        .containerBackground(error, for: .widget)
+    StaticConfiguration(kind: "SosWidget", provider: StaticProvider()) { _ in
+      VStack(spacing: 4) {
+        Text("SOS").font(.system(size: 44, weight: .bold))
+        Text("Dotknij, aby wezwać pomoc").font(.subheadline)
+      }
+      .multilineTextAlignment(.center)
+      .padding(12)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .foregroundStyle(.white)
+      .containerBackground(error, for: .widget)
+      .widgetURL(sosUrl)
     }
     .configurationDisplayName("SOS")
-    .description("Wzywa pomoc opiekuna jednym dotknięciem.")
+    .description("Otwiera aplikację i wzywa pomoc opiekuna.")
     .supportedFamilies([.systemSmall])
     .contentMarginsDisabled()
   }
 }
 
-/// Signed in, a tap sends SOS in the background. Signed out, the widget has
-/// no button, so a tap opens the app on the login screen.
-struct SosWidgetView: View {
-  let entry: StoredEntry
-
-  var body: some View {
-    if entry.signedIn {
-      Button(intent: SosIntent()) { content }
-        .buttonStyle(.plain)
-    } else {
-      content
-    }
-  }
-
-  private var content: some View {
-    VStack(spacing: 4) {
-      Text("SOS").font(.system(size: 44, weight: .bold))
-      Text(entry.sosStatus ?? "Dotknij, aby wezwać pomoc")
-        .font(.subheadline)
-        .multilineTextAlignment(.center)
-    }
-    .padding(12)
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .contentShape(Rectangle())
-  }
-}
+/// Opens the app on walking navigation home, handled by HomeWidgetLaunchListener in Dart.
+private let backHomeUrl = URL(string: "mobilezpi://back-home?homeWidget")
 
 struct BackHomeWidget: Widget {
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: "BackHomeWidget", provider: StoredProvider()) { entry in
+    StaticConfiguration(
+      kind: "BackHomeWidget", provider: StoredProvider<Bool>(key: "back_home_has_address")
+    ) { entry in
       VStack(spacing: 4) {
         Image(systemName: "house.fill").font(.system(size: 40))
         Text("Wróć do domu").font(.headline)
-        if !entry.hasHome {
+        if entry.value != true {
           Text("Brak adresu domu").font(.subheadline)
         }
       }
@@ -98,8 +103,7 @@ struct BackHomeWidget: Widget {
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .foregroundStyle(.white)
       .containerBackground(primary, for: .widget)
-      // `backHomeWidgetHost` in Dart opens the walk home in the app.
-      .widgetURL(URL(string: "zpi://back-home?homeWidget"))
+      .widgetURL(backHomeUrl)
     }
     .configurationDisplayName("Wróć do domu")
     .description("Otwiera w aplikacji nawigację do domu.")

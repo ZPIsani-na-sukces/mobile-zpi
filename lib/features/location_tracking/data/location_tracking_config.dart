@@ -11,15 +11,15 @@ const _sampleTemplate =
     '"battery":{"level":<%= battery.level %>,'
     '"isCharging":<%= battery.is_charging %>}}';
 
-bg.Config buildLocationTrackingConfig(AuthSession session, String? deviceId) =>
+bg.Config buildLocationTrackingConfig(AuthSession session, String? deviceId, {required bool showLocationAlert}) =>
     bg.Config(
-      geolocation: const bg.GeoConfig(
+      geolocation: bg.GeoConfig(
         desiredAccuracy: bg.DesiredAccuracy.high,
         distanceFilter: 8,
         stationaryRadius: 25,
         stopTimeout: 10,
         locationAuthorizationRequest: 'Always',
-        disableLocationAuthorizationAlert: false,
+        disableLocationAuthorizationAlert: !showLocationAlert,
 
         // iOS only
         locationAuthorizationAlert: {

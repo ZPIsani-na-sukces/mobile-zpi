@@ -5,14 +5,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.widget.RemoteViews
-import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
-/**
- * Sends SOS in the background (`sosWidgetTask` in Dart) without opening the app. Signed out, it
- * opens the app so the senior can log in.
- */
+/** Opens the app on the SOS screen, handled by HomeWidgetLaunchListener in Dart. */
 class SosWidgetProvider : HomeWidgetProvider() {
   override fun onUpdate(
       context: Context,
@@ -20,18 +16,16 @@ class SosWidgetProvider : HomeWidgetProvider() {
       appWidgetIds: IntArray,
       widgetData: SharedPreferences,
   ) {
-    val status = widgetData.getString("sos_status", null)
-    val signedIn = widgetData.getBoolean("signed_in", true)
-    val tap =
-        if (signedIn) HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("zpi://sos"))
-        else HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
     val views =
         RemoteViews(context.packageName, R.layout.widget_sos).apply {
-          setTextViewText(
-              R.id.widget_sos_status,
-              status ?: context.getString(R.string.widget_sos_hint),
+          setOnClickPendingIntent(
+              R.id.widget_sos,
+              HomeWidgetLaunchIntent.getActivity(
+                  context,
+                  MainActivity::class.java,
+                  Uri.parse("mobilezpi://sos"),
+              ),
           )
-          setOnClickPendingIntent(R.id.widget_sos, tap)
         }
     appWidgetManager.updateAppWidget(appWidgetIds, views)
   }
