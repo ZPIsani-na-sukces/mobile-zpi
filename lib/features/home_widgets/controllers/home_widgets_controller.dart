@@ -7,7 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_widgets_controller.g.dart';
 
-/// Keeps the home screen widgets in sync with the session and home address.
+/// Keeps the back home widget in sync with the session and home address.
 @Riverpod(keepAlive: true)
 class HomeWidgetsController extends _$HomeWidgetsController {
   @override
@@ -17,14 +17,13 @@ class HomeWidgetsController extends _$HomeWidgetsController {
     );
 
     if (seniorId == null) {
-      _run(saveWidgetsLoggedOut);
+      _run(() => saveBackHomeWidgetHasAddress(false));
       return;
     }
 
-    _run(resetSosWidget);
     ref.listen(homeAddressControllerProvider(seniorId), (_, next) {
       if (next case AsyncData(:final value)) {
-        _run(() => saveBackHomeWidgetHasHome(hasHome: value != null));
+        _run(() => saveBackHomeWidgetHasAddress(value != null));
       }
     }, fireImmediately: true);
   }

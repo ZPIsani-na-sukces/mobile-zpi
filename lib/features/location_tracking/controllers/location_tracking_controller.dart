@@ -5,6 +5,8 @@ import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart
 import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
 import 'package:mobile_zpi/features/devices/data/device_storage.dart';
 import 'package:mobile_zpi/features/devices/data/repository/device_repository.dart';
+import 'package:mobile_zpi/features/home_widgets/controllers/widget_launch_controller.dart';
+import 'package:mobile_zpi/features/home_widgets/data/home_widgets.dart';
 import 'package:mobile_zpi/features/location_tracking/data/location_tracking_config.dart';
 import 'package:mobile_zpi/features/location_tracking/data/plugin_tokens.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,9 +20,15 @@ class LocationTrackingController extends _$LocationTrackingController {
   var _syncQueue = Future<void>.value();
   String? _deviceUserId;
   String? _deviceId;
+  var _showLocationAlert = true;
 
   @override
   void build() {
+    // The alert would cover the SOS screen, which sends without location.
+    ref.listen(widgetLaunchControllerProvider, (_, launch) {
+      if (launch == HomeWidgetLaunch.sos) _hideLocationAlert();
+    }, fireImmediately: true);
+
     final heartbeat = bg.BackgroundGeolocation.onHeartbeat((_) async {
       try {
         await bg.BackgroundGeolocation.getCurrentPosition(
@@ -45,6 +53,25 @@ class LocationTrackingController extends _$LocationTrackingController {
           .then((_) => _sync(next.value))
           .catchError((Object e) => debugPrint('Location sync failed: $e'));
     }, fireImmediately: true);
+  }
+
+  void _hideLocationAlert() {
+    if (!_showLocationAlert) return;
+    _showLocationAlert = false;
+    _syncQueue = _syncQueue
+        .then((_) async {
+          if (!_isReady) return;
+          await bg.BackgroundGeolocation.setConfig(
+            bg.Config(
+              geolocation: const bg.GeoConfig(
+                disableLocationAuthorizationAlert: true,
+              ),
+            ),
+          );
+        })
+        .catchError(
+          (Object e) => debugPrint('Location alert update failed: $e'),
+        );
   }
 
   Future<void> _onAuthorization(bg.AuthorizationEvent event) async {
@@ -91,7 +118,11 @@ class LocationTrackingController extends _$LocationTrackingController {
     if (isFirstSync && await _hasNewerPluginTokens(session)) return;
 
     final deviceId = await _registerDevice(session.user.userId);
-    final config = buildLocationTrackingConfig(session, deviceId);
+    final config = buildLocationTrackingConfig(
+      session,
+      deviceId,
+      showLocationAlert: _showLocationAlert,
+    );
     if (_isReady) {
       await bg.BackgroundGeolocation.setConfig(config);
     } else {

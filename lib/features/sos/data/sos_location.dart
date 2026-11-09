@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:mobile_zpi/features/profile/data/device_location.dart';
 
 const _fixTimeout = Duration(seconds: 15);
 
@@ -33,32 +33,20 @@ class SosFix {
   final DateTime capturedAt;
 }
 
-Future<SosFix> readSosFix() async {
-  final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    throw const LocationException('Włącz lokalizację w telefonie.');
+/// Never asks for permission or shows an error, so SOS goes out without a
+/// location instead of waiting on the user.
+Future<SosFix?> readSosFix() async {
+  try {
+    if (!await Geolocator.isLocationServiceEnabled()) return null;
+    final permission = await Geolocator.checkPermission();
+    if (permission != LocationPermission.whileInUse &&
+        permission != LocationPermission.always) {
+      return null;
+    }
+    final position = await Geolocator.getCurrentPosition().timeout(_fixTimeout);
+    return SosFix.fromPosition(position);
+  } catch (error) {
+    debugPrint('SOS location failed: $error');
+    return null;
   }
-
-  var permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-  }
-  if (permission == LocationPermission.denied) {
-    throw const LocationException(
-      'Zezwól na lokalizację, żeby wysłać SOS z miejscem.',
-    );
-  }
-  if (permission == LocationPermission.deniedForever) {
-    throw const LocationException(
-      'Lokalizacja jest zablokowana. Możesz wysłać SOS bez niej.',
-    );
-  }
-
-  final position = await Geolocator.getCurrentPosition().timeout(
-    _fixTimeout,
-    onTimeout: () => throw const LocationException(
-      'Nie udało się ustalić lokalizacji. Możesz wysłać SOS bez niej.',
-    ),
-  );
-  return SosFix.fromPosition(position);
 }

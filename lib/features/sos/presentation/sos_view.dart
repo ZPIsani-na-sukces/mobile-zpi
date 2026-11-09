@@ -31,8 +31,7 @@ class SosView extends HookConsumerWidget {
       return null;
     }, const []);
 
-    final canCancel =
-        flow.phase == SosPhase.locating || flow.phase == SosPhase.gpsError;
+    final canCancel = flow.phase == SosPhase.locating;
 
     return BackScaffold(
       title: 'SOS',
@@ -74,18 +73,6 @@ class _SosBody extends ConsumerWidget {
         title: 'Wysyłanie wezwania',
         body: 'Proszę czekać.',
         busy: true,
-      ),
-      SosPhase.gpsError => _Message(
-        title: 'Brak lokalizacji',
-        body: flow.message ?? 'Nie udało się odczytać pozycji.',
-        actionLabel: 'Wyślij bez lokalizacji',
-        onPressed: () {
-          unawaited(
-            ref
-                .read(sosControllerProvider.notifier)
-                .sendWithoutLocation(seniorId),
-          );
-        },
       ),
       SosPhase.waiting => _Message(
         title: 'Czekamy na pomoc',

@@ -9,7 +9,7 @@ import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
-/** Opens the app on the walk home (`backHomeWidgetHost` in Dart). */
+/** Opens the app on walking navigation home, handled by HomeWidgetLaunchListener in Dart. */
 class BackHomeWidgetProvider : HomeWidgetProvider() {
   override fun onUpdate(
       context: Context,
@@ -17,19 +17,19 @@ class BackHomeWidgetProvider : HomeWidgetProvider() {
       appWidgetIds: IntArray,
       widgetData: SharedPreferences,
   ) {
-    val hasHome = widgetData.getBoolean("has_home", false)
+    val hasAddress = widgetData.getBoolean("back_home_has_address", false)
     val views =
         RemoteViews(context.packageName, R.layout.widget_back_home).apply {
           setViewVisibility(
               R.id.widget_back_home_missing,
-              if (hasHome) View.GONE else View.VISIBLE,
+              if (hasAddress) View.GONE else View.VISIBLE,
           )
           setOnClickPendingIntent(
               R.id.widget_back_home,
               HomeWidgetLaunchIntent.getActivity(
                   context,
                   MainActivity::class.java,
-                  Uri.parse("zpi://back-home?homeWidget"),
+                  Uri.parse("mobilezpi://back-home"),
               ),
           )
         }
