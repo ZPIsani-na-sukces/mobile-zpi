@@ -15,7 +15,8 @@ import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_shadows.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
-import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_message.dart';
+import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 
 @RoutePage()
 class RoutineView extends ConsumerWidget {
@@ -48,10 +49,8 @@ class RoutineView extends ConsumerWidget {
               ),
         body: _TaskList(seniorId: account.userId),
       ),
-      AsyncError() => _Message(
-        text: 'Nie udało się wczytać profilu.',
-        actionLabel: 'Spróbuj ponownie',
-        onPressed: () => ref.invalidate(profileControllerProvider),
+      AsyncError() => AppNoConnectionInfo(
+        onRetry: () => ref.invalidate(profileControllerProvider),
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
@@ -71,15 +70,12 @@ class _TaskList extends ConsumerWidget {
     );
 
     return switch (tasks) {
-      AsyncData(value: final items) when items.isEmpty => const _Message(
+      AsyncData(value: final items) when items.isEmpty => const AppMessage(
         text: 'Brak zadań.',
       ),
       AsyncData(value: final items) => _list(context, items, confirmation),
-      AsyncError() => _Message(
-        text: 'Nie udało się wczytać zadań.',
-        actionLabel: 'Spróbuj ponownie',
-        onPressed: () =>
-            ref.invalidate(routineTasksControllerProvider(seniorId)),
+      AsyncError() => AppNoConnectionInfo(
+        onRetry: () => ref.invalidate(routineTasksControllerProvider(seniorId)),
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
@@ -222,37 +218,6 @@ class _TaskCard extends StatelessWidget {
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Message extends StatelessWidget {
-  const _Message({required this.text, this.actionLabel, this.onPressed});
-
-  final String text;
-  final String? actionLabel;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyLarge.copyWith(
-              color: context.colors.onBackground,
-            ),
-          ),
-          if (actionLabel != null && onPressed != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            AppButton.primary(label: actionLabel!, onPressed: onPressed),
-          ],
-        ],
       ),
     );
   }

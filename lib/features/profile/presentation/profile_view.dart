@@ -15,6 +15,7 @@ import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
 @RoutePage()
@@ -29,10 +30,8 @@ class ProfileView extends ConsumerWidget {
       title: 'Profil',
       body: switch (profile) {
         AsyncData(value: final account) => _ProfileBody(account: account),
-        AsyncError() => _Message(
-          text: 'Nie udało się wczytać profilu.',
-          actionLabel: 'Spróbuj ponownie',
-          onPressed: () => ref.invalidate(profileControllerProvider),
+        AsyncError() => AppNoConnectionInfo(
+          onRetry: () => ref.invalidate(profileControllerProvider),
         ),
         AsyncLoading() => const Center(child: CircularProgressIndicator()),
       },
@@ -201,39 +200,6 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _Message extends StatelessWidget {
-  const _Message({
-    required this.text,
-    required this.actionLabel,
-    required this.onPressed,
-  });
-
-  final String text;
-  final String actionLabel;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyLarge.copyWith(
-              color: context.colors.onBackground,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          AppButton.primary(label: actionLabel, onPressed: onPressed),
-        ],
-      ),
     );
   }
 }

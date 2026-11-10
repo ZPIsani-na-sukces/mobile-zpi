@@ -7,6 +7,7 @@ import 'package:mobile_zpi/features/med_history/presentation/widgets/med_file_ca
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
+import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
 @RoutePage()
@@ -89,8 +90,9 @@ class MedFileView extends ConsumerWidget {
               ),
           ],
         ),
-        AsyncError() => const Center(
-          child: Text('Nie udało się wczytać dokumentu.'),
+        AsyncError() => AppNoConnectionInfo(
+          onRetry: () =>
+              ref.invalidate(medRecordControllerProvider(seniorId, recordId)),
         ),
         AsyncLoading() => const Center(child: CircularProgressIndicator()),
       },

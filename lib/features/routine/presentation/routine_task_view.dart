@@ -9,6 +9,7 @@ import 'package:mobile_zpi/features/routine/presentation/routine_occurrence_mark
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
+import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
 @RoutePage()
@@ -74,8 +75,9 @@ class RoutineTaskView extends ConsumerWidget {
             ..._today(context.colors, confirmation, seniorId, value.taskId),
           ],
         ),
-        AsyncError() => const Center(
-          child: Text('Nie udało się wczytać zadania.'),
+        AsyncError() => AppNoConnectionInfo(
+          onRetry: () =>
+              ref.invalidate(routineTaskControllerProvider(seniorId, taskId)),
         ),
         AsyncLoading() => const Center(child: CircularProgressIndicator()),
       },
