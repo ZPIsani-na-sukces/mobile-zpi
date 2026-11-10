@@ -9,10 +9,9 @@ class SosAlarm {
   /// When the incident this press belongs to started.
   final DateTime occurredAt;
 
-  /// Short status for the SOS screen and widget.
-  String get status => isNew
-      ? 'Wysłano o ${_time(occurredAt)}'
-      : 'Wezwanie trwa od ${_dateTime(occurredAt)}';
+  String get statusLabel => isNew ? 'Wysłano o' : 'Wezwanie trwa od';
+
+  String get statusTime => isNew ? _time(occurredAt) : _dateTime(occurredAt);
 }
 
 String _time(DateTime at) {
@@ -32,5 +31,5 @@ String _dateTime(DateTime at) {
   if (today) return _time(local);
   final day = local.day.toString().padLeft(2, '0');
   final month = local.month.toString().padLeft(2, '0');
-  return '$day.$month, ${_time(local)}';
+  return '$day.$month.${local.year} godz. ${_time(local)}';
 }
