@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -17,7 +18,36 @@ VerificationCodeController useVerificationCodeController() {
   return controller;
 }
 
-class AppCodeInput extends StatelessWidget {
+void _useUnfocusOnKeyboardHide(FocusNode focusNode) {
+  final view = View.of(useContext());
+  useEffect(() {
+    var lastInset = view.viewInsets.bottom;
+    var shownWhileFocused = false;
+    final observer = _MetricsObserver(() {
+      final inset = view.viewInsets.bottom;
+      if (inset > lastInset) {
+        shownWhileFocused = focusNode.hasFocus;
+      } else if (inset == 0 && shownWhileFocused) {
+        shownWhileFocused = false;
+        focusNode.unfocus();
+      }
+      lastInset = inset;
+    });
+    WidgetsBinding.instance.addObserver(observer);
+    return () => WidgetsBinding.instance.removeObserver(observer);
+  }, [view, focusNode]);
+}
+
+class _MetricsObserver with WidgetsBindingObserver {
+  _MetricsObserver(this.onChanged);
+
+  final VoidCallback onChanged;
+
+  @override
+  void didChangeMetrics() => onChanged();
+}
+
+class AppCodeInput extends HookWidget {
   const AppCodeInput({
     super.key,
     required this.controller,
@@ -47,6 +77,8 @@ class AppCodeInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final focusNode = useFocusNode(canRequestFocus: false, skipTraversal: true);
+    _useUnfocusOnKeyboardHide(focusNode);
     final hasError = errorText != null && enabled;
     final borderWidth = colors.isHighContrast ? 2.0 : 1.5;
     final activeBorderWidth = colors.isHighContrast ? 3.0 : 2.0;
@@ -98,27 +130,40 @@ class AppCodeInput extends StatelessWidget {
             );
 
             return Center(
-              child: VerificationCodeField(
-                controller: controller,
-                codeDigit: codeDigit,
-                fieldSize: fieldSize,
-                enabled: enabled,
-                autoFocus: autoFocus,
-                clearOnTap: false,
-                showCursor: true,
-                cursorColor: colors.primary,
-                filled: true,
-                fillColor: fillColor,
-                focusedFillColor: hasError ? colors.inputErrorBackground : null,
-                border: border,
-                focusedBorder: focusedBorder,
-                textStyle: AppTypography.headlineSmall.copyWith(
-                  color: enabled
-                      ? colors.onSurface
-                      : colors.inputContentDisabled,
+              child: Listener(
+                onPointerUp: (_) {
+                  if (focusNode.hasFocus) {
+                    SystemChannels.textInput.invokeMethod<void>(
+                      'TextInput.show',
+                    );
+                  }
+                },
+                child: Focus(
+                  focusNode: focusNode,
+                  child: VerificationCodeField(
+                    controller: controller,
+                    codeDigit: codeDigit,
+                    fieldSize: fieldSize,
+                    enabled: enabled,
+                    autoFocus: autoFocus,
+                    showCursor: true,
+                    cursorColor: colors.primary,
+                    filled: true,
+                    fillColor: fillColor,
+                    focusedFillColor: hasError
+                        ? colors.inputErrorBackground
+                        : null,
+                    border: border,
+                    focusedBorder: focusedBorder,
+                    textStyle: AppTypography.headlineSmall.copyWith(
+                      color: enabled
+                          ? colors.onSurface
+                          : colors.inputContentDisabled,
+                    ),
+                    onChanged: onChanged,
+                    onSubmit: onCompleted,
+                  ),
                 ),
-                onChanged: onChanged,
-                onSubmit: onCompleted,
               ),
             );
           },
