@@ -6,10 +6,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/sos/controllers/sos_controller.dart';
 import 'package:mobile_zpi/features/sos/data/sos_alarm.dart';
-import 'package:mobile_zpi/features/sos/data/sos_location.dart';
+import 'package:mobile_zpi/features/sos/presentation/widgets/sos_details_card.dart';
+import 'package:mobile_zpi/features/sos/presentation/widgets/sos_status.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
-import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
@@ -23,143 +23,129 @@ class SosView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final flow = ref.watch(sosControllerProvider);
     final started = useRef(false);
+    final colors = context.colors;
+
+    void start() =>
+        unawaited(ref.read(sosControllerProvider.notifier).start(seniorId));
+    void close() => context.router.pop();
 
     useEffect(() {
       if (started.value) return null;
       started.value = true;
-      unawaited(ref.read(sosControllerProvider.notifier).start(seniorId));
+      start();
       return null;
     }, const []);
 
-    final canCancel = flow.phase == SosPhase.locating;
+    final status = switch (flow.phase) {
+      SosPhase.locating => SosStatus(
+        icon: Icons.my_location,
+        color: colors.primary,
+        onColor: colors.onPrimary,
+        busy: true,
+        title: 'Sprawdzamy, gdzie jesteś',
+        body: 'Za chwilę wyślemy wezwanie do opiekuna.',
+      ),
+      SosPhase.sending => SosStatus(
+        icon: Icons.send,
+        color: colors.primary,
+        onColor: colors.onPrimary,
+        busy: true,
+        title: 'Wysyłamy wezwanie',
+        body: 'Proszę czekać. To potrwa tylko chwilę.',
+      ),
+      SosPhase.waiting => SosStatus(
+        icon: Icons.check,
+        color: colors.success,
+        onColor: colors.onSuccess,
+        title: switch (flow.alarm) {
+          SosAlarm(isNew: false) => 'Wezwanie jest aktywne',
+          _ => 'Wezwanie wysłane',
+        },
+        body: switch (flow.alarm) {
+          SosAlarm(isNew: false) => 'Pomoc jest już w drodze!',
+          _ => 'Opiekun został powiadomiony.',
+        },
+      ),
+      SosPhase.failed => SosStatus(
+        icon: Icons.priority_high,
+        color: colors.error,
+        onColor: colors.onError,
+        title: 'Nie udało się wysłać wezwania',
+        body:
+            flow.message ??
+            'Sprawdź połączenie z internetem i spróbuj ponownie.',
+      ),
+    };
+
+    final actions = switch (flow.phase) {
+      SosPhase.locating => [
+        AppButton.secondary(label: 'Anuluj', onPressed: close),
+      ],
+      SosPhase.sending => const <Widget>[],
+      SosPhase.waiting => [
+        AppButton.primary(label: 'Zamknij', onPressed: close),
+      ],
+      SosPhase.failed => [
+        AppButton.primary(
+          label: 'Spróbuj ponownie',
+          icon: Icons.refresh,
+          onPressed: start,
+        ),
+        AppButton.secondary(label: 'Zamknij', onPressed: close),
+      ],
+    };
 
     return BackScaffold(
       title: 'SOS',
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+      body: SafeArea(
+        top: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: _SosBody(flow: flow, seniorId: seniorId),
+              child: LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: (constraints.maxHeight - AppSpacing.lg * 2)
+                          .clamp(0, double.infinity),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        status,
+                        if (flow.phase == SosPhase.waiting) ...[
+                          const SizedBox(height: AppSpacing.lg),
+                          SosDetailsCard(
+                            alarm: flow.alarm,
+                            position: flow.position,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-            if (canCancel)
-              AppButton.secondary(
-                label: 'Anuluj',
-                onPressed: () => context.router.pop(),
+            if (actions.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.md,
+                  children: actions,
+                ),
               ),
           ],
         ),
       ),
     );
   }
-}
-
-class _SosBody extends ConsumerWidget {
-  const _SosBody({required this.flow, required this.seniorId});
-
-  final SosFlow flow;
-  final String seniorId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return switch (flow.phase) {
-      SosPhase.locating => const _Message(
-        title: 'Pobieranie lokalizacji',
-        body: 'Za chwilę wyślemy wezwanie do opiekuna.',
-        busy: true,
-      ),
-      SosPhase.sending => const _Message(
-        title: 'Wysyłanie wezwania',
-        body: 'Proszę czekać.',
-        busy: true,
-      ),
-      SosPhase.waiting => _Message(
-        title: 'Czekamy na pomoc',
-        body: switch (flow.alarm) {
-          SosAlarm(isNew: false, :final status) =>
-            '$status. Opiekun już je otrzymał.',
-          _ => 'Wezwanie zostało wysłane do opiekuna.',
-        },
-        detail: _locationLabel(flow.position),
-      ),
-      SosPhase.failed => _Message(
-        title: 'Wezwanie nie wyszło',
-        body: flow.message ?? 'Spróbuj ponownie.',
-        actionLabel: 'Spróbuj ponownie',
-        onPressed: () {
-          unawaited(ref.read(sosControllerProvider.notifier).start(seniorId));
-        },
-      ),
-    };
-  }
-}
-
-class _Message extends StatelessWidget {
-  const _Message({
-    required this.title,
-    required this.body,
-    this.detail,
-    this.busy = false,
-    this.actionLabel,
-    this.onPressed,
-  });
-
-  final String title;
-  final String body;
-  final String? detail;
-  final bool busy;
-  final String? actionLabel;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (busy) ...[
-          const CircularProgressIndicator(),
-          const SizedBox(height: AppSpacing.lg),
-        ],
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: AppTypography.headlineSmall.copyWith(
-            color: context.colors.onBackground,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        Text(
-          body,
-          textAlign: TextAlign.center,
-          style: AppTypography.bodyLarge.copyWith(
-            color: context.colors.onBackground,
-          ),
-        ),
-        if (detail != null) ...[
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            detail!,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyLarge.copyWith(
-              color: context.colors.onSurface,
-            ),
-          ),
-        ],
-        if (actionLabel != null && onPressed != null) ...[
-          const SizedBox(height: AppSpacing.xl),
-          AppButton.primary(label: actionLabel!, onPressed: onPressed),
-        ],
-      ],
-    );
-  }
-}
-
-String _locationLabel(SosFix? position) {
-  if (position == null) return 'Wysłano bez lokalizacji.';
-  final lat = position.latitude.toStringAsFixed(5);
-  final lng = position.longitude.toStringAsFixed(5);
-  final accuracy = position.accuracyMeters?.round();
-  final accuracyText = accuracy == null ? '' : ' Dokładność około $accuracy m.';
-  return 'Bieżąca lokalizacja: $lat, $lng.$accuracyText';
 }

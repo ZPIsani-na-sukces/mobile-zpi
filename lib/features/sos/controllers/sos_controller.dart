@@ -49,7 +49,7 @@ class SosController extends _$SosController {
       if (!ref.mounted) return;
       state = const SosFlow(
         phase: SosPhase.failed,
-        message: 'Nie udało się wysłać wezwania. Spróbuj ponownie.',
+        message: 'Sprawdź połączenie z internetem i spróbuj ponownie.',
       );
     }
   }
