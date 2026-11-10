@@ -12,6 +12,7 @@ import 'package:mobile_zpi/theme/app_shadows.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_message.dart';
+import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 
 @RoutePage()
 class MedHistoryView extends ConsumerWidget {
@@ -23,10 +24,8 @@ class MedHistoryView extends ConsumerWidget {
 
     return switch (profile) {
       AsyncData(value: final account) => _RecordList(seniorId: account.userId),
-      AsyncError() => AppMessage(
-        text: 'Nie udało się wczytać profilu.',
-        actionLabel: 'Spróbuj ponownie',
-        onPressed: () => ref.invalidate(profileControllerProvider),
+      AsyncError() => AppNoConnectionInfo(
+        onRetry: () => ref.invalidate(profileControllerProvider),
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
@@ -56,10 +55,8 @@ class _RecordList extends ConsumerWidget {
           itemBuilder: (context, index) => _RecordCard(record: items[index]),
         ),
       ),
-      AsyncError() => AppMessage(
-        text: 'Nie udało się wczytać dokumentów.',
-        actionLabel: 'Spróbuj ponownie',
-        onPressed: () => ref.invalidate(provider),
+      AsyncError() => AppNoConnectionInfo(
+        onRetry: () => ref.invalidate(provider),
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };

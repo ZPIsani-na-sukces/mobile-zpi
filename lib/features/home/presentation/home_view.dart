@@ -16,6 +16,7 @@ import 'package:mobile_zpi/theme/app_shadows.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 
 @RoutePage()
 class HomePage extends ConsumerWidget {
@@ -30,10 +31,8 @@ class HomePage extends ConsumerWidget {
         firstName: account.firstName,
         seniorId: account.userId,
       ),
-      AsyncError() => _StatusMessage(
-        text: 'Nie udało się wczytać ekranu głównego.',
-        actionLabel: 'Spróbuj ponownie',
-        onPressed: () => ref.invalidate(profileControllerProvider),
+      AsyncError() => AppNoConnectionInfo(
+        onRetry: () => ref.invalidate(profileControllerProvider),
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
@@ -121,10 +120,8 @@ class _HomeBody extends ConsumerWidget {
           ),
         ],
       ),
-      AsyncError() => _StatusMessage(
-        text: 'Nie udało się wczytać danych.',
-        actionLabel: 'Spróbuj ponownie',
-        onPressed: () => ref.invalidate(homeControllerProvider(seniorId)),
+      AsyncError() => AppNoConnectionInfo(
+        onRetry: () => ref.invalidate(homeControllerProvider(seniorId)),
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
@@ -386,37 +383,6 @@ class _EmptyText extends StatelessWidget {
     return Text(
       text,
       style: AppTypography.bodyLarge.copyWith(color: context.colors.onSurface),
-    );
-  }
-}
-
-class _StatusMessage extends StatelessWidget {
-  const _StatusMessage({required this.text, this.actionLabel, this.onPressed});
-
-  final String text;
-  final String? actionLabel;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyLarge.copyWith(
-              color: context.colors.onBackground,
-            ),
-          ),
-          if (actionLabel != null && onPressed != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            AppButton.primary(label: actionLabel!, onPressed: onPressed),
-          ],
-        ],
-      ),
     );
   }
 }

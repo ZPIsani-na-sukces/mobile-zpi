@@ -9,9 +9,8 @@ import 'package:mobile_zpi/features/med_history/controllers/med_record_controlle
 import 'package:mobile_zpi/features/med_history/data/models/medical_record.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_shadows.dart';
-import 'package:mobile_zpi/theme/app_spacing.dart';
-import 'package:mobile_zpi/theme/app_typography.dart';
-import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_message.dart';
+import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 import 'package:pdfx/pdfx.dart';
 
@@ -51,14 +50,12 @@ class MedFilePreviewView extends ConsumerWidget {
               fit: BoxFit.contain,
               semanticLabel: 'Podgląd pliku ${file.originalName}',
               errorBuilder: (_, _, _) =>
-                  const _Message(text: 'Nie udało się otworzyć pliku.'),
+                  const AppMessage(text: 'Nie udało się otworzyć pliku.'),
             ),
           ),
         ),
-        AsyncError() => _Message(
-          text: 'Nie udało się wczytać pliku.',
-          actionLabel: 'Spróbuj ponownie',
-          onPressed: () => ref.invalidate(provider),
+        AsyncError() => AppNoConnectionInfo(
+          onRetry: () => ref.invalidate(provider),
         ),
         AsyncLoading() => const Center(child: CircularProgressIndicator()),
       },
@@ -102,36 +99,5 @@ class _PdfPages extends HookWidget {
   }
 
   static Widget _pdfError(BuildContext context, Exception error) =>
-      const _Message(text: 'Nie udało się otworzyć pliku.');
-}
-
-class _Message extends StatelessWidget {
-  const _Message({required this.text, this.actionLabel, this.onPressed});
-
-  final String text;
-  final String? actionLabel;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyLarge.copyWith(
-              color: context.colors.onBackground,
-            ),
-          ),
-          if (actionLabel != null && onPressed != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            AppButton.primary(label: actionLabel!, onPressed: onPressed),
-          ],
-        ],
-      ),
-    );
-  }
+      const AppMessage(text: 'Nie udało się otworzyć pliku.');
 }

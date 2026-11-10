@@ -15,6 +15,7 @@ import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/app_text_input.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
@@ -30,8 +31,8 @@ class ProfileEditView extends HookConsumerWidget {
       title: 'Edycja profilu',
       body: switch (profile) {
         AsyncData(value: final account) => _ProfileEditForm(account: account),
-        AsyncError() => const Center(
-          child: Text('Nie udało się wczytać profilu.'),
+        AsyncError() => AppNoConnectionInfo(
+          onRetry: () => ref.invalidate(profileControllerProvider),
         ),
         AsyncLoading() => const Center(child: CircularProgressIndicator()),
       },
