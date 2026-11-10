@@ -53,8 +53,8 @@ class HighContrastSwitch extends ConsumerWidget {
           subtitle: Text(
             preferences.hasError && !preferences.hasValue
                 ? 'Nie udało się wczytać ustawienia.'
-                : 'Wyraźniejsze kolory i obramowania. Opiekun też może '
-                      'to zmienić.',
+                : 'Wyraźniejsze kolory i krawędzie. Opiekun też może '
+                      'zmienić te ustawienie.',
             style: AppTypography.bodyMedium.copyWith(color: colors.onSurface),
           ),
         ),

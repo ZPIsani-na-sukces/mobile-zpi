@@ -7,9 +7,7 @@ import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
 
 class LogoutButton extends ConsumerWidget {
-  const LogoutButton({super.key, this.asText = false});
-
-  final bool asText;
+  const LogoutButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,14 +47,7 @@ class LogoutButton extends ConsumerWidget {
       await ref.read(authControllerProvider.notifier).logout();
     }
 
-    if (asText) {
-      return AppButton.text(
-        label: 'Wyloguj się',
-        icon: Icons.logout,
-        onPressed: onPressed,
-      );
-    }
-    return AppButton.secondary(
+    return AppButton.text(
       label: 'Wyloguj się',
       icon: Icons.logout,
       onPressed: onPressed,
