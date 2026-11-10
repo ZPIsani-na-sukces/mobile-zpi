@@ -32,6 +32,7 @@ class ProfileView extends ConsumerWidget {
         AsyncData(value: final account) => _ProfileBody(account: account),
         AsyncError() => AppNoConnectionInfo(
           onRetry: () => ref.invalidate(profileControllerProvider),
+          secondaryAction: const LogoutButton(asText: true),
         ),
         AsyncLoading() => const Center(child: CircularProgressIndicator()),
       },

@@ -5,9 +5,14 @@ import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
 
 class AppNoConnectionInfo extends StatelessWidget {
-  const AppNoConnectionInfo({super.key, required this.onRetry});
+  const AppNoConnectionInfo({
+    super.key,
+    required this.onRetry,
+    this.secondaryAction,
+  });
 
   final VoidCallback onRetry;
+  final Widget? secondaryAction;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +52,10 @@ class AppNoConnectionInfo extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xxl),
           AppButton.primary(label: 'Spróbuj ponownie', onPressed: onRetry),
+          if (secondaryAction case final action?) ...[
+            const SizedBox(height: AppSpacing.md),
+            action,
+          ],
         ],
       ),
     );
