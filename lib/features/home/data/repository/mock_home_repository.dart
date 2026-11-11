@@ -7,13 +7,13 @@ class MockHomeRepository implements HomeRepository {
     return const [
       HomeContact(
         contactId: '1',
-        displayName: 'Anna (córka)',
+        displayName: 'Anna',
         relationshipLabel: 'Córka',
         phoneNumber: '+48600100200',
       ),
       HomeContact(
         contactId: '2',
-        displayName: 'Jan (syn)',
+        displayName: 'Jan',
         relationshipLabel: 'Syn',
         phoneNumber: '+48600300400',
       ),
@@ -25,7 +25,7 @@ class MockHomeRepository implements HomeRepository {
       ),
       HomeContact(
         contactId: '4',
-        displayName: 'Maria (sąsiadka)',
+        displayName: 'Maria',
         relationshipLabel: 'Sąsiadka',
         phoneNumber: '+48600500600',
       ),
@@ -38,18 +38,21 @@ class MockHomeRepository implements HomeRepository {
     return [
       UpcomingTask(
         occurrenceId: '1',
+        taskId: '1',
         title: 'Leki poranne',
         scheduledAt: DateTime(now.year, now.month, now.day, 8),
         status: 'pending',
       ),
       UpcomingTask(
         occurrenceId: '2',
+        taskId: '2',
         title: 'Śniadanie',
         scheduledAt: DateTime(now.year, now.month, now.day, 8, 30),
         status: 'pending',
       ),
       UpcomingTask(
         occurrenceId: '3',
+        taskId: '3',
         title: 'Szklanka wody',
         scheduledAt: DateTime(now.year, now.month, now.day, 11),
         status: 'pending',

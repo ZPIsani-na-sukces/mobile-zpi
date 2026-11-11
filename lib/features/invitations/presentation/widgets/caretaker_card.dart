@@ -8,6 +8,7 @@ import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_initials_avatar.dart';
 
 class CaretakerCard extends ConsumerWidget {
   const CaretakerCard({
@@ -18,8 +19,6 @@ class CaretakerCard extends ConsumerWidget {
 
   final String seniorId;
   final CareRelationship relationship;
-
-  static const double _avatarSize = 56;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,34 +40,13 @@ class CaretakerCard extends ConsumerWidget {
       }
     }
 
-    final initials = [
-      caretaker.firstName,
-      caretaker.lastName,
-    ].map((part) => part.characters.take(1)).join().toUpperCase();
-
     return SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              ExcludeSemantics(
-                child: Container(
-                  width: _avatarSize,
-                  height: _avatarSize,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: context.colors.primary.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    initials,
-                    style: AppTypography.titleMedium.copyWith(
-                      color: context.colors.primary,
-                    ),
-                  ),
-                ),
-              ),
+              AppInitialsAvatar(name: name),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(

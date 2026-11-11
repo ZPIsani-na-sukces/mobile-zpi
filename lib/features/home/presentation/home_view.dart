@@ -2,20 +2,18 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/home/controllers/home_controller.dart';
-import 'package:mobile_zpi/features/home/data/models/home_overview.dart';
-import 'package:mobile_zpi/features/home/data/phone_call.dart';
-import 'package:mobile_zpi/features/home/presentation/navigate_back_home.dart';
-import 'package:mobile_zpi/features/home/presentation/widgets/empty_zones_card.dart';
-import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
+import 'package:mobile_zpi/features/home/presentation/widgets/back_home_card.dart';
+import 'package:mobile_zpi/features/home/presentation/widgets/home_contact_tile.dart';
+import 'package:mobile_zpi/features/home/presentation/widgets/home_greeting.dart';
+import 'package:mobile_zpi/features/home/presentation/widgets/home_section.dart';
+import 'package:mobile_zpi/features/home/presentation/widgets/home_zone_tile.dart';
+import 'package:mobile_zpi/features/home/presentation/widgets/upcoming_task_tile.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/sos/presentation/sos_button.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
-import 'package:mobile_zpi/theme/app_colors.dart';
-import 'package:mobile_zpi/theme/app_radius.dart';
-import 'package:mobile_zpi/theme/app_shadows.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
-import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_empty_card.dart';
 import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 
 @RoutePage()
@@ -55,12 +53,7 @@ class _HomeBody extends ConsumerWidget {
       AsyncData(value: final overview) => ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          Text(
-            'Dzień dobry, $firstName',
-            style: AppTypography.headlineSmall.copyWith(
-              color: context.colors.onBackground,
-            ),
-          ),
+          HomeGreeting(firstName: firstName),
           const SizedBox(height: AppSpacing.xl),
           Center(
             child: SosButton(
@@ -69,52 +62,84 @@ class _HomeBody extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
-          _BackHomeButton(seniorId: seniorId),
-          const SizedBox(height: AppSpacing.xl),
-          _Section(
-            title: 'Ostatnie kontakty',
+          BackHomeCard(seniorId: seniorId),
+          const SizedBox(height: AppSpacing.xxl),
+          HomeSection(
+            title: 'Kontakty',
+            actionLabel: overview.contacts.isEmpty ? null : 'Wszystkie',
+            onAction: () => AutoTabsRouter.of(context).setActiveIndex(2),
             child: overview.contacts.isEmpty
-                ? const _EmptyText('Brak kontaktów.')
+                ? const AppEmptyCard(
+                    icon: Icons.contact_phone_outlined,
+                    title: 'Brak kontaktów',
+                    description: 'Poproś opiekuna o dodanie bliskich osób.',
+                  )
                 : Column(
+                    spacing: AppSpacing.sm,
                     children: [
-                      _ContactGrid(contacts: overview.contacts),
-                      AppButton.text(
-                        label: 'Wszystkie kontakty',
-                        onPressed: () =>
-                            AutoTabsRouter.of(context).setActiveIndex(2),
-                      ),
+                      for (final contact in overview.contacts)
+                        HomeContactTile(contact: contact),
                     ],
                   ),
           ),
           const SizedBox(height: AppSpacing.xl),
-          _Section(
+          HomeSection(
             title: 'Nadchodzące zadania',
             child: overview.tasks.isEmpty
-                ? const _EmptyText('Brak zadań na dziś.')
+                ? const AppEmptyCard(
+                    icon: Icons.event_available_outlined,
+                    title: 'Na dziś nic nie zaplanowano',
+                    description: 'Zadania od opiekuna pojawią się tutaj.',
+                  )
                 : Column(
+                    spacing: AppSpacing.sm,
                     children: [
-                      for (final task in overview.tasks) ...[
-                        _TaskTile(task: task),
-                        const SizedBox(height: AppSpacing.sm),
-                      ],
+                      for (final task in overview.tasks)
+                        UpcomingTaskTile(
+                          task: task,
+                          onTap: () async {
+                            await context.router.push(
+                              RoutineTaskRoute(
+                                seniorId: seniorId,
+                                taskId: task.taskId,
+                              ),
+                            );
+                            if (!context.mounted) return;
+                            ref.invalidate(homeControllerProvider(seniorId));
+                          },
+                        ),
                     ],
                   ),
           ),
           const SizedBox(height: AppSpacing.xl),
-          _Section(
+          HomeSection(
             title: 'Geostrefy',
+            actionLabel: overview.zones.isEmpty ? null : 'Mapa',
+            onAction: openMap,
             child: overview.zones.isEmpty
-                ? EmptyZonesCard(onOpenMap: openMap)
+                ? AppEmptyCard(
+                    icon: Icons.place_outlined,
+                    title: 'Brak ustawionych geostref',
+                    description: 'Poproś opiekuna o ich dodanie.',
+                    action: AppButton.secondary(
+                      label: 'Otwórz mapę',
+                      icon: Icons.map_outlined,
+                      onPressed: openMap,
+                    ),
+                  )
                 : Column(
+                    spacing: AppSpacing.sm,
                     children: [
-                      for (final zone in overview.zones.take(3)) ...[
-                        _ZoneTile(zone: zone),
-                        const SizedBox(height: AppSpacing.sm),
-                      ],
-                      AppButton.text(
-                        label: 'Podgląd geostref',
-                        onPressed: openMap,
-                      ),
+                      for (final zone in overview.zones.take(3))
+                        HomeZoneTile(
+                          zone: zone,
+                          onTap: () => context.router.push(
+                            GeozoneRoute(
+                              seniorId: seniorId,
+                              initialZoneId: zone.zoneId,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
           ),
@@ -125,264 +150,5 @@ class _HomeBody extends ConsumerWidget {
       ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
     };
-  }
-}
-
-class _BackHomeButton extends ConsumerWidget {
-  const _BackHomeButton({required this.seniorId});
-
-  final String seniorId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final provider = homeAddressControllerProvider(seniorId);
-    final address = ref.watch(provider);
-
-    return AppButton.primary(
-      label: 'Wróć do domu',
-      icon: Icons.home_rounded,
-      onPressed: switch (address) {
-        AsyncData(value: final home) => () => navigateBackHome(
-          context,
-          seniorId: seniorId,
-          home: home,
-        ),
-        AsyncError() => () {
-          ref.invalidate(provider);
-          _showMessage(context, 'Nie udało się wczytać adresu domu.');
-        },
-        AsyncLoading() => null,
-      },
-    );
-  }
-
-  void _showMessage(BuildContext context, String text) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-  }
-}
-
-class _ContactGrid extends StatelessWidget {
-  const _ContactGrid({required this.contacts});
-
-  final List<HomeContact> contacts;
-
-  @override
-  Widget build(BuildContext context) {
-    // Two columns would break words in half at a large font size.
-    final columns = MediaQuery.textScalerOf(context).scale(16) > 24 ? 1 : 2;
-
-    return Column(
-      children: [
-        for (var i = 0; i < contacts.length; i += columns) ...[
-          // Rows instead of GridView, which has a fixed height and would clip
-          // the text at a large font size.
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(child: _ContactTile(contact: contacts[i])),
-                if (columns == 2) ...[
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: i + 1 < contacts.length
-                        ? _ContactTile(contact: contacts[i + 1])
-                        : const SizedBox.shrink(),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-        ],
-      ],
-    );
-  }
-}
-
-class _ContactTile extends StatelessWidget {
-  const _ContactTile({required this.contact});
-
-  final HomeContact contact;
-
-  @override
-  Widget build(BuildContext context) {
-    final subtitle = contact.relationshipLabel;
-
-    return _Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                contact.displayName,
-                style: AppTypography.titleLarge.copyWith(
-                  color: context.colors.onBackground,
-                ),
-              ),
-              if (subtitle != null && subtitle.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  subtitle,
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: context.colors.onSurface,
-                  ),
-                ),
-              ],
-              const SizedBox(height: AppSpacing.md),
-            ],
-          ),
-          AppButton.primary(
-            label: 'Zadzwoń',
-            icon: Icons.call,
-            onPressed: () async {
-              try {
-                await callPhone(contact.phoneNumber);
-              } on PhoneCallException {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Nie udało się otworzyć telefonu.'),
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TaskTile extends StatelessWidget {
-  const _TaskTile({required this.task});
-
-  final UpcomingTask task;
-
-  @override
-  Widget build(BuildContext context) {
-    final time = task.scheduledAt.toLocal();
-    final hour = time.hour.toString().padLeft(2, '0');
-    final minute = time.minute.toString().padLeft(2, '0');
-
-    return _Card(
-      child: Row(
-        children: [
-          Text(
-            '$hour:$minute',
-            style: AppTypography.titleLarge.copyWith(
-              color: context.colors.primary,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(
-              task.title,
-              style: AppTypography.titleMedium.copyWith(
-                color: context.colors.onBackground,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ZoneTile extends StatelessWidget {
-  const _ZoneTile({required this.zone});
-
-  final HomeZone zone;
-
-  @override
-  Widget build(BuildContext context) {
-    return _Card(
-      child: Row(
-        children: [
-          Icon(Icons.place_outlined, color: context.colors.primary, size: 28),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(
-              zone.name,
-              style: AppTypography.titleMedium.copyWith(
-                color: context.colors.onBackground,
-              ),
-            ),
-          ),
-          Text(
-            '${zone.radiusMeters.round()} m',
-            style: AppTypography.bodyLarge.copyWith(
-              color: context.colors.onSurface,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child});
-
-  final String title;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: AppTypography.titleLarge.copyWith(
-            color: context.colors.onBackground,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        child,
-      ],
-    );
-  }
-}
-
-class _Card extends StatelessWidget {
-  const _Card({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        border: context.colors.cardBorder,
-        borderRadius: AppRadius.lgAll,
-        boxShadow: AppShadows.sm,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        child: child,
-      ),
-    );
-  }
-}
-
-class _EmptyText extends StatelessWidget {
-  const _EmptyText(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: AppTypography.bodyLarge.copyWith(color: context.colors.onSurface),
-    );
   }
 }

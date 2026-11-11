@@ -4,14 +4,21 @@ import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_shadows.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
-import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_icon_circle.dart';
 
-class EmptyZonesCard extends StatelessWidget {
-  const EmptyZonesCard({super.key, required this.onOpenMap});
+class AppEmptyCard extends StatelessWidget {
+  const AppEmptyCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.description,
+    this.action,
+  });
 
-  final VoidCallback onOpenMap;
-
-  static const double _iconSize = 32;
+  final IconData icon;
+  final String title;
+  final String description;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -29,26 +36,22 @@ class EmptyZonesCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.place_outlined,
-                  color: context.colors.primary,
-                  size: _iconSize,
-                ),
+                ExcludeSemantics(child: AppIconCircle.small(icon: icon)),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Brak ustawionych geostref',
+                        title,
                         style: AppTypography.titleMedium.copyWith(
                           color: context.colors.onBackground,
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.sm),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
-                        'Poproś opiekuna o ich dodanie.',
-                        style: AppTypography.bodyLarge.copyWith(
+                        description,
+                        style: AppTypography.bodyMedium.copyWith(
                           color: context.colors.onSurface,
                         ),
                       ),
@@ -57,12 +60,10 @@ class EmptyZonesCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.md),
-            AppButton.secondary(
-              label: 'Otwórz mapę',
-              icon: Icons.map_outlined,
-              onPressed: onOpenMap,
-            ),
+            if (action case final action?) ...[
+              const SizedBox(height: AppSpacing.md),
+              action,
+            ],
           ],
         ),
       ),

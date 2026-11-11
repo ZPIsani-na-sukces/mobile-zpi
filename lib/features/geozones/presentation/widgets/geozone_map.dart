@@ -7,6 +7,7 @@ import 'package:mobile_zpi/features/geozones/controllers/route_navigation_contro
 import 'package:mobile_zpi/features/geozones/data/models/geozone.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/current_location_marker_layer.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_circle_layer.dart';
+import 'package:mobile_zpi/features/geozones/presentation/widgets/geozone_focus_layer.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/home_marker_layer.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_attribution.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_center_location_button.dart';
@@ -23,6 +24,7 @@ class GeozoneMap extends ConsumerWidget {
     required this.initialCenter,
     this.geozones = const [],
     this.selectedZoneId,
+    this.focusedZone,
     this.onGeozoneTap,
     this.bottomPanel,
     this.bottomLeftAction,
@@ -32,6 +34,7 @@ class GeozoneMap extends ConsumerWidget {
   final LatLng initialCenter;
   final List<Geozone> geozones;
   final String? selectedZoneId;
+  final Geozone? focusedZone;
   final ValueChanged<Geozone>? onGeozoneTap;
   final Widget? bottomPanel;
   final Widget? bottomLeftAction;
@@ -65,6 +68,7 @@ class GeozoneMap extends ConsumerWidget {
           selectedZoneId: selectedZoneId,
           onGeozoneTap: onGeozoneTap,
         ),
+        GeozoneFocusLayer(geozone: focusedZone),
         const WalkingRouteLayer(),
         HomeMarkerLayer(seniorId: seniorId),
         const CurrentLocationMarkerLayer(),
