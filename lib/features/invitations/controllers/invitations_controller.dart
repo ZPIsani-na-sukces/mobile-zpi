@@ -42,6 +42,7 @@ class InvitationCodeController extends _$InvitationCodeController {
     state = const AsyncLoading();
     final result = await AsyncValue.guard<InvitationPreview?>(() async {
       await ref.read(invitationsRepositoryProvider).accept(code);
+      ref.invalidate(caretakersControllerProvider);
       return null;
     });
     if (ref.mounted) state = result;
