@@ -11,6 +11,7 @@ import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_icon_circle.dart';
 import 'package:mobile_zpi/widgets/app_message.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
@@ -62,56 +63,72 @@ class _Code extends HookWidget {
     final expired = remaining.value <= Duration.zero;
     final code = invitation.code;
 
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      children: [
-        Text(
-          'Podaj ten kod opiekunowi. Wpisze go w swojej aplikacji.',
-          textAlign: TextAlign.center,
-          style: AppTypography.bodyLarge.copyWith(
-            color: context.colors.onBackground,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        Semantics(
-          label: 'Kod zaproszenia ${code.split('').join(' ')}',
-          excludeSemantics: true,
-          child: Text(
-            '${code.substring(0, 3)} ${code.substring(3)}',
-            textAlign: TextAlign.center,
-            style: AppTypography.displayLarge.copyWith(
-              color: expired
-                  ? context.colors.onSurface
-                  : context.colors.primary,
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Center(child: AppIconCircle(icon: Icons.pin_rounded)),
+            const SizedBox(height: AppSpacing.xl),
+            Text(
+              'Podaj kod opiekunowi',
+              textAlign: TextAlign.center,
+              style: AppTypography.headlineSmall.copyWith(
+                color: context.colors.onBackground,
+              ),
             ),
-          ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Opiekun wpisze go w swojej aplikacji.',
+              textAlign: TextAlign.center,
+              style: AppTypography.bodyLarge.copyWith(
+                color: context.colors.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            Semantics(
+              label: 'Kod zaproszenia ${code.split('').join(' ')}',
+              excludeSemantics: true,
+              child: Text(
+                '${code.substring(0, 3)} ${code.substring(3)}',
+                textAlign: TextAlign.center,
+                style: AppTypography.displayLarge.copyWith(
+                  color: expired
+                      ? context.colors.onSurface
+                      : context.colors.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              expired
+                  ? 'Kod wygasł.'
+                  : 'Kod ważny jeszcze ${_format(remaining.value)}',
+              textAlign: TextAlign.center,
+              style: AppTypography.titleMedium.copyWith(
+                color: context.colors.onBackground,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            if (expired)
+              AppButton.primary(label: 'Utwórz nowy kod', onPressed: onExpired)
+            else
+              AppButton.secondary(
+                label: 'Skopiuj kod',
+                icon: Icons.copy,
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: code));
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Kod został skopiowany.')),
+                  );
+                },
+              ),
+            const SizedBox(height: AppSpacing.xl),
+          ],
         ),
-        const SizedBox(height: AppSpacing.md),
-        Text(
-          expired
-              ? 'Kod wygasł.'
-              : 'Kod ważny jeszcze ${_format(remaining.value)}',
-          textAlign: TextAlign.center,
-          style: AppTypography.titleMedium.copyWith(
-            color: context.colors.onBackground,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        if (expired)
-          AppButton.primary(label: 'Utwórz nowy kod', onPressed: onExpired)
-        else
-          AppButton.secondary(
-            label: 'Skopiuj kod',
-            icon: Icons.copy,
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: code));
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kod został skopiowany.')),
-              );
-            },
-          ),
-      ],
+      ),
     );
   }
 

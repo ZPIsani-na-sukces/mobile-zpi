@@ -26,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Aparat jest potrzebny do zeskanowania kodu QR z zaproszeniem od opiekuna.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Lokalizacja jest potrzebna do udostępnienia Twojemu opiekunowi.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

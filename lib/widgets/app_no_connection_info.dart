@@ -3,6 +3,7 @@ import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_icon_circle.dart';
 
 class AppNoConnectionInfo extends StatelessWidget {
   const AppNoConnectionInfo({
@@ -21,19 +22,7 @@ class AppNoConnectionInfo extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: context.colors.primary.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.wifi_off_rounded,
-              size: 64,
-              color: context.colors.primary,
-            ),
-          ),
+          const AppIconCircle(icon: Icons.wifi_off_rounded),
           const SizedBox(height: AppSpacing.xl),
           Text(
             'Brak połączenia',

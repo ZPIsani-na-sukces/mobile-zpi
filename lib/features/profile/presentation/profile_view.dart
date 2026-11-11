@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/config/app_env.dart';
+import 'package:mobile_zpi/features/invitations/controllers/invitations_controller.dart';
 import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
@@ -49,14 +50,26 @@ class _ProfileBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final address = ref.watch(homeAddressControllerProvider(account.userId));
+    final caretakers = caretakersControllerProvider(account.userId);
+    ref.watch(caretakers);
+
+    Future<void> openCaregivers() async {
+      final hasCaretakers = await ref
+          .read(caretakers.future)
+          .then((items) => items.isNotEmpty, onError: (_) => true);
+      if (!context.mounted) return;
+      await context.router.push(
+        hasCaretakers
+            ? CaregiversRoute(seniorId: account.userId)
+            : AddCaretakerRoute(seniorId: account.userId),
+      );
+      if (context.mounted) ref.invalidate(caretakers);
+    }
 
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        CaregiversCard(
-          onTap: () =>
-              context.router.push(InvitationsRoute(seniorId: account.userId)),
-        ),
+        CaregiversCard(onTap: openCaregivers),
         const SizedBox(height: AppSpacing.xxl),
         Text(
           'Twoje dane osobowe',
