@@ -6,7 +6,6 @@ import 'package:mobile_zpi/features/invitations/controllers/invitations_controll
 import 'package:mobile_zpi/features/profile/controllers/home_address_controller.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
-import 'package:mobile_zpi/features/profile/presentation/widgets/caregivers_card.dart';
 import 'package:mobile_zpi/features/profile/presentation/widgets/dev_section.dart';
 import 'package:mobile_zpi/features/profile/presentation/widgets/high_contrast_switch.dart';
 import 'package:mobile_zpi/features/profile/presentation/widgets/logout_button.dart';
@@ -16,6 +15,7 @@ import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
+import 'package:mobile_zpi/widgets/app_action_card.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
 import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
@@ -69,7 +69,12 @@ class _ProfileBody extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        CaregiversCard(onTap: openCaregivers),
+        AppActionCard(
+          icon: Icons.group,
+          title: 'Opiekunowie',
+          subtitle: 'Zobacz swoich opiekunów i zaproś nowych',
+          onTap: openCaregivers,
+        ),
         const SizedBox(height: AppSpacing.xxl),
         Text(
           'Twoje dane osobowe',

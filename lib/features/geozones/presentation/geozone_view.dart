@@ -22,10 +22,16 @@ import 'package:mobile_zpi/theme/app_spacing.dart';
 
 @RoutePage()
 class GeozoneView extends HookConsumerWidget {
-  const GeozoneView({super.key, required this.seniorId, this.navigateTo});
+  const GeozoneView({
+    super.key,
+    required this.seniorId,
+    this.navigateTo,
+    this.initialZoneId,
+  });
 
   final String seniorId;
   final LatLng? navigateTo;
+  final String? initialZoneId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,11 +57,14 @@ class GeozoneView extends HookConsumerWidget {
     );
     final isNavigating = ref.watch(routeNavigationControllerProvider);
     ref.watch(routeRerouteControllerProvider);
-    final selectedZoneId = useState<String?>(null);
+    final selectedZoneId = useState(initialZoneId);
 
     final zones = geozones.value ?? const [];
     final selectedZone = zones
         .where((zone) => zone.zoneId == selectedZoneId.value)
+        .firstOrNull;
+    final focusedZone = zones
+        .where((zone) => zone.zoneId == initialZoneId)
         .firstOrNull;
 
     final bottomPanel = switch (selectedZone) {
@@ -81,6 +90,7 @@ class GeozoneView extends HookConsumerWidget {
                   .latLng,
               geozones: zones,
               selectedZoneId: selectedZone?.zoneId,
+              focusedZone: focusedZone,
               onGeozoneTap: (zone) => selectedZoneId.value = zone.zoneId,
               bottomPanel: bottomPanel,
               bottomLeftAction: hasRoute

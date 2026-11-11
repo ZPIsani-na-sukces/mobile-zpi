@@ -13,7 +13,7 @@ class MockContactsRepository implements ContactsRepository {
     Contact(
       contactId: '1',
       seniorId: '',
-      displayName: 'Anna (córka)',
+      displayName: 'Anna',
       firstName: 'Anna',
       lastName: 'Kowalska',
       relationshipLabel: 'Córka',
@@ -27,7 +27,7 @@ class MockContactsRepository implements ContactsRepository {
     Contact(
       contactId: '2',
       seniorId: '',
-      displayName: 'Jan (syn)',
+      displayName: 'Jan',
       firstName: 'Jan',
       lastName: 'Nowak',
       relationshipLabel: 'Syn',
@@ -69,7 +69,7 @@ class MockContactsRepository implements ContactsRepository {
     Contact(
       contactId: '5',
       seniorId: '',
-      displayName: 'Tomek (wnuk)',
+      displayName: 'Tomek',
       firstName: 'Tomasz',
       lastName: 'Kowalski',
       relationshipLabel: 'Wnuk',

@@ -20,6 +20,7 @@ abstract class HomeContact with _$HomeContact {
 abstract class UpcomingTask with _$UpcomingTask {
   const factory UpcomingTask({
     required String occurrenceId,
+    required String taskId,
     required String title,
     required DateTime scheduledAt,
     required String status,
