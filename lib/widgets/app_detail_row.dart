@@ -4,8 +4,8 @@ import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_icon_circle.dart';
 
-class MedRecordDetailRow extends StatelessWidget {
-  const MedRecordDetailRow({
+class AppDetailRow extends StatelessWidget {
+  const AppDetailRow({
     super.key,
     required this.icon,
     required this.label,

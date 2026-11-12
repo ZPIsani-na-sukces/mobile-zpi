@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/invitations/controllers/invitations_controller.dart';
 import 'package:mobile_zpi/features/invitations/data/models/care_invitation.dart';
-import 'package:mobile_zpi/features/invitations/presentation/widgets/section_card.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_card.dart';
 import 'package:mobile_zpi/widgets/app_initials_avatar.dart';
 
 class CaretakerCard extends ConsumerWidget {
@@ -40,7 +40,7 @@ class CaretakerCard extends ConsumerWidget {
       }
     }
 
-    return SectionCard(
+    return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -11,6 +11,7 @@ import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_shadows.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
+import 'package:mobile_zpi/utils/date_format.dart';
 import 'package:mobile_zpi/widgets/app_message.dart';
 import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 
@@ -104,7 +105,7 @@ class _RecordCard extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  formatDocumentDate(record.documentDate),
+                  formatLongDate(record.documentDate),
                   style: AppTypography.bodyMedium.copyWith(
                     color: context.colors.onSurface,
                   ),

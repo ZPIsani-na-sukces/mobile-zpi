@@ -22,27 +22,6 @@ IconData medicalRecordTypeIcon(String type) {
   };
 }
 
-const _monthsGenitive = [
-  'stycznia',
-  'lutego',
-  'marca',
-  'kwietnia',
-  'maja',
-  'czerwca',
-  'lipca',
-  'sierpnia',
-  'września',
-  'października',
-  'listopada',
-  'grudnia',
-];
-
-String formatDocumentDate(String date) {
-  final value = DateTime.tryParse(date);
-  if (value == null) return date;
-  return '${value.day} ${_monthsGenitive[value.month - 1]} ${value.year}';
-}
-
 String fileTypeLabel(MedicalFile file) =>
     file.isPdf ? 'Dokument PDF' : 'Zdjęcie';
 

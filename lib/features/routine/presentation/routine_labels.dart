@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/routine/data/models/routine_task.dart';
+import 'package:mobile_zpi/utils/date_format.dart';
 
 String routineTypeLabel(String type) {
   return switch (type) {
@@ -19,19 +20,59 @@ IconData routineTypeIcon(String type) {
   };
 }
 
+const _daysPlural = [
+  'poniedziałki',
+  'wtorki',
+  'środy',
+  'czwartki',
+  'piątki',
+  'soboty',
+  'niedziele',
+];
+
+const _daysGenitive = [
+  'poniedziałku',
+  'wtorku',
+  'środy',
+  'czwartku',
+  'piątku',
+  'soboty',
+  'niedzieli',
+];
+
+String formatDays(List<int> daysOfWeek) {
+  final days = daysOfWeek.where((day) => day >= 1 && day <= 7).toSet().toList()
+    ..sort();
+  if (days.isEmpty) return '';
+  if (days.length == 7) return 'Codziennie';
+  if (days.length >= 3 && days.last - days.first == days.length - 1) {
+    return 'Od ${_daysGenitive[days.first - 1]} '
+        'do ${_daysGenitive[days.last - 1]}';
+  }
+  final names = _joinWithAnd([for (final day in days) _daysPlural[day - 1]]);
+  return days.first == 2 ? 'We $names' : 'W $names';
+}
+
+String formatTimes(List<String> times) {
+  final clocks = [
+    for (final time in times) time.length >= 5 ? time.substring(0, 5) : time,
+  ]..sort();
+  return _joinWithAnd(clocks);
+}
+
 String formatSchedule(RoutineSchedule schedule) {
-  const days = ['pon', 'wt', 'śr', 'czw', 'pt', 'sob', 'nd'];
-  final sorted = [...schedule.daysOfWeek]..sort();
-  final dayText = sorted.length == 7
-      ? 'Codziennie'
-      : sorted
-            .where((day) => day >= 1 && day <= 7)
-            .map((day) => days[day - 1])
-            .join(', ');
-  final times = schedule.times
-      .map((time) => time.length >= 5 ? time.substring(0, 5) : time)
-      .join(', ');
-  return '$dayText · $times';
+  return '${formatDays(schedule.daysOfWeek)} o ${formatTimes(schedule.times)}';
+}
+
+String _joinWithAnd(List<String> items) {
+  if (items.length < 2) return items.join();
+  return '${items.sublist(0, items.length - 1).join(', ')} i ${items.last}';
+}
+
+String formatValidity(String startsOn, String? endsOn) {
+  final start = formatLongDate(startsOn);
+  if (endsOn == null) return 'Od $start';
+  return '$start – ${formatLongDate(endsOn)}';
 }
 
 String formatClock(DateTime value) {
