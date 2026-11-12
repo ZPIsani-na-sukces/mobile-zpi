@@ -90,6 +90,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/icons/
     - assets/mocks/med_history/
 
   fonts:
