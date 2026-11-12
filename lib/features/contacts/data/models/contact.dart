@@ -5,6 +5,8 @@ part 'contact.g.dart';
 
 @freezed
 abstract class Contact with _$Contact {
+  const Contact._();
+
   const factory Contact({
     required String contactId,
     required String seniorId,
@@ -22,6 +24,9 @@ abstract class Contact with _$Contact {
 
   factory Contact.fromJson(Map<String, dynamic> json) =>
       _$ContactFromJson(json);
+
+  String get fullName =>
+      [firstName, lastName].nonNulls.where((part) => part.isNotEmpty).join(' ');
 }
 
 @freezed

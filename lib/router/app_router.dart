@@ -37,6 +37,7 @@ class AppRouter extends RootStackRouter {
       path: '/med-history/file/preview',
       page: MedFilePreviewRoute.page,
     ),
+    AutoRoute(path: '/contacts/details', page: ContactDetailsRoute.page),
     AutoRoute(path: '/sos', page: SosRoute.page),
     AutoRoute(path: '/caregivers', page: CaregiversRoute.page),
     AutoRoute(path: '/invitations/add', page: AddCaretakerRoute.page),
