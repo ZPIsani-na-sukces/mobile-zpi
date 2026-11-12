@@ -1,11 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/routine/controllers/routine_tasks_controller.dart';
 import 'package:mobile_zpi/features/routine/controllers/task_confirmation_controller.dart';
 import 'package:mobile_zpi/features/routine/data/task_confirmation_state.dart';
 import 'package:mobile_zpi/features/routine/presentation/routine_labels.dart';
-import 'package:mobile_zpi/features/routine/presentation/routine_occurrence_mark.dart';
+import 'package:mobile_zpi/features/routine/presentation/widgets/routine_occurrence_tile.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -29,6 +30,8 @@ class RoutineTaskView extends ConsumerWidget {
     final confirmation = ref.watch(
       taskConfirmationControllerProvider(seniorId),
     );
+    final canDecide =
+        ref.watch(profileControllerProvider).value?.role == 'senior';
 
     return BackScaffold(
       title: 'Zadanie',
@@ -72,7 +75,13 @@ class RoutineTaskView extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            ..._today(context.colors, confirmation, seniorId, value.taskId),
+            ..._today(
+              context.colors,
+              confirmation,
+              seniorId,
+              value.taskId,
+              canDecide,
+            ),
           ],
         ),
         AsyncError() => AppNoConnectionInfo(
@@ -90,9 +99,16 @@ List<Widget> _today(
   AsyncValue<TaskConfirmationState> confirmation,
   String seniorId,
   String taskId,
+  bool canDecide,
 ) {
   return switch (confirmation) {
-    AsyncData(:final value) => _todayItems(colors, value, seniorId, taskId),
+    AsyncData(:final value) => _todayItems(
+      colors,
+      value,
+      seniorId,
+      taskId,
+      canDecide,
+    ),
     AsyncError() => [
       Text(
         'Nie udało się wczytać dzisiejszych zadań.',
@@ -108,6 +124,7 @@ List<Widget> _todayItems(
   TaskConfirmationState state,
   String seniorId,
   String taskId,
+  bool canDecide,
 ) {
   final items = [
     for (final item in state.items)
@@ -128,10 +145,14 @@ List<Widget> _todayItems(
         style: AppTypography.bodyMedium.copyWith(color: colors.error),
       ),
     for (final item in items)
-      RoutineOccurrenceMark(
-        seniorId: seniorId,
-        occurrence: item,
-        submittingId: state.submittingId,
+      Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+        child: RoutineOccurrenceTile(
+          seniorId: seniorId,
+          occurrence: item,
+          submittingId: state.submittingId,
+          canDecide: canDecide,
+        ),
       ),
   ];
 }
