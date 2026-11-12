@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/routine/data/models/routine_task.dart';
 
 String routineTypeLabel(String type) {
@@ -6,6 +7,15 @@ String routineTypeLabel(String type) {
     'meal' => 'Posiłek',
     'hydration' => 'Nawodnienie',
     _ => type,
+  };
+}
+
+IconData routineTypeIcon(String type) {
+  return switch (type) {
+    'medication' => Icons.medication_outlined,
+    'meal' => Icons.restaurant,
+    'hydration' => Icons.water_drop_outlined,
+    _ => Icons.event_note_outlined,
   };
 }
 
@@ -33,6 +43,7 @@ String formatClock(DateTime value) {
 
 String occurrenceStatusLabel(String status) {
   return switch (status) {
+    'pending' => 'Do zrobienia',
     'confirmed' => 'Wykonane',
     'skipped' => 'Pominięte',
     'missed' => 'Minęło',
