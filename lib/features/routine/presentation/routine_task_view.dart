@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/routine/controllers/routine_tasks_controller.dart';
-import 'package:mobile_zpi/features/routine/controllers/task_confirmation_controller.dart';
-import 'package:mobile_zpi/features/routine/data/task_confirmation_state.dart';
 import 'package:mobile_zpi/features/routine/presentation/routine_labels.dart';
-import 'package:mobile_zpi/features/routine/presentation/widgets/routine_occurrence_tile.dart';
+import 'package:mobile_zpi/features/routine/presentation/widgets/routine_inactive_banner.dart';
+import 'package:mobile_zpi/features/routine/presentation/widgets/routine_instruction_card.dart';
+import 'package:mobile_zpi/features/routine/presentation/widgets/routine_today_card.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
+import 'package:mobile_zpi/widgets/app_badge.dart';
+import 'package:mobile_zpi/widgets/app_detail_row.dart';
+import 'package:mobile_zpi/widgets/app_details_card.dart';
 import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
@@ -27,9 +30,6 @@ class RoutineTaskView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final task = ref.watch(routineTaskControllerProvider(seniorId, taskId));
-    final confirmation = ref.watch(
-      taskConfirmationControllerProvider(seniorId),
-    );
     final canDecide =
         ref.watch(profileControllerProvider).value?.role == 'senior';
 
@@ -39,48 +39,59 @@ class RoutineTaskView extends ConsumerWidget {
         AsyncData(:final value) => ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            Text(
-              routineTypeLabel(value.type),
-              style: AppTypography.labelLarge.copyWith(
-                color: context.colors.primary,
-              ),
+            if (!value.isActive) ...[
+              const RoutineInactiveBanner(),
+              const SizedBox(height: AppSpacing.lg),
+            ],
+            AppBadge(
+              icon: routineTypeIcon(value.type),
+              label: routineTypeLabel(value.type),
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.md),
             Text(
               value.title,
               style: AppTypography.headlineSmall.copyWith(
                 color: context.colors.onBackground,
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              value.instructions,
-              style: AppTypography.bodyLarge.copyWith(
-                color: context.colors.onBackground,
-              ),
-            ),
+            if (value.instructions.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              RoutineInstructionCard(instructions: value.instructions),
+            ],
             const SizedBox(height: AppSpacing.xl),
-            _Row(label: 'Kiedy', value: formatSchedule(value.schedule)),
-            _Row(label: 'Od', value: value.startsOn),
-            _Row(label: 'Do', value: value.endsOn ?? 'Bez daty końca'),
-            _Row(
-              label: 'Status',
-              value: value.isActive ? 'Aktywne' : 'Nieaktywne',
-            ),
-            const SizedBox(height: AppSpacing.sm),
             Text(
               'Dziś',
-              style: AppTypography.titleMedium.copyWith(
+              style: AppTypography.titleLarge.copyWith(
                 color: context.colors.onBackground,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            ..._today(
-              context.colors,
-              confirmation,
-              seniorId,
-              value.taskId,
-              canDecide,
+            RoutineTodayCard(
+              seniorId: seniorId,
+              taskId: value.taskId,
+              canDecide: canDecide,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            AppDetailsCard(
+              rows: [
+                AppDetailRow(
+                  icon: Icons.event_repeat,
+                  label: 'Dni',
+                  value: formatDays(value.schedule.daysOfWeek),
+                ),
+                AppDetailRow(
+                  icon: Icons.schedule,
+                  label: value.schedule.times.length == 1
+                      ? 'Godzina'
+                      : 'Godziny',
+                  value: formatTimes(value.schedule.times),
+                ),
+                AppDetailRow(
+                  icon: Icons.calendar_today_outlined,
+                  label: 'Obowiązuje',
+                  value: formatValidity(value.startsOn, value.endsOn),
+                ),
+              ],
             ),
           ],
         ),
@@ -90,101 +101,6 @@ class RoutineTaskView extends ConsumerWidget {
         ),
         AsyncLoading() => const Center(child: CircularProgressIndicator()),
       },
-    );
-  }
-}
-
-List<Widget> _today(
-  AppColors colors,
-  AsyncValue<TaskConfirmationState> confirmation,
-  String seniorId,
-  String taskId,
-  bool canDecide,
-) {
-  return switch (confirmation) {
-    AsyncData(:final value) => _todayItems(
-      colors,
-      value,
-      seniorId,
-      taskId,
-      canDecide,
-    ),
-    AsyncError() => [
-      Text(
-        'Nie udało się wczytać dzisiejszych zadań.',
-        style: AppTypography.bodyLarge.copyWith(color: colors.onBackground),
-      ),
-    ],
-    AsyncLoading() => const [Center(child: CircularProgressIndicator())],
-  };
-}
-
-List<Widget> _todayItems(
-  AppColors colors,
-  TaskConfirmationState state,
-  String seniorId,
-  String taskId,
-  bool canDecide,
-) {
-  final items = [
-    for (final item in state.items)
-      if (item.taskId == taskId) item,
-  ];
-  if (items.isEmpty) {
-    return [
-      Text(
-        'Dziś nie ma tego zadania.',
-        style: AppTypography.bodyLarge.copyWith(color: colors.onBackground),
-      ),
-    ];
-  }
-  return [
-    if (state.error != null)
-      Text(
-        state.error!,
-        style: AppTypography.bodyMedium.copyWith(color: colors.error),
-      ),
-    for (final item in items)
-      Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-        child: RoutineOccurrenceTile(
-          seniorId: seniorId,
-          occurrence: item,
-          submittingId: state.submittingId,
-          canDecide: canDecide,
-        ),
-      ),
-  ];
-}
-
-class _Row extends StatelessWidget {
-  const _Row({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: AppTypography.labelLarge.copyWith(
-              color: context.colors.onSurface,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            value,
-            style: AppTypography.bodyLarge.copyWith(
-              color: context.colors.onBackground,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -4,10 +4,15 @@ import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_shadows.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 
-class SectionCard extends StatelessWidget {
-  const SectionCard({super.key, required this.child});
+class AppCard extends StatelessWidget {
+  const AppCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(AppSpacing.md),
+  });
 
   final Widget child;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +23,7 @@ class SectionCard extends StatelessWidget {
         borderRadius: AppRadius.lgAll,
         boxShadow: AppShadows.sm,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: child,
-      ),
+      child: Padding(padding: padding, child: child),
     );
   }
 }

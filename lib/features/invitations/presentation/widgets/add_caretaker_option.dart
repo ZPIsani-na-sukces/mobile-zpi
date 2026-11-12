@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_zpi/features/invitations/presentation/widgets/section_card.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
+import 'package:mobile_zpi/widgets/app_card.dart';
 
 class AddCaretakerOption extends StatelessWidget {
   const AddCaretakerOption({
@@ -18,7 +18,7 @@ class AddCaretakerOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SectionCard(
+    return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.sm,

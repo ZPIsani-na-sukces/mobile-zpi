@@ -4,12 +4,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/med_history/controllers/med_record_controller.dart';
 import 'package:mobile_zpi/features/med_history/presentation/med_history_labels.dart';
 import 'package:mobile_zpi/features/med_history/presentation/widgets/med_file_card.dart';
-import 'package:mobile_zpi/features/med_history/presentation/widgets/med_record_detail_row.dart';
-import 'package:mobile_zpi/features/med_history/presentation/widgets/med_record_details_card.dart';
-import 'package:mobile_zpi/features/med_history/presentation/widgets/med_record_type_badge.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
+import 'package:mobile_zpi/utils/date_format.dart';
+import 'package:mobile_zpi/widgets/app_badge.dart';
+import 'package:mobile_zpi/widgets/app_detail_row.dart';
+import 'package:mobile_zpi/widgets/app_details_card.dart';
 import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
@@ -34,7 +35,10 @@ class MedFileView extends ConsumerWidget {
         AsyncData(:final value) => ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            MedRecordTypeBadge(recordType: value.recordType),
+            AppBadge(
+              icon: medicalRecordTypeIcon(value.recordType),
+              label: medicalRecordTypeLabel(value.recordType),
+            ),
             const SizedBox(height: AppSpacing.md),
             Text(
               value.title,
@@ -53,15 +57,15 @@ class MedFileView extends ConsumerWidget {
               ),
             ],
             const SizedBox(height: AppSpacing.xl),
-            MedRecordDetailsCard(
+            AppDetailsCard(
               rows: [
-                MedRecordDetailRow(
+                AppDetailRow(
                   icon: Icons.calendar_today_outlined,
                   label: 'Data dokumentu',
-                  value: formatDocumentDate(value.documentDate),
+                  value: formatLongDate(value.documentDate),
                 ),
                 if (value.createdBy case final creator?)
-                  MedRecordDetailRow(
+                  AppDetailRow(
                     icon: Icons.person_outline,
                     label: 'Dodane przez',
                     value: '${creator.firstName} ${creator.lastName}',
