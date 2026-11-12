@@ -11,6 +11,10 @@ class AppInitialsAvatar extends StatelessWidget {
     : size = 44,
       textStyle = AppTypography.titleSmall;
 
+  const AppInitialsAvatar.large({super.key, required this.name})
+    : size = 96,
+      textStyle = AppTypography.headlineMedium;
+
   final String name;
   final double size;
   final TextStyle textStyle;

@@ -1,9 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mobile_zpi/features/contacts/presentation/widgets/contact_tile.dart';
 import 'package:mobile_zpi/features/home/controllers/home_controller.dart';
 import 'package:mobile_zpi/features/home/presentation/widgets/back_home_card.dart';
-import 'package:mobile_zpi/features/home/presentation/widgets/home_contact_tile.dart';
 import 'package:mobile_zpi/features/home/presentation/widgets/home_greeting.dart';
 import 'package:mobile_zpi/features/home/presentation/widgets/home_section.dart';
 import 'package:mobile_zpi/features/home/presentation/widgets/home_zone_tile.dart';
@@ -78,7 +78,17 @@ class _HomeBody extends ConsumerWidget {
                     spacing: AppSpacing.sm,
                     children: [
                       for (final contact in overview.contacts)
-                        HomeContactTile(contact: contact),
+                        ContactTile(
+                          name: contact.displayName,
+                          relationship: contact.relationshipLabel,
+                          phoneNumber: contact.phoneNumber,
+                          onTap: () => context.router.push(
+                            ContactDetailsRoute(
+                              seniorId: seniorId,
+                              contactId: contact.contactId,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
           ),
