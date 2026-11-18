@@ -67,7 +67,7 @@ class _HomeBody extends ConsumerWidget {
           HomeSection(
             title: 'Kontakty',
             actionLabel: overview.contacts.isEmpty ? null : 'Wszystkie',
-            onAction: () => AutoTabsRouter.of(context).setActiveIndex(2),
+            onAction: () => context.router.push(const ContactsRoute()),
             child: overview.contacts.isEmpty
                 ? const AppEmptyCard(
                     icon: Icons.contact_phone_outlined,

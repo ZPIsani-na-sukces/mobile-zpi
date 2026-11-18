@@ -8,6 +8,7 @@ import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/widgets/app_empty_card.dart';
 import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
+import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
 @RoutePage()
 class ContactsView extends ConsumerWidget {
@@ -17,13 +18,18 @@ class ContactsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileControllerProvider);
 
-    return switch (profile) {
-      AsyncData(value: final account) => _ContactList(seniorId: account.userId),
-      AsyncError() => AppNoConnectionInfo(
-        onRetry: () => ref.invalidate(profileControllerProvider),
-      ),
-      AsyncLoading() => const Center(child: CircularProgressIndicator()),
-    };
+    return BackScaffold(
+      title: 'Kontakty',
+      body: switch (profile) {
+        AsyncData(value: final account) => _ContactList(
+          seniorId: account.userId,
+        ),
+        AsyncError() => AppNoConnectionInfo(
+          onRetry: () => ref.invalidate(profileControllerProvider),
+        ),
+        AsyncLoading() => const Center(child: CircularProgressIndicator()),
+      },
+    );
   }
 }
 

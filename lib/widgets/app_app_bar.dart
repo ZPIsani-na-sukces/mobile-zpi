@@ -4,10 +4,16 @@ import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 
 class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const AppAppBar({super.key, required this.title, this.actions});
+  const AppAppBar({
+    super.key,
+    required this.title,
+    this.actions,
+    this.centerTitle = false,
+  });
 
   final String title;
   final List<Widget>? actions;
+  final bool centerTitle;
 
   static const double _height = 80;
 
@@ -28,6 +34,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       titleSpacing: AppSpacing.md,
+      centerTitle: centerTitle,
       title: Text(
         title,
         maxLines: 1,

@@ -169,24 +169,15 @@ class LoginView extends HookConsumerWidget {
                           ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
+                          spacing: AppSpacing.sm,
                           children: [
                             AppButton.primary(
                               label: isLoading ? 'Logowanie…' : 'Zaloguj się',
                               onPressed: isLoading ? null : onLogin,
                             ),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                const Text(
-                                  'Nie masz konta?',
-                                  style: AppTypography.bodyMedium,
-                                ),
-                                AppButton.text(
-                                  label: 'Zarejestruj się',
-                                  onPressed: onSignUp,
-                                ),
-                              ],
+                            AppButton.secondary(
+                              label: 'Zarejestruj się',
+                              onPressed: isLoading ? null : onSignUp,
                             ),
                           ],
                         ),

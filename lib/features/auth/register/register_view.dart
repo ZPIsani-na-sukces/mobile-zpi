@@ -200,24 +200,15 @@ class RegisterView extends HookConsumerWidget {
                         const SizedBox(height: AppSpacing.sm),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
+                          spacing: AppSpacing.sm,
                           children: [
                             AppButton.primary(
                               label: 'Dalej',
                               onPressed: onNext,
                             ),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                const Text(
-                                  'Masz już konto?',
-                                  style: AppTypography.bodyMedium,
-                                ),
-                                AppButton.text(
-                                  label: 'Zaloguj się',
-                                  onPressed: onSignIn,
-                                ),
-                              ],
+                            AppButton.secondary(
+                              label: 'Zaloguj się',
+                              onPressed: onSignIn,
                             ),
                           ],
                         ),

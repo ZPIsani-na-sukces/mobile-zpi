@@ -18,7 +18,6 @@ import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_action_card.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
 import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
-import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
 @RoutePage()
 class ProfileView extends ConsumerWidget {
@@ -28,17 +27,14 @@ class ProfileView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileControllerProvider);
 
-    return BackScaffold(
-      title: 'Profil',
-      body: switch (profile) {
-        AsyncData(value: final account) => _ProfileBody(account: account),
-        AsyncError() => AppNoConnectionInfo(
-          onRetry: () => ref.invalidate(profileControllerProvider),
-          secondaryAction: const LogoutButton(),
-        ),
-        AsyncLoading() => const Center(child: CircularProgressIndicator()),
-      },
-    );
+    return switch (profile) {
+      AsyncData(value: final account) => _ProfileBody(account: account),
+      AsyncError() => AppNoConnectionInfo(
+        onRetry: () => ref.invalidate(profileControllerProvider),
+        secondaryAction: const LogoutButton(),
+      ),
+      AsyncLoading() => const Center(child: CircularProgressIndicator()),
+    };
   }
 }
 

@@ -34,14 +34,14 @@ class AppBottomNav extends StatelessWidget {
             label: 'Zadania',
           ),
           BottomNavigationBarItem(
-            icon: _BottomNavIcon(Icons.contacts_outlined),
-            activeIcon: _BottomNavIcon(Icons.contacts_rounded),
-            label: 'Kontakty',
-          ),
-          BottomNavigationBarItem(
             icon: _BottomNavIcon(Icons.assignment_outlined),
             activeIcon: _BottomNavIcon(Icons.assignment_rounded),
-            label: 'Dokumenty',
+            label: 'Zdrowie',
+          ),
+          BottomNavigationBarItem(
+            icon: _BottomNavIcon(Icons.person_outline_rounded),
+            activeIcon: _BottomNavIcon(Icons.person_rounded),
+            label: 'Profil',
           ),
         ],
       ),
