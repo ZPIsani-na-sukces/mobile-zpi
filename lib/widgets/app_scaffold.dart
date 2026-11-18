@@ -12,8 +12,8 @@ class AppScaffold extends StatelessWidget {
   static const List<String> _tabTitles = [
     'Start',
     'Zadania',
-    'Kontakty',
-    'Dokumenty',
+    'Zdrowie',
+    'Profil',
   ];
 
   @override
@@ -23,8 +23,8 @@ class AppScaffold extends StatelessWidget {
         routes: const [
           HomeRoute(),
           RoutineRoute(),
-          ContactsRoute(),
           MedHistoryRoute(),
+          ProfileRoute(),
         ],
         builder: (context, child) {
           final tabsRouter = AutoTabsRouter.of(context);
@@ -32,13 +32,7 @@ class AppScaffold extends StatelessWidget {
           return Scaffold(
             appBar: AppAppBar(
               title: _tabTitles[tabsRouter.activeIndex],
-              actions: [
-                IconButton(
-                  tooltip: 'Profil',
-                  onPressed: () => context.router.push(const ProfileRoute()),
-                  icon: const Icon(Icons.account_circle_outlined, size: 32),
-                ),
-              ],
+              centerTitle: true,
             ),
             body: child,
             bottomNavigationBar: const AppBottomNav(),
