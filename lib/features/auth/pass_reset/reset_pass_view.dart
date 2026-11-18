@@ -6,8 +6,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/controllers/send_reset_pass_code_controller.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/controllers/set_new_pass_controller.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/controllers/verify_reset_pass_code_controller.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/reset_channel.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/verify_reset_pass_code_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/widgets/reset_channel_switch.dart';
 import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
@@ -26,6 +28,8 @@ import 'package:mobile_zpi/widgets/app_text_input.dart';
 const _stepCount = 3;
 const _pageTransitionDuration = Duration(milliseconds: 300);
 
+typedef _ResetTarget = ({ResetChannel channel, String identifier});
+
 @RoutePage()
 class ResetPassView extends HookConsumerWidget {
   const ResetPassView({super.key});
@@ -35,19 +39,24 @@ class ResetPassView extends HookConsumerWidget {
     final pageController = usePageController();
     final currentStep = useState(0);
 
+    final channel = useState(ResetChannel.sms);
     final phoneController = useTextEditingController();
+    final emailController = useTextEditingController();
     final codeController = useVerificationCodeController();
+    final emailCodeController = useTextEditingController();
     final passwordController = useTextEditingController();
     final repeatPasswordController = useTextEditingController();
     final passwordHidden = useState(true);
     final repeatPasswordHidden = useState(true);
 
     final phoneError = useState<String?>(null);
+    final emailError = useState<String?>(null);
     final codeError = useState<String?>(null);
     final passwordError = useState<String?>(null);
     final repeatPasswordError = useState<String?>(null);
 
-    final requestedPhone = useState<String?>(null);
+    final pendingTarget = useRef<_ResetTarget?>(null);
+    final requested = useState<_ResetTarget?>(null);
     final challenge = useState<PhoneChallenge?>(null);
     final verifiedCode = useState<String?>(null);
 
@@ -57,6 +66,12 @@ class ResetPassView extends HookConsumerWidget {
     final isRequesting = requestState.isLoading;
     final isVerifying = verifyState.isLoading;
     final isResetting = resetState.isLoading;
+
+    final codeChannel = requested.value?.channel ?? channel.value;
+    final isEmailCode = codeChannel == ResetChannel.email;
+
+    String currentCode() =>
+        isEmailCode ? emailCodeController.text.trim() : codeController.text;
 
     void goToStep(int step) {
       FocusScope.of(context).unfocus();
@@ -76,9 +91,11 @@ class ResetPassView extends HookConsumerWidget {
     ref.listen(sendResetPassCodeControllerProvider, (previous, next) {
       if (previous?.isLoading != true) return;
       if (next case AsyncData(value: final newChallenge?)) {
+        requested.value = pendingTarget.value;
         challenge.value = newChallenge;
         verifiedCode.value = null;
         codeController.clear();
+        emailCodeController.clear();
         codeError.value = null;
         goToStep(1);
       }
@@ -88,10 +105,10 @@ class ResetPassView extends HookConsumerWidget {
       if (previous?.isLoading != true) return;
       switch (next) {
         case AsyncData():
-          verifiedCode.value = codeController.text;
+          verifiedCode.value = currentCode();
           goToStep(2);
         case AsyncError(:final error) when _isCodeError(error):
-          codeError.value = _resetPasswordErrorMessage(error);
+          codeError.value = _resetPasswordErrorMessage(error, codeChannel);
         default:
       }
     });
@@ -111,37 +128,67 @@ class ResetPassView extends HookConsumerWidget {
           context.router.replaceAll([const LoginRoute()]);
         case AsyncError(:final error) when _isCodeError(error):
           verifiedCode.value = null;
-          codeError.value = _resetPasswordErrorMessage(error);
+          codeError.value = _resetPasswordErrorMessage(error, codeChannel);
           goToStep(1);
         default:
       }
     });
 
-    void requestCode(String phone) {
+    void requestCode(_ResetTarget target) {
       clearControllerErrors();
-      requestedPhone.value = phone;
-      ref.read(sendResetPassCodeControllerProvider.notifier).send(phone);
+      pendingTarget.value = target;
+      ref
+          .read(sendResetPassCodeControllerProvider.notifier)
+          .send(target.channel, target.identifier);
+    }
+
+    void onChannelChanged(ResetChannel value) {
+      if (isRequesting) return;
+      channel.value = value;
+      phoneError.value = null;
+      emailError.value = null;
+      clearControllerErrors();
     }
 
     void onSendCode() {
-      phoneError.value = AuthValidators.phoneNumber(phoneController.text);
-      if (phoneError.value != null) return;
+      final _ResetTarget target;
+      if (channel.value == ResetChannel.sms) {
+        phoneError.value = AuthValidators.phoneNumber(phoneController.text);
+        if (phoneError.value != null) return;
+        target = (
+          channel: ResetChannel.sms,
+          identifier: AuthValidators.normalizePhoneNumber(
+            phoneController.text,
+          )!,
+        );
+      } else {
+        emailError.value = AuthValidators.requiredEmail(emailController.text);
+        if (emailError.value != null) return;
+        target = (
+          channel: ResetChannel.email,
+          identifier: emailController.text.trim(),
+        );
+      }
 
       FocusScope.of(context).unfocus();
-      final phone = AuthValidators.normalizePhoneNumber(phoneController.text)!;
-      if (challenge.value != null && phone == requestedPhone.value) {
+      if (challenge.value != null && target == requested.value) {
         goToStep(1);
         return;
       }
-      requestCode(phone);
+      requestCode(target);
     }
 
-    void onResendCode() => requestCode(requestedPhone.value!);
+    void onResendCode() => requestCode(requested.value!);
 
     ValueChanged<String> clearErrors(ValueNotifier<String?> fieldError) => (_) {
       fieldError.value = null;
       clearControllerErrors();
     };
+
+    void onCodeChanged(String value) {
+      verifiedCode.value = null;
+      clearErrors(codeError)(value);
+    }
 
     void onBack() {
       clearControllerErrors();
@@ -149,10 +196,13 @@ class ResetPassView extends HookConsumerWidget {
     }
 
     void onConfirmCode() {
-      codeError.value = AuthValidators.verificationCode(codeController.text);
+      final code = currentCode();
+      codeError.value = isEmailCode
+          ? AuthValidators.emailCode(code)
+          : AuthValidators.verificationCode(code);
       if (codeError.value != null) return;
 
-      if (codeController.text == verifiedCode.value) {
+      if (code == verifiedCode.value) {
         goToStep(2);
         return;
       }
@@ -164,7 +214,7 @@ class ResetPassView extends HookConsumerWidget {
           .verify(
             VerifyResetPassCodeRequest(
               challengeId: challenge.value!.challengeId,
-              code: codeController.text,
+              code: code,
             ),
           );
     }
@@ -188,7 +238,7 @@ class ResetPassView extends HookConsumerWidget {
           .submit(
             SetNewPassRequest(
               challengeId: challenge.value!.challengeId,
-              code: codeController.text,
+              code: currentCode(),
               newPassword: password,
             ),
           );
@@ -206,6 +256,8 @@ class ResetPassView extends HookConsumerWidget {
       final error? when !_isCodeError(error) => error,
       _ => null,
     };
+
+    final isSmsSelected = channel.value == ResetChannel.sms;
 
     return PopScope(
       canPop: currentStep.value == 0,
@@ -232,30 +284,56 @@ class ResetPassView extends HookConsumerWidget {
               Expanded(
                 child: PageView(
                   controller: pageController,
-                  // change page only using button, swipping disabled
                   physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: (page) => currentStep.value = page,
                   children: [
                     StepCard(
                       title: 'Nie pamiętasz hasła?',
-                      subtitle: 'Podaj numer telefonu, a wyślemy Ci kod SMS',
+                      subtitle: isSmsSelected
+                          ? 'Podaj numer telefonu, a wyślemy Ci kod SMS'
+                          : 'Podaj adres e-mail, a wyślemy Ci kod',
                       children: [
-                        AppTextInput(
-                          label: 'Numer telefonu',
-                          hintText: 'np. 600 123 456',
-                          controller: phoneController,
-                          leadingIcon: Icons.phone_outlined,
-                          keyboardType: TextInputType.phone,
-                          textInputAction: TextInputAction.done,
-                          autofillHints: const [AutofillHints.telephoneNumber],
-                          errorText: phoneError.value,
-                          onChanged: clearErrors(phoneError),
-                          onSubmitted: (_) => onSendCode(),
+                        ResetChannelSwitch(
+                          value: channel.value,
+                          onChanged: onChannelChanged,
                         ),
+                        if (isSmsSelected)
+                          AppTextInput(
+                            key: const ValueKey(ResetChannel.sms),
+                            label: 'Numer telefonu',
+                            hintText: 'np. 600 123 456',
+                            controller: phoneController,
+                            leadingIcon: Icons.phone_outlined,
+                            keyboardType: TextInputType.phone,
+                            textInputAction: TextInputAction.done,
+                            autofillHints: const [
+                              AutofillHints.telephoneNumber,
+                            ],
+                            errorText: phoneError.value,
+                            onChanged: clearErrors(phoneError),
+                            onSubmitted: (_) => onSendCode(),
+                          )
+                        else
+                          AppTextInput(
+                            key: const ValueKey(ResetChannel.email),
+                            label: 'Adres e-mail',
+                            hintText: 'np. jan.kowalski@example.com',
+                            controller: emailController,
+                            leadingIcon: Icons.mail_outline,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.done,
+                            autofillHints: const [AutofillHints.email],
+                            errorText: emailError.value,
+                            onChanged: clearErrors(emailError),
+                            onSubmitted: (_) => onSendCode(),
+                          ),
                         if (currentStep.value == 0 &&
                             requestState.error != null)
                           Text(
-                            _resetPasswordErrorMessage(requestState.error!),
+                            _resetPasswordErrorMessage(
+                              requestState.error!,
+                              channel.value,
+                            ),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
                               color: context.colors.error,
@@ -288,27 +366,46 @@ class ResetPassView extends HookConsumerWidget {
                       ],
                     ),
                     StepCard(
-                      title: 'Wpisz kod z SMS',
+                      title: isEmailCode
+                          ? 'Wpisz kod z e-maila'
+                          : 'Wpisz kod z SMS',
                       subtitle:
-                          'Wysłaliśmy go na numer '
-                          '${requestedPhone.value ?? ''}',
+                          '${isEmailCode ? 'Wysłaliśmy go na adres' : 'Wysłaliśmy go na numer'} '
+                          '${requested.value?.identifier ?? ''}',
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
+                          spacing: AppSpacing.md,
                           children: [
-                            AppCodeInput(
-                              label: 'Kod z SMS',
-                              controller: codeController,
-                              autoFocus: true,
-                              errorText: codeError.value,
-                              onChanged: (value) {
-                                verifiedCode.value = null;
-                                clearErrors(codeError)(value);
-                              },
-                              onCompleted: (_) {
-                                if (!isVerifying) onConfirmCode();
-                              },
-                            ),
+                            if (isEmailCode)
+                              AppTextInput(
+                                label: 'Kod z e-maila',
+                                hintText: 'Wklej kod z wiadomości',
+                                controller: emailCodeController,
+                                leadingIcon: Icons.key_outlined,
+                                autofocus: true,
+                                keyboardType: TextInputType.visiblePassword,
+                                textInputAction: TextInputAction.done,
+                                autofillHints: const [
+                                  AutofillHints.oneTimeCode,
+                                ],
+                                errorText: codeError.value,
+                                onChanged: onCodeChanged,
+                                onSubmitted: (_) {
+                                  if (!isVerifying) onConfirmCode();
+                                },
+                              )
+                            else
+                              AppCodeInput(
+                                label: 'Kod z SMS',
+                                controller: codeController,
+                                autoFocus: true,
+                                errorText: codeError.value,
+                                onChanged: onCodeChanged,
+                                onCompleted: (_) {
+                                  if (!isVerifying) onConfirmCode();
+                                },
+                              ),
                             Wrap(
                               alignment: WrapAlignment.center,
                               crossAxisAlignment: WrapCrossAlignment.center,
@@ -330,7 +427,10 @@ class ResetPassView extends HookConsumerWidget {
                         ),
                         if (currentStep.value == 1 && codeStepError != null)
                           Text(
-                            _resetPasswordErrorMessage(codeStepError),
+                            _resetPasswordErrorMessage(
+                              codeStepError,
+                              codeChannel,
+                            ),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
                               color: context.colors.error,
@@ -409,7 +509,10 @@ class ResetPassView extends HookConsumerWidget {
                         ),
                         if (currentStep.value == 2 && passwordStepError != null)
                           Text(
-                            _resetPasswordErrorMessage(passwordStepError),
+                            _resetPasswordErrorMessage(
+                              passwordStepError,
+                              codeChannel,
+                            ),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
                               color: context.colors.error,
@@ -448,20 +551,25 @@ class ResetPassView extends HookConsumerWidget {
 bool _isCodeError(Object error) =>
     error is InvalidCodeException || error is CodeExpiredException;
 
-String _resetPasswordErrorMessage(Object error) => switch (error) {
-  InvalidCodeException() =>
-    'Nieprawidłowy kod. Sprawdź SMS i spróbuj ponownie.',
-  CodeExpiredException() => 'Kod wygasł. Wyślij nowy kod.',
-  TooManyAttemptsException() =>
-    'Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.',
-  DioException(
-    type: DioExceptionType.connectionError ||
-        DioExceptionType.connectionTimeout ||
-        DioExceptionType.receiveTimeout ||
-        DioExceptionType.sendTimeout,
-  ) =>
-    'Brak połączenia z internetem. Spróbuj ponownie.',
-  DioException(response: Response(statusCode: 503)) =>
-    'Usługa jest chwilowo niedostępna. Spróbuj ponownie później.',
-  _ => 'Nie udało się zmienić hasła.',
-};
+String _resetPasswordErrorMessage(Object error, ResetChannel channel) =>
+    switch (error) {
+      InvalidCodeException() => switch (channel) {
+        ResetChannel.sms =>
+          'Nieprawidłowy kod. Sprawdź SMS i spróbuj ponownie.',
+        ResetChannel.email =>
+          'Nieprawidłowy kod. Sprawdź e-mail i spróbuj ponownie.',
+      },
+      CodeExpiredException() => 'Kod wygasł. Wyślij nowy kod.',
+      TooManyAttemptsException() =>
+        'Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.',
+      DioException(
+        type: DioExceptionType.connectionError ||
+            DioExceptionType.connectionTimeout ||
+            DioExceptionType.receiveTimeout ||
+            DioExceptionType.sendTimeout,
+      ) =>
+        'Brak połączenia z internetem. Spróbuj ponownie.',
+      DioException(response: Response(statusCode: 503)) =>
+        'Usługa jest chwilowo niedostępna. Spróbuj ponownie później.',
+      _ => 'Nie udało się zmienić hasła.',
+    };

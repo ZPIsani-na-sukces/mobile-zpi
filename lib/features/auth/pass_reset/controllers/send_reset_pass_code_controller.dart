@@ -1,3 +1,4 @@
+import 'package:mobile_zpi/features/auth/pass_reset/models/reset_channel.dart';
 import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -9,10 +10,10 @@ class SendResetPassCodeController extends _$SendResetPassCodeController {
   @override
   FutureOr<PhoneChallenge?> build() => null;
 
-  Future<void> send(String phoneNumber) async {
+  Future<void> send(ResetChannel channel, String identifier) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(
-      () => ref.read(authRepositoryProvider).sendResetCode(phoneNumber),
+      () => ref.read(authRepositoryProvider).sendResetCode(channel, identifier),
     );
     if (ref.mounted) state = result;
   }

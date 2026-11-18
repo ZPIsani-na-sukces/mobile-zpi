@@ -52,6 +52,12 @@ abstract final class AuthValidators {
     return null;
   }
 
+  static String? requiredEmail(String value) =>
+      value.trim().isEmpty ? 'Wpisz adres e-mail' : email(value);
+
+  static String? emailCode(String value) =>
+      value.trim().isEmpty ? 'Wpisz kod z e-maila' : null;
+
   static String? verificationCode(String value) {
     if (value.isEmpty) return 'Wpisz kod z SMS';
     if (!_verificationCode.hasMatch(value)) {
