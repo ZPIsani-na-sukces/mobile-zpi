@@ -1,0 +1,1 @@
+enum ResetChannel { sms, email }

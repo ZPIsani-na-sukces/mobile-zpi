@@ -1,4 +1,5 @@
 import 'package:mobile_zpi/features/auth/acc_activation/models/activate_acc_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/reset_channel.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/verify_reset_pass_code_request.dart';
 import 'package:mobile_zpi/features/auth/register/models/register_request.dart';
@@ -88,9 +89,14 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<PhoneChallenge> sendResetCode(String phoneNumber) async {
+  Future<PhoneChallenge> sendResetCode(
+    ResetChannel channel,
+    String identifier,
+  ) async {
     await Future<void>.delayed(_delay);
-    if (phoneNumber == '+48600000000') throw const TooManyAttemptsException();
+    if (identifier == '+48600000000' || identifier == 'limit@example.com') {
+      throw const TooManyAttemptsException();
+    }
 
     _resetChallengeCount++;
     return PhoneChallenge(

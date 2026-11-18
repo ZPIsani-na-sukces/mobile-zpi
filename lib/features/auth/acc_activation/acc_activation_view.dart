@@ -143,6 +143,7 @@ class AccActivationView extends HookConsumerWidget {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.md,
               children: [
                 AppCodeInput(
                   label: 'Kod z SMS',

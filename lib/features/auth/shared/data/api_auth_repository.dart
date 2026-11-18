@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:mobile_zpi/features/auth/acc_activation/models/activate_acc_request.dart';
 import 'package:mobile_zpi/features/auth/acc_activation/models/send_acc_activation_code_request.dart';
 import 'package:mobile_zpi/features/auth/login/models/login_request.dart';
+import 'package:mobile_zpi/features/auth/pass_reset/models/reset_channel.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/send_reset_pass_code_request.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/set_new_pass_request.dart';
 import 'package:mobile_zpi/features/auth/pass_reset/models/verify_reset_pass_code_request.dart';
@@ -110,11 +111,17 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<PhoneChallenge> sendResetCode(String phoneNumber) async {
+  Future<PhoneChallenge> sendResetCode(
+    ResetChannel channel,
+    String identifier,
+  ) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/auth/password-reset-requests',
-        data: SendResetPassCodeRequest(identifier: phoneNumber).toJson(),
+        data: SendResetPassCodeRequest(
+          channel: channel,
+          identifier: identifier,
+        ).toJson(),
       );
       return PhoneChallenge.fromJson(response.data!);
     } on DioException catch (e) {
