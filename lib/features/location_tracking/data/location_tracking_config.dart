@@ -39,7 +39,7 @@ bg.Config buildLocationTrackingConfig(
   app: bg.AppConfig(
     stopOnTerminate: false,
     startOnBoot: true,
-    heartbeatInterval: 300, // in stationary check every 5 min
+    heartbeatInterval: 5, // in stationary check every 5 sec
     // iOS only
     preventSuspend: true,
     // Android only
