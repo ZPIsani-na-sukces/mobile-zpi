@@ -72,6 +72,7 @@ bg.Config buildLocationTrackingConfig(
   persistence: const bg.PersistenceConfig(
     maxDaysToPersist: 1,
     locationTemplate: _sampleTemplate,
+    disableProviderChangeRecord: true,
   ),
   activity: const bg.ActivityConfig(
     motionTriggerDelay: 10000, // wait 10 s before treating it as movement, so walking around at home doesn't count
