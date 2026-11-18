@@ -6,6 +6,7 @@ import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
+import 'package:mobile_zpi/widgets/app_empty_card.dart';
 
 class CaretakerList extends ConsumerWidget {
   const CaretakerList({super.key, required this.seniorId});
@@ -20,6 +21,13 @@ class CaretakerList extends ConsumerWidget {
     );
 
     return switch (ref.watch(provider)) {
+      AsyncData(value: final items) when items.isEmpty => const AppEmptyCard(
+        icon: Icons.group_outlined,
+        title: 'Brak opiekunów',
+        description:
+            'Dodaj opiekuna, aby mógł pomagać Ci w lekach, zadaniach i '
+            'powrocie do domu.',
+      ),
       AsyncData(value: final items) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.sm,

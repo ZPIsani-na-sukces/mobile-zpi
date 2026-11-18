@@ -61,11 +61,7 @@ class CaretakerCard extends ConsumerWidget {
           const SizedBox(height: AppSpacing.md),
           Divider(height: 1, thickness: 1, color: context.colors.outline),
           const SizedBox(height: AppSpacing.sm),
-          AppButton.text(
-            label: 'Usuń opiekuna',
-            icon: Icons.person_remove_outlined,
-            onPressed: onRemove,
-          ),
+          AppButton.text(label: 'Usuń opiekuna', onPressed: onRemove),
         ],
       ),
     );
