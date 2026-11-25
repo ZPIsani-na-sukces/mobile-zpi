@@ -2,7 +2,7 @@ import SwiftUI
 import WidgetKit
 
 /// Shared with `homeWidgetsAppGroup` in Dart and both entitlements files.
-private let homeWidgetsAppGroup = "group.com.example.mobileZpi"
+private let homeWidgetsAppGroup = "group.pl.zpizsws.mobile"
 
 // Mirrors AppColors in lib/theme/app_colors.dart.
 private let primary = Color(red: 0x00 / 255, green: 0x67 / 255, blue: 0xB8 / 255)

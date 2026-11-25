@@ -1,7 +1,7 @@
 import 'package:home_widget/home_widget.dart';
 
 /// Shared with `ios/Runner/Runner.entitlements` and the widget extension.
-const homeWidgetsAppGroup = 'group.com.example.mobileZpi';
+const homeWidgetsAppGroup = 'group.pl.zpizsws.mobile';
 
 /// Keys read by the native widgets on Android and iOS.
 abstract final class HomeWidgetKeys {
