@@ -8,12 +8,15 @@ import 'package:mobile_zpi/features/profile/controllers/home_address_controller.
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/profile/data/device_location.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
+import 'package:mobile_zpi/features/profile/data/models/contact_channel.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
 import 'package:mobile_zpi/features/profile/data/repository/profile_repository.dart';
 import 'package:mobile_zpi/features/profile/presentation/profile_messages.dart';
+import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
+import 'package:mobile_zpi/widgets/app_action_card.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
 import 'package:mobile_zpi/widgets/app_no_connection_info.dart';
 import 'package:mobile_zpi/widgets/app_text_input.dart';
@@ -197,13 +200,6 @@ class _ProfileEditForm extends HookConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        Text(
-          'Telefon i e-mail zostają bez zmian.',
-          style: AppTypography.bodyLarge.copyWith(
-            color: context.colors.onBackground,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
         AppTextInput(
           controller: firstNameController,
           label: 'Imię',
@@ -220,6 +216,50 @@ class _ProfileEditForm extends HookConsumerWidget {
           textInputAction: TextInputAction.next,
           errorText: lastNameError.value,
           onChanged: (_) => lastNameError.value = null,
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        Text(
+          'Telefon i e-mail',
+          style: AppTypography.titleLarge.copyWith(
+            color: context.colors.onBackground,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          'Zmianę potwierdzisz kodem wysłanym na nowy numer lub adres.',
+          style: AppTypography.bodyLarge.copyWith(
+            color: context.colors.onBackground,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        AppActionCard(
+          icon: Icons.phone_outlined,
+          title: 'Zmień numer telefonu',
+          subtitle: account.phoneNumber,
+          onTap: busy
+              ? null
+              : () => context.router.push(
+                  ContactChangeRoute(
+                    channel: ContactChannel.phone,
+                    currentValue: account.phoneNumber,
+                  ),
+                ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        AppActionCard(
+          icon: Icons.mail_outline,
+          title: account.email == null
+              ? 'Dodaj adres e-mail'
+              : 'Zmień adres e-mail',
+          subtitle: account.email ?? 'Brak adresu e-mail',
+          onTap: busy
+              ? null
+              : () => context.router.push(
+                  ContactChangeRoute(
+                    channel: ContactChannel.email,
+                    currentValue: account.email,
+                  ),
+                ),
         ),
         const SizedBox(height: AppSpacing.xl),
         Text(

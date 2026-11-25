@@ -1,6 +1,8 @@
 import 'package:mobile_zpi/config/app_env.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/profile/data/models/accessibility_preferences.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
+import 'package:mobile_zpi/features/profile/data/models/contact_channel.dart';
 import 'package:mobile_zpi/features/profile/data/models/detected_address.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
 import 'package:mobile_zpi/features/profile/data/repository/api_profile_repository.dart';
@@ -17,6 +19,18 @@ abstract interface class ProfileRepository {
     required int version,
     required String firstName,
     required String lastName,
+  });
+
+  Future<PhoneChallenge> startContactChange(
+    ContactChannel channel,
+    String value,
+  );
+
+  Future<Account> confirmContactChange({
+    required ContactChannel channel,
+    required int version,
+    required String challengeId,
+    required String code,
   });
 
   Future<HomeAddress?> getHomeAddress(String seniorId);

@@ -8,6 +8,10 @@ class AccountAlreadyExistsException implements Exception {
   const AccountAlreadyExistsException();
 }
 
+class InvalidPhoneNumberException implements Exception {
+  const InvalidPhoneNumberException();
+}
+
 class TooManyAttemptsException implements Exception {
   const TooManyAttemptsException({this.retryAfter});
 

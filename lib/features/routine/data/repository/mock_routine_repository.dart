@@ -41,6 +41,24 @@ class MockRoutineRepository implements RoutineRepository {
       scheduledAt: DateTime.now().copyWith(hour: 15, minute: 0),
       status: 'pending',
     ),
+    TaskOccurrence(
+      occurrenceId: 'occ-5',
+      taskId: '4',
+      title: 'Lek wieczorny',
+      instructions: 'Przyjmij jedną tabletkę przed snem.',
+      type: 'medication',
+      scheduledAt: _nextAt(0, 5),
+      status: 'pending',
+    ),
+    TaskOccurrence(
+      occurrenceId: 'occ-6',
+      taskId: '3',
+      title: 'Szklanka wody',
+      instructions: 'Wypij szklankę wody.',
+      type: 'hydration',
+      scheduledAt: _nextAt(0, 7),
+      status: 'pending',
+    ),
   ];
 
   final _tasks = <RoutineTask>[
@@ -80,7 +98,20 @@ class MockRoutineRepository implements RoutineRepository {
       schedule: RoutineSchedule(
         timeZone: 'Europe/Warsaw',
         daysOfWeek: [1, 2, 3, 4, 5],
-        times: ['11:00:00', '15:00:00'],
+        times: ['11:00:00', '15:00:00', '00:07:00'],
+      ),
+    ),
+    const RoutineTask(
+      taskId: '4',
+      title: 'Lek wieczorny',
+      type: 'medication',
+      instructions: 'Przyjmij jedną tabletkę przed snem.',
+      isActive: true,
+      startsOn: '2026-09-01',
+      schedule: RoutineSchedule(
+        timeZone: 'Europe/Warsaw',
+        daysOfWeek: [1, 2, 3, 4, 5, 6, 7],
+        times: ['00:05:00'],
       ),
     ),
   ];
@@ -154,5 +185,11 @@ class MockRoutineRepository implements RoutineRepository {
     final month = value.month.toString().padLeft(2, '0');
     final day = value.day.toString().padLeft(2, '0');
     return '${value.year}-$month-$day';
+  }
+
+  static DateTime _nextAt(int hour, int minute) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day, hour, minute);
+    return today.isAfter(now) ? today : today.add(const Duration(days: 1));
   }
 }

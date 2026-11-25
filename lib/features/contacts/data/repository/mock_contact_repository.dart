@@ -3,10 +3,10 @@ import 'package:mobile_zpi/features/contacts/data/repository/contacts_repository
 
 class MockContactsRepository implements ContactsRepository {
   static const _creator = ContactCreator(
-    userId: 'caregiver-1',
+    userId: 'caretaker-1',
     firstName: 'Katarzyna',
     lastName: 'Wiśniewska',
-    role: 'CAREGIVER',
+    role: 'caretaker',
   );
 
   final _contacts = <Contact>[

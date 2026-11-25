@@ -49,14 +49,14 @@ class _ProfileBody extends ConsumerWidget {
     final caretakers = caretakersControllerProvider(account.userId);
     ref.watch(caretakers);
 
-    Future<void> openCaregivers() async {
+    Future<void> openCaretakers() async {
       final hasCaretakers = await ref
           .read(caretakers.future)
           .then((items) => items.isNotEmpty, onError: (_) => true);
       if (!context.mounted) return;
       await context.router.push(
         hasCaretakers
-            ? CaregiversRoute(seniorId: account.userId)
+            ? CaretakersRoute(seniorId: account.userId)
             : AddCaretakerRoute(seniorId: account.userId),
       );
       if (context.mounted) ref.invalidate(caretakers);
@@ -69,7 +69,7 @@ class _ProfileBody extends ConsumerWidget {
           icon: Icons.group,
           title: 'Opiekunowie',
           subtitle: 'Zobacz swoich opiekunów i zaproś nowych',
-          onTap: openCaregivers,
+          onTap: openCaretakers,
         ),
         const SizedBox(height: AppSpacing.xxl),
         Text(

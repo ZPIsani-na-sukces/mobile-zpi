@@ -9,8 +9,8 @@ import 'package:mobile_zpi/widgets/app_button.dart';
 import 'package:mobile_zpi/widgets/back_scaffold.dart';
 
 @RoutePage()
-class CaregiversView extends ConsumerWidget {
-  const CaregiversView({super.key, required this.seniorId});
+class CaretakersView extends ConsumerWidget {
+  const CaretakersView({super.key, required this.seniorId});
 
   final String seniorId;
 

@@ -11,13 +11,24 @@ class MockInvitationsRepository implements InvitationsRepository {
     CareRelationship(
       relationshipId: 'relationship-1',
       caretaker: const ContactCreator(
-        userId: 'caregiver-1',
+        userId: 'caretaker-1',
         firstName: 'Katarzyna',
         lastName: 'Wiśniewska',
         role: 'caretaker',
       ),
       status: 'active',
       createdAt: DateTime.utc(2026, 10, 1, 9),
+    ),
+    CareRelationship(
+      relationshipId: 'relationship-2',
+      caretaker: const ContactCreator(
+        userId: 'caretaker-2',
+        firstName: 'Tomasz',
+        lastName: 'Nowak',
+        role: 'caretaker',
+      ),
+      status: 'active',
+      createdAt: DateTime.utc(2026, 10, 12, 14),
     ),
   ];
 
@@ -57,9 +68,9 @@ class MockInvitationsRepository implements InvitationsRepository {
     }
     _caretakers.add(
       CareRelationship(
-        relationshipId: 'relationship-2',
+        relationshipId: 'relationship-3',
         caretaker: const ContactCreator(
-          userId: 'caregiver-2',
+          userId: 'caretaker-3',
           firstName: 'Marek',
           lastName: 'Wiśniewski',
           role: 'caretaker',
