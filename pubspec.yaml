@@ -65,6 +65,8 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
+  flutter_test:
+    sdk: flutter
   flutter_lints: ^6.0.0
   riverpod_generator: ^4.0.8
   build_runner: ^2.16.0
@@ -73,11 +75,19 @@ dev_dependencies:
   freezed: ^4.0.1
   json_serializable: ^6.14.1
   flutter_launcher_icons: ^0.14.4
+  patrol: ^4.12.0
 
 flutter_launcher_icons:
   image_path: assets/images/logo.png
   android: true
   ios: true
+
+patrol:
+  app_name: Mobile Zpi
+  android:
+    package_name: pl.zpizsws.mobile
+  ios:
+    bundle_id: pl.zpizsws.mobile
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
