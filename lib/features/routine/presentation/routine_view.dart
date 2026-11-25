@@ -25,7 +25,6 @@ class RoutineView extends ConsumerWidget {
     return switch (profile) {
       AsyncData(value: final account) => Scaffold(
         backgroundColor: context.colors.background,
-        // The API lets only a caregiver create tasks.
         floatingActionButton: account.role == 'senior'
             ? null
             : FloatingActionButton.extended(

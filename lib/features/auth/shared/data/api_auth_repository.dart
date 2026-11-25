@@ -12,6 +12,7 @@ import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
 import 'package:mobile_zpi/features/auth/shared/data/auth_repository.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
+import 'package:mobile_zpi/network/dio_problem.dart';
 
 class ApiAuthRepository implements AuthRepository {
   ApiAuthRepository(this._dio);
@@ -44,7 +45,7 @@ class ApiAuthRepository implements AuthRepository {
         case Response(statusCode: 403, data: {'code': 'operationForbidden'}):
           throw const AccountUnavailableException();
         case Response(statusCode: 429):
-          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
+          throw TooManyAttemptsException(retryAfter: e.retryAfter);
       }
       rethrow;
     }
@@ -84,7 +85,7 @@ class ApiAuthRepository implements AuthRepository {
         case 400 || 409:
           throw const VerificationExpiredException();
         case 429:
-          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
+          throw TooManyAttemptsException(retryAfter: e.retryAfter);
       }
       rethrow;
     }
@@ -99,12 +100,12 @@ class ApiAuthRepository implements AuthRepository {
       );
     } on DioException catch (e) {
       switch (e.response?.statusCode) {
-        case 400 when _problemCode(e) == 'invalidCode':
+        case 400 when e.problemCode == 'invalidCode':
           throw const InvalidCodeException();
         case 409:
           throw const CodeExpiredException();
         case 429:
-          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
+          throw TooManyAttemptsException(retryAfter: e.retryAfter);
       }
       rethrow;
     }
@@ -141,10 +142,10 @@ class ApiAuthRepository implements AuthRepository {
       );
     } on DioException catch (e) {
       switch (e.response?.statusCode) {
-        case 400 when _problemCode(e) == 'invalidCode':
+        case 400 when e.problemCode == 'invalidCode':
           throw const InvalidCodeException();
         case 429:
-          throw TooManyAttemptsException(retryAfter: _retryAfter(e));
+          throw TooManyAttemptsException(retryAfter: e.retryAfter);
       }
       rethrow;
     }
@@ -156,7 +157,7 @@ class ApiAuthRepository implements AuthRepository {
       await _dio.post<void>('/auth/password-resets', data: request.toJson());
     } on DioException catch (e) {
       switch (e.response?.statusCode) {
-        case 400 when _problemCode(e) == 'invalidCode':
+        case 400 when e.problemCode == 'invalidCode':
           throw const InvalidCodeException();
         case 409:
           throw const CodeExpiredException();
@@ -200,11 +201,6 @@ class ApiAuthRepository implements AuthRepository {
     options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
   );
 
-  String? _problemCode(DioException e) => switch (e.response?.data) {
-    {'code': final String code} => code,
-    _ => null,
-  };
-
   PhoneChallenge? _phoneChallenge(DioException e) {
     if (e.response?.data case {
       'phoneChallenge': final Map<String, dynamic> json,
@@ -217,10 +213,4 @@ class ApiAuthRepository implements AuthRepository {
     }
     return null;
   }
-
-  Duration? _retryAfter(DioException e) =>
-      switch (int.tryParse(e.response?.headers.value('retry-after') ?? '')) {
-        final seconds? => Duration(seconds: seconds),
-        null => null,
-      };
 }

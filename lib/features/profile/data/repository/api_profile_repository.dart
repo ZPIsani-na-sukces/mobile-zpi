@@ -1,9 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/profile/data/models/accessibility_preferences.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
+import 'package:mobile_zpi/features/profile/data/models/contact_channel.dart';
 import 'package:mobile_zpi/features/profile/data/models/detected_address.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
 import 'package:mobile_zpi/features/profile/data/repository/profile_repository.dart';
+import 'package:mobile_zpi/network/dio_problem.dart';
 
 class ApiProfileRepository implements ProfileRepository {
   ApiProfileRepository(this._dio);
@@ -28,6 +32,62 @@ class ApiProfileRepository implements ProfileRepository {
       options: Options(headers: {'If-Match': '"$version"'}),
     );
     return Account.fromJson(response.data!);
+  }
+
+  @override
+  Future<PhoneChallenge> startContactChange(
+    ContactChannel channel,
+    String value,
+  ) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/me/profile/${_contactPath(channel)}/change-requests',
+        data: switch (channel) {
+          ContactChannel.phone => {'phoneNumber': value},
+          ContactChannel.email => {'email': value},
+        },
+      );
+      return PhoneChallenge.fromJson(response.data!);
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 400
+            when channel == ContactChannel.phone &&
+                e.problemCode == 'validationFailed':
+          throw const InvalidPhoneNumberException();
+        case 409:
+          throw const AccountAlreadyExistsException();
+        case 429:
+          throw TooManyAttemptsException(retryAfter: e.retryAfter);
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Account> confirmContactChange({
+    required ContactChannel channel,
+    required int version,
+    required String challengeId,
+    required String code,
+  }) async {
+    try {
+      final response = await _dio.put<Map<String, dynamic>>(
+        '/me/profile/${_contactPath(channel)}',
+        data: {'challengeId': challengeId, 'code': code},
+        options: Options(headers: {'If-Match': '"$version"'}),
+      );
+      return Account.fromJson(response.data!);
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 400 when e.problemCode == 'invalidCode':
+          throw const InvalidCodeException();
+        case 409:
+          throw const AccountAlreadyExistsException();
+        case 429:
+          throw TooManyAttemptsException(retryAfter: e.retryAfter);
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -100,4 +160,9 @@ class ApiProfileRepository implements ProfileRepository {
     );
     return AccessibilityPreferences.fromJson(response.data!);
   }
+
+  String _contactPath(ContactChannel channel) => switch (channel) {
+    ContactChannel.phone => 'phone-number',
+    ContactChannel.email => 'email',
+  };
 }

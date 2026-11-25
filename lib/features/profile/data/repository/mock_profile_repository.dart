@@ -1,10 +1,17 @@
+import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
+import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 import 'package:mobile_zpi/features/profile/data/models/accessibility_preferences.dart';
 import 'package:mobile_zpi/features/profile/data/models/account.dart';
+import 'package:mobile_zpi/features/profile/data/models/contact_channel.dart';
 import 'package:mobile_zpi/features/profile/data/models/detected_address.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
 import 'package:mobile_zpi/features/profile/data/repository/profile_repository.dart';
 
 class MockProfileRepository implements ProfileRepository {
+  static const _contactChangeCode = '123456';
+
+  final _pendingContactChanges = <String, String>{};
+
   Account _account = const Account(
     userId: '11111111-1111-4111-8111-111111111111',
     role: 'senior',
@@ -53,6 +60,47 @@ class MockProfileRepository implements ProfileRepository {
       lastName: lastName,
       version: version + 1,
     );
+    return _account;
+  }
+
+  @override
+  Future<PhoneChallenge> startContactChange(
+    ContactChannel channel,
+    String value,
+  ) async {
+    final challengeId =
+        'mock-${channel.name}-${DateTime.now().millisecondsSinceEpoch}';
+    _pendingContactChanges[challengeId] = value;
+    return PhoneChallenge(
+      challengeId: challengeId,
+      resendAfter: DateTime.now().add(const Duration(seconds: 60)),
+    );
+  }
+
+  @override
+  Future<Account> confirmContactChange({
+    required ContactChannel channel,
+    required int version,
+    required String challengeId,
+    required String code,
+  }) async {
+    final value = _pendingContactChanges[challengeId];
+    if (value == null || code != _contactChangeCode) {
+      throw const InvalidCodeException();
+    }
+    _pendingContactChanges.remove(challengeId);
+    _account = switch (channel) {
+      ContactChannel.phone => _account.copyWith(
+        phoneNumber: value,
+        phoneVerified: true,
+        version: version + 1,
+      ),
+      ContactChannel.email => _account.copyWith(
+        email: value,
+        emailVerified: true,
+        version: version + 1,
+      ),
+    };
     return _account;
   }
 

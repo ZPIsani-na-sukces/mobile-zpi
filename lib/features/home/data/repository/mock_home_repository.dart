@@ -57,6 +57,20 @@ class MockHomeRepository implements HomeRepository {
         scheduledAt: DateTime(now.year, now.month, now.day, 11),
         status: 'pending',
       ),
+      UpcomingTask(
+        occurrenceId: '4',
+        taskId: '4',
+        title: 'Leki wieczorne',
+        scheduledAt: DateTime(now.year, now.month, now.day, 0, 5).add(const Duration(days: 1)),
+        status: 'pending',
+      ),
+      UpcomingTask(
+        occurrenceId: '5',
+        taskId: '5',
+        title: 'Szklanka wody',
+        scheduledAt: DateTime(now.year, now.month, now.day, 0, 7).add(const Duration(days: 1)),
+        status: 'pending',
+      ),
     ];
   }
 

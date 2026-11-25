@@ -11,19 +11,17 @@ class MockMedHistoryRepository implements MedHistoryRepository {
     'file-2': 'assets/mocks/med_history/skierowanie.jpg',
   };
 
-  @override
-  Future<List<MedicalRecord>> records(String seniorId) async => [
-    await record(seniorId, mockMedicalRecordId),
-  ];
+  static const _caretaker = ContactCreator(
+    userId: 'caretaker-1',
+    firstName: 'Katarzyna',
+    lastName: 'Wiśniewska',
+    role: 'caretaker',
+  );
 
-  @override
-  Future<MedicalRecord> record(String seniorId, String recordId) async {
-    if (recordId != mockMedicalRecordId) {
-      throw StateError('Unknown medical record: $recordId');
-    }
-    return MedicalRecord(
-      recordId: recordId,
-      seniorId: seniorId,
+  static final _records = [
+    MedicalRecord(
+      recordId: mockMedicalRecordId,
+      seniorId: '',
       title: 'Morfologia i biochemia krwi',
       description:
           'Wyniki badań kontrolnych z przychodni. Zabierz je na wizytę '
@@ -46,16 +44,70 @@ class MockMedHistoryRepository implements MedHistoryRepository {
           createdAt: DateTime.utc(2026, 10, 15, 9),
         ),
       ],
-      createdBy: const ContactCreator(
-        userId: 'caregiver-1',
-        firstName: 'Katarzyna',
-        lastName: 'Wiśniewska',
-        role: 'CAREGIVER',
-      ),
+      createdBy: _caretaker,
       createdAt: DateTime.utc(2026, 10, 15, 9),
       updatedAt: DateTime.utc(2026, 10, 15, 9),
       version: 1,
-    );
+    ),
+    MedicalRecord(
+      recordId: 'record-2',
+      seniorId: '',
+      title: 'Recepta na leki na nadciśnienie',
+      description:
+          'Ramipril 5 mg, jedna tabletka rano. Recepta ważna 30 dni, '
+          'kod do realizacji w aptece jest w SMS-ie.',
+      recordType: 'prescription',
+      documentDate: '2026-11-03',
+      files: const [],
+      createdBy: _caretaker,
+      createdAt: DateTime.utc(2026, 11, 3, 14),
+      updatedAt: DateTime.utc(2026, 11, 3, 14),
+      version: 1,
+    ),
+    MedicalRecord(
+      recordId: 'record-3',
+      seniorId: '',
+      title: 'Konsultacja kardiologiczna',
+      description:
+          'Ciśnienie w normie przy obecnym leczeniu. Kontrola za 6 miesięcy, '
+          'wcześniej w razie duszności lub bólu w klatce piersiowej.',
+      recordType: 'consultation',
+      documentDate: '2026-10-28',
+      files: const [],
+      createdBy: _caretaker,
+      createdAt: DateTime.utc(2026, 10, 28, 17),
+      updatedAt: DateTime.utc(2026, 10, 28, 17),
+      version: 1,
+    ),
+    MedicalRecord(
+      recordId: 'record-4',
+      seniorId: '',
+      title: 'Wypis ze szpitala po zapaleniu płuc',
+      description:
+          'Pobyt na oddziale wewnętrznym od 2 do 9 września. Zalecony '
+          'odpoczynek i kontrola u lekarza rodzinnego po tygodniu.',
+      recordType: 'dischargeSummary',
+      documentDate: '2026-09-09',
+      files: const [],
+      createdBy: _caretaker,
+      createdAt: DateTime.utc(2026, 9, 10, 10),
+      updatedAt: DateTime.utc(2026, 9, 10, 10),
+      version: 1,
+    ),
+  ];
+
+  @override
+  Future<List<MedicalRecord>> records(String seniorId) async => [
+    for (final record in _records) record.copyWith(seniorId: seniorId),
+  ];
+
+  @override
+  Future<MedicalRecord> record(String seniorId, String recordId) async {
+    final match = _records.where((record) => record.recordId == recordId);
+    if (match.isEmpty) {
+      throw StateError('Unknown medical record: $recordId');
+    }
+    return match.first.copyWith(seniorId: seniorId);
   }
 
   @override

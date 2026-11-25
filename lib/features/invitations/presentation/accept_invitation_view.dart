@@ -52,11 +52,11 @@ class AcceptInvitationView extends HookConsumerWidget {
         context,
       ).showSnackBar(const SnackBar(content: Text('Opiekun został dodany.')));
       final router = context.router;
-      if (router.stackData.any((r) => r.name == CaregiversRoute.name)) {
-        router.popUntilRouteWithName(CaregiversRoute.name);
+      if (router.stackData.any((r) => r.name == CaretakersRoute.name)) {
+        router.popUntilRouteWithName(CaretakersRoute.name);
       } else {
         router.popUntilRouteWithName(AddCaretakerRoute.name);
-        unawaited(router.replace(CaregiversRoute(seniorId: seniorId)));
+        unawaited(router.replace(CaretakersRoute(seniorId: seniorId)));
       }
     }
 

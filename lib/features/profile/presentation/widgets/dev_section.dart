@@ -51,15 +51,15 @@ class DevSection extends ConsumerWidget {
         ),
         AppButton.secondary(
           label: 'Kontrast od opiekuna',
-          onPressed: () => _toggleContrastAsCaregiver(ref),
+          onPressed: () => _toggleContrastAsCaretaker(ref),
         ),
       ],
     );
   }
 
-  // Saves past the app's controller, like a caregiver in the web panel, so
+  // Saves past the app's controller, like a caretaker in the web panel, so
   // the change shows up only after the next refresh.
-  Future<void> _toggleContrastAsCaregiver(WidgetRef ref) async {
+  Future<void> _toggleContrastAsCaretaker(WidgetRef ref) async {
     final repository = ref.read(profileRepositoryProvider);
     final current = await repository.getAccessibilityPreferences(seniorId);
     await repository.saveAccessibilityPreferences(

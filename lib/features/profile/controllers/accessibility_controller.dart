@@ -12,7 +12,7 @@ part 'accessibility_controller.g.dart';
 /// Accessibility preferences of the senior from the profile.
 @Riverpod(keepAlive: true)
 class AccessibilityController extends _$AccessibilityController {
-  // A caregiver can change the preferences remotely and no live event covers
+  // A caretaker can change the preferences remotely and no live event covers
   // them, so they are polled like other screens without live updates.
   static const Duration _refreshInterval = Duration(seconds: 15);
 
@@ -40,7 +40,7 @@ class AccessibilityController extends _$AccessibilityController {
       );
     } catch (_) {
       state = AsyncData(current);
-      // The save fails with 412 when a caregiver changed the preferences in
+      // The save fails with 412 when a caretaker changed the preferences in
       // the meantime, so load the current version before the next try.
       ref.invalidateSelf();
       rethrow;

@@ -1,0 +1,1 @@
+enum ContactChannel { phone, email }
