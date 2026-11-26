@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/invitations/controllers/invitations_controller.dart';
 import 'package:mobile_zpi/features/invitations/presentation/widgets/caretaker_card.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -33,7 +34,11 @@ class CaretakerList extends ConsumerWidget {
         spacing: AppSpacing.sm,
         children: [
           for (final relationship in items)
-            CaretakerCard(seniorId: seniorId, relationship: relationship),
+            CaretakerCard(
+              key: keys.caretakers.card(relationship.relationshipId),
+              seniorId: seniorId,
+              relationship: relationship,
+            ),
         ],
       ),
       AsyncError() => Column(

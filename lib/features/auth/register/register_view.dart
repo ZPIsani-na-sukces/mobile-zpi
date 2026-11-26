@@ -10,6 +10,7 @@ import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart'
 import 'package:mobile_zpi/features/auth/shared/widgets/pass_strength.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_progress.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -164,6 +165,7 @@ class RegisterView extends HookConsumerWidget {
                       subtitle: 'Najpierw powiedz nam coś o sobie',
                       children: [
                         AppTextInput(
+                          key: keys.register.firstNameInput,
                           label: 'Imię',
                           hintText: 'np. Jan',
                           controller: firstNameController,
@@ -175,6 +177,7 @@ class RegisterView extends HookConsumerWidget {
                           onChanged: clearErrors(firstNameError),
                         ),
                         AppTextInput(
+                          key: keys.register.lastNameInput,
                           label: 'Nazwisko',
                           hintText: 'np. Kowalski',
                           controller: lastNameController,
@@ -186,6 +189,7 @@ class RegisterView extends HookConsumerWidget {
                           onChanged: clearErrors(lastNameError),
                         ),
                         AppTextInput(
+                          key: keys.register.phoneInput,
                           label: 'Numer telefonu',
                           hintText: 'np. 600 123 456',
                           controller: phoneController,
@@ -203,6 +207,7 @@ class RegisterView extends HookConsumerWidget {
                           spacing: AppSpacing.sm,
                           children: [
                             AppButton.primary(
+                              key: keys.register.nextButton,
                               label: 'Dalej',
                               onPressed: onNext,
                             ),
@@ -234,6 +239,7 @@ class RegisterView extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             AppTextInput(
+                              key: keys.register.passwordInput,
                               label: 'Hasło',
                               hintText: 'Wpisz hasło',
                               helperText:
@@ -258,6 +264,7 @@ class RegisterView extends HookConsumerWidget {
                           ],
                         ),
                         AppTextInput(
+                          key: keys.register.repeatPasswordInput,
                           label: 'Powtórz hasło',
                           hintText: 'Wpisz hasło ponownie',
                           controller: repeatPasswordController,
@@ -292,6 +299,7 @@ class RegisterView extends HookConsumerWidget {
                           spacing: AppSpacing.sm,
                           children: [
                             AppButton.primary(
+                              key: keys.register.registerButton,
                               label: isLoading
                                   ? 'Rejestrowanie…'
                                   : 'Zarejestruj się',

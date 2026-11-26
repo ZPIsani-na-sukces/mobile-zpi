@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/contacts/controllers/contacts_controller.dart';
 import 'package:mobile_zpi/features/contacts/presentation/widgets/call_button.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -31,6 +32,7 @@ class ContactDetailsView extends ConsumerWidget {
     final colors = context.colors;
 
     return BackScaffold(
+      key: keys.contactDetails.page,
       title: 'Kontakt',
       body: switch (contacts) {
         AsyncData(value: final items) => switch (items

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/invitations/presentation/widgets/add_caretaker_option.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
@@ -29,6 +30,7 @@ class AddCaretakerView extends StatelessWidget {
                 onPressed: () => _scan(context),
               ),
               AppButton.text(
+                key: keys.addCaretaker.enterCodeButton,
                 label: 'Wpisz kod ręcznie',
                 icon: Icons.dialpad,
                 onPressed: () => context.router.push(
@@ -43,6 +45,7 @@ class AddCaretakerView extends StatelessWidget {
             description: 'Pokaż mu swój kod. Wpisze go w swojej aplikacji.',
             actions: [
               AppButton.primary(
+                key: keys.addCaretaker.showMyCodeButton,
                 label: 'Pokaż mój kod',
                 icon: Icons.pin,
                 onPressed: () =>

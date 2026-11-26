@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/sos/data/sos_alarm.dart';
 import 'package:mobile_zpi/features/sos/data/sos_location.dart';
 import 'package:mobile_zpi/features/sos/presentation/widgets/sos_detail_row.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_shadows.dart';
@@ -44,6 +45,7 @@ class SosDetailsCard extends StatelessWidget {
               ),
             if (position == null)
               SosDetailRow(
+                key: keys.sos.locationMissingRow,
                 icon: Icons.location_off_outlined,
                 iconColor: colors.onSurface,
                 title: 'Bez lokalizacji',
@@ -51,6 +53,7 @@ class SosDetailsCard extends StatelessWidget {
               )
             else
               SosDetailRow(
+                key: keys.sos.locationSentRow,
                 icon: Icons.location_on_outlined,
                 iconColor: colors.primary,
                 title: 'Lokalizacja wysłana',

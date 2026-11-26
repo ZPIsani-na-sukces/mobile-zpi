@@ -17,6 +17,7 @@ import 'package:mobile_zpi/features/auth/shared/widgets/pass_strength.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/resend_code_button.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_progress.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -299,7 +300,7 @@ class ResetPassView extends HookConsumerWidget {
                         ),
                         if (isSmsSelected)
                           AppTextInput(
-                            key: const ValueKey(ResetChannel.sms),
+                            key: keys.resetPass.phoneInput,
                             label: 'Numer telefonu',
                             hintText: 'np. 600 123 456',
                             controller: phoneController,
@@ -344,6 +345,7 @@ class ResetPassView extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             AppButton.primary(
+                              key: keys.resetPass.sendCodeButton,
                               label: isRequesting ? 'Wysyłanie…' : 'Wyślij kod',
                               onPressed: isRequesting ? null : onSendCode,
                             ),
@@ -397,6 +399,7 @@ class ResetPassView extends HookConsumerWidget {
                               )
                             else
                               AppCodeInput(
+                                key: keys.resetPass.smsCodeInput,
                                 label: 'Kod z SMS',
                                 controller: codeController,
                                 autoFocus: true,
@@ -463,6 +466,7 @@ class ResetPassView extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             AppTextInput(
+                              key: keys.resetPass.newPasswordInput,
                               label: 'Nowe hasło',
                               hintText: 'Wpisz nowe hasło',
                               helperText:
@@ -487,6 +491,7 @@ class ResetPassView extends HookConsumerWidget {
                           ],
                         ),
                         AppTextInput(
+                          key: keys.resetPass.repeatPasswordInput,
                           label: 'Powtórz nowe hasło',
                           hintText: 'Wpisz nowe hasło ponownie',
                           controller: repeatPasswordController,
@@ -524,6 +529,7 @@ class ResetPassView extends HookConsumerWidget {
                           spacing: AppSpacing.sm,
                           children: [
                             AppButton.primary(
+                              key: keys.resetPass.changePasswordButton,
                               label: isResetting
                                   ? 'Zapisywanie…'
                                   : 'Zmień hasło',

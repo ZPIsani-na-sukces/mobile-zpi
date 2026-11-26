@@ -3,10 +3,10 @@ import 'package:mobile_zpi/features/invitations/data/invitation_exceptions.dart'
 import 'package:mobile_zpi/features/invitations/data/models/care_invitation.dart';
 import 'package:mobile_zpi/features/invitations/data/repository/invitations_repository.dart';
 
-/// Code `123456` previews and accepts, any other one is invalid.
-class MockInvitationsRepository implements InvitationsRepository {
-  static const _validCode = '123456';
+/// Previews and accepts, any other code is invalid.
+const mockInvitationCode = '123456';
 
+class MockInvitationsRepository implements InvitationsRepository {
   final List<CareRelationship> _caretakers = [
     CareRelationship(
       relationshipId: 'relationship-1',
@@ -49,7 +49,7 @@ class MockInvitationsRepository implements InvitationsRepository {
 
   @override
   Future<InvitationPreview> preview(String code) async {
-    if (code != _validCode) {
+    if (code != mockInvitationCode) {
       throw const InvitationCodeException(InvitationCodeError.invalid);
     }
     final now = DateTime.now();
@@ -63,7 +63,7 @@ class MockInvitationsRepository implements InvitationsRepository {
 
   @override
   Future<void> accept(String code) async {
-    if (code != _validCode) {
+    if (code != mockInvitationCode) {
       throw const InvitationCodeException(InvitationCodeError.invalid);
     }
     _caretakers.add(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/resend_code_button.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
 import 'package:mobile_zpi/features/profile/data/models/contact_channel.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -71,6 +72,7 @@ class ContactCodeStep extends StatelessWidget {
               )
             else
               AppTextInput(
+                key: keys.contactChange.emailCodeInput,
                 label: 'Kod z e-maila',
                 hintText: 'Wklej kod z wiadomości',
                 controller: emailCodeController,
@@ -113,6 +115,7 @@ class ContactCodeStep extends StatelessWidget {
           spacing: AppSpacing.sm,
           children: [
             AppButton.primary(
+              key: keys.contactChange.confirmButton,
               label: isConfirming ? 'Potwierdzanie…' : 'Potwierdź',
               onPressed: isSending || isConfirming ? null : onConfirm,
             ),

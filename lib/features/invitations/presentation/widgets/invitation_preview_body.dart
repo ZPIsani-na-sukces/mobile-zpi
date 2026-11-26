@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/invitations/data/models/care_invitation.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -54,7 +55,11 @@ class InvitationPreviewBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        AppButton.primary(label: 'Przyjmij', onPressed: onAccept),
+        AppButton.primary(
+          key: keys.acceptInvitation.acceptButton,
+          label: 'Przyjmij',
+          onPressed: onAccept,
+        ),
         const SizedBox(height: AppSpacing.sm),
         AppButton.text(label: 'Anuluj', onPressed: onCancel),
       ],

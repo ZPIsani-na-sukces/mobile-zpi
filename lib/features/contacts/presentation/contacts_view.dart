@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/contacts/controllers/contacts_controller.dart';
 import 'package:mobile_zpi/features/contacts/presentation/widgets/contact_tile.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/widgets/app_empty_card.dart';
@@ -65,6 +66,7 @@ class _ContactList extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final contact = items[index];
                   return ContactTile(
+                    key: keys.contacts.contactTile(contact.contactId),
                     name: contact.displayName,
                     relationship: contact.relationshipLabel,
                     phoneNumber: contact.phoneNumber,
