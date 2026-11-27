@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/med_history/data/repository/mock_med_history_repository.dart';
 import 'package:mobile_zpi/features/profile/data/repository/profile_repository.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -32,14 +33,17 @@ class DevSection extends ConsumerWidget {
           onPressed: () => context.router.push(const PlaygroudRoute()),
         ),
         AppButton.secondary(
+          key: keys.profile.devLoginButton,
           label: 'Logowanie',
           onPressed: () => context.router.push(const LoginRoute()),
         ),
         AppButton.secondary(
+          key: keys.profile.devRegisterButton,
           label: 'Rejestracja',
           onPressed: () => context.router.push(const RegisterRoute()),
         ),
         AppButton.secondary(
+          key: keys.profile.devResetPassButton,
           label: 'Reset hasła',
           onPressed: () => context.router.push(const ResetPassRoute()),
         ),

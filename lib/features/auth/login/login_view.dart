@@ -7,6 +7,7 @@ import 'package:mobile_zpi/features/auth/login/controllers/login_controller.dart
 import 'package:mobile_zpi/features/auth/shared/data/auth_exceptions.dart';
 import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/logo_placeholder.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -77,6 +78,7 @@ class LoginView extends HookConsumerWidget {
     void onSignUp() => context.router.push(const RegisterRoute());
 
     return Scaffold(
+      key: keys.login.page,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -115,6 +117,7 @@ class LoginView extends HookConsumerWidget {
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         AppTextInput(
+                          key: keys.login.identifierInput,
                           label: 'E-mail lub numer telefonu',
                           hintText: 'np. jan@kowalski.pl',
                           controller: identifierController,
@@ -130,6 +133,7 @@ class LoginView extends HookConsumerWidget {
                           spacing: AppSpacing.xs,
                           children: [
                             AppTextInput(
+                              key: keys.login.passwordInput,
                               label: 'Hasło',
                               hintText: 'Wpisz hasło',
                               controller: passwordController,
@@ -161,6 +165,7 @@ class LoginView extends HookConsumerWidget {
                         if (loginState.error case final error?
                             when error is! PhoneVerificationRequiredException)
                           Text(
+                            key: keys.login.errorText,
                             _loginErrorMessage(error),
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMedium.copyWith(
@@ -172,6 +177,7 @@ class LoginView extends HookConsumerWidget {
                           spacing: AppSpacing.sm,
                           children: [
                             AppButton.primary(
+                              key: keys.login.loginButton,
                               label: isLoading ? 'Logowanie…' : 'Zaloguj się',
                               onPressed: isLoading ? null : onLogin,
                             ),

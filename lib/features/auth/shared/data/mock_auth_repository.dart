@@ -10,6 +10,16 @@ import 'package:mobile_zpi/features/auth/shared/data/models/auth_session.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/auth_user.dart';
 import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart';
 
+/// The SMS code that activates an account and resets a password.
+const mockSmsCode = '123456';
+const mockWrongPassword = 'wrong';
+
+/// Login with it asks for phone verification first.
+const mockUnverifiedPassword = 'unverified';
+
+/// Like [mockUnverifiedPassword], but the SMS code is already sent.
+const mockUnverifiedPendingPassword = 'unverified-pending';
+
 class MockAuthRepository implements AuthRepository {
   static const _delay = Duration(milliseconds: 500);
 
@@ -20,11 +30,13 @@ class MockAuthRepository implements AuthRepository {
   @override
   Future<AuthSession> login(String identifier, String password) async {
     await Future<void>.delayed(_delay);
-    if (password == 'wrong') throw const InvalidCredentialsException();
-    if (password.startsWith('unverified') && !_phoneVerified) {
+    if (password == mockWrongPassword) {
+      throw const InvalidCredentialsException();
+    }
+    if (password.startsWith(mockUnverifiedPassword) && !_phoneVerified) {
       throw PhoneVerificationRequiredException(
         verificationTicket: 'mock-verification-ticket',
-        phoneChallenge: password == 'unverified-pending'
+        phoneChallenge: password == mockUnverifiedPendingPassword
             ? PhoneChallenge(
                 challengeId: 'mock-pending-challenge',
                 resendAfter: DateTime.now().add(const Duration(seconds: 30)),
@@ -79,7 +91,7 @@ class MockAuthRepository implements AuthRepository {
   Future<void> activateAccount(ActivateAccRequest request) async {
     await Future<void>.delayed(_delay);
     switch (request.code) {
-      case '123456':
+      case mockSmsCode:
         _phoneVerified = true;
       case '000000':
         throw const CodeExpiredException();
@@ -109,7 +121,7 @@ class MockAuthRepository implements AuthRepository {
   Future<void> verifyResetCode(VerifyResetPassCodeRequest request) async {
     await Future<void>.delayed(_delay);
     switch (request.code) {
-      case '123456':
+      case mockSmsCode:
         return;
       case '000000':
         throw const CodeExpiredException();
@@ -122,7 +134,7 @@ class MockAuthRepository implements AuthRepository {
   Future<void> setNewPassword(SetNewPassRequest request) async {
     await Future<void>.delayed(_delay);
     switch (request.code) {
-      case '123456':
+      case mockSmsCode:
         return;
       case '000000':
         throw const CodeExpiredException();

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/invitations/controllers/invitations_controller.dart';
 import 'package:mobile_zpi/features/invitations/presentation/widgets/caretaker_list.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
@@ -31,6 +32,7 @@ class CaretakersView extends ConsumerWidget {
           CaretakerList(seniorId: seniorId),
           const SizedBox(height: AppSpacing.xl),
           AppButton.primary(
+            key: keys.caretakers.addButton,
             label: 'Dodaj opiekuna',
             icon: Icons.person_add,
             onPressed: openAddCaretaker,

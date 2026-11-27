@@ -7,6 +7,7 @@ import 'package:mobile_zpi/features/routine/presentation/routine_labels.dart';
 import 'package:mobile_zpi/features/routine/presentation/widgets/routine_inactive_banner.dart';
 import 'package:mobile_zpi/features/routine/presentation/widgets/routine_instruction_card.dart';
 import 'package:mobile_zpi/features/routine/presentation/widgets/routine_today_card.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -34,6 +35,7 @@ class RoutineTaskView extends ConsumerWidget {
         ref.watch(profileControllerProvider).value?.role == 'senior';
 
     return BackScaffold(
+      key: keys.routineTask.page,
       title: 'Zadanie',
       body: switch (task) {
         AsyncData(:final value) => ListView(

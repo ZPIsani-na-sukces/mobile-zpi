@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/invitations/controllers/invitations_controller.dart';
 import 'package:mobile_zpi/features/invitations/data/invitation_exceptions.dart';
 import 'package:mobile_zpi/features/invitations/presentation/widgets/invitation_preview_body.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -107,6 +108,7 @@ class AcceptInvitationView extends HookConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 AppCodeInput(
+                  key: keys.acceptInvitation.codeInput,
                   controller: codeController,
                   autoFocus: code == null,
                   errorText: switch (state) {

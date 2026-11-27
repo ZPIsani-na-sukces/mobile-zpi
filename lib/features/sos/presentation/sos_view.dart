@@ -8,6 +8,7 @@ import 'package:mobile_zpi/features/sos/controllers/sos_controller.dart';
 import 'package:mobile_zpi/features/sos/data/sos_alarm.dart';
 import 'package:mobile_zpi/features/sos/presentation/widgets/sos_details_card.dart';
 import 'package:mobile_zpi/features/sos/presentation/widgets/sos_status.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
@@ -38,6 +39,7 @@ class SosView extends HookConsumerWidget {
 
     final status = switch (flow.phase) {
       SosPhase.locating => SosStatus(
+        key: keys.sos.status(SosPhase.locating),
         icon: Icons.my_location,
         color: colors.primary,
         onColor: colors.onPrimary,
@@ -46,6 +48,7 @@ class SosView extends HookConsumerWidget {
         body: 'Za chwilę wyślemy wezwanie do opiekuna.',
       ),
       SosPhase.sending => SosStatus(
+        key: keys.sos.status(SosPhase.sending),
         icon: Icons.send,
         color: colors.primary,
         onColor: colors.onPrimary,
@@ -54,6 +57,7 @@ class SosView extends HookConsumerWidget {
         body: 'Proszę czekać. To potrwa tylko chwilę.',
       ),
       SosPhase.waiting => SosStatus(
+        key: keys.sos.status(SosPhase.waiting),
         icon: Icons.check,
         color: colors.success,
         onColor: colors.onSuccess,
@@ -67,6 +71,7 @@ class SosView extends HookConsumerWidget {
         },
       ),
       SosPhase.failed => SosStatus(
+        key: keys.sos.status(SosPhase.failed),
         icon: Icons.priority_high,
         color: colors.error,
         onColor: colors.onError,
@@ -83,7 +88,11 @@ class SosView extends HookConsumerWidget {
       ],
       SosPhase.sending => const <Widget>[],
       SosPhase.waiting => [
-        AppButton.primary(label: 'Zamknij', onPressed: close),
+        AppButton.primary(
+          key: keys.sos.closeButton,
+          label: 'Zamknij',
+          onPressed: close,
+        ),
       ],
       SosPhase.failed => [
         AppButton.primary(

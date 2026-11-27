@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/auth/shared/controllers/auth_controller.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
@@ -38,6 +39,7 @@ class LogoutButton extends ConsumerWidget {
               onPressed: () => Navigator.of(dialogContext).pop(false),
             ),
             AppButton.primary(
+              key: keys.profile.logoutConfirmButton,
               label: 'Wyloguj',
               onPressed: () => Navigator.of(dialogContext).pop(true),
             ),

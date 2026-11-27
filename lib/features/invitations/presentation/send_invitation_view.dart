@@ -7,6 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/invitations/controllers/invitations_controller.dart';
 import 'package:mobile_zpi/features/invitations/data/models/care_invitation.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -91,6 +92,7 @@ class _Code extends HookWidget {
               label: 'Kod zaproszenia ${code.split('').join(' ')}',
               excludeSemantics: true,
               child: Text(
+                key: keys.sendInvitation.code,
                 '${code.substring(0, 3)} ${code.substring(3)}',
                 textAlign: TextAlign.center,
                 style: AppTypography.displayLarge.copyWith(
@@ -115,6 +117,7 @@ class _Code extends HookWidget {
               AppButton.primary(label: 'Utwórz nowy kod', onPressed: onExpired)
             else
               AppButton.secondary(
+                key: keys.sendInvitation.copyButton,
                 label: 'Skopiuj kod',
                 icon: Icons.copy,
                 onPressed: () async {

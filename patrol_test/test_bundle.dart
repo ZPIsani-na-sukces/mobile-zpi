@@ -13,7 +13,22 @@ import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-import 'smoke_test.dart' as smoke_test;
+import 'auth/login_test.dart' as auth__login_test;
+import 'auth/login_unverified_test.dart' as auth__login_unverified_test;
+import 'auth/login_wrong_password_test.dart' as auth__login_wrong_password_test;
+import 'auth/logout_test.dart' as auth__logout_test;
+import 'auth/register_test.dart' as auth__register_test;
+import 'auth/reset_password_test.dart' as auth__reset_password_test;
+import 'home/home_contacts_test.dart' as home__home_contacts_test;
+import 'home/home_shortcuts_test.dart' as home__home_shortcuts_test;
+import 'profile/caretakers_manage_test.dart' as profile__caretakers_manage_test;
+import 'profile/caretakers_send_code_test.dart' as profile__caretakers_send_code_test;
+import 'profile/profile_edit_test.dart' as profile__profile_edit_test;
+import 'profile/profile_email_change_test.dart' as profile__profile_email_change_test;
+import 'profile/profile_high_contrast_test.dart' as profile__profile_high_contrast_test;
+import 'sos/sos_send_test.dart' as sos__sos_send_test;
+import 'sos/sos_without_location_test.dart' as sos__sos_without_location_test;
+import 'vps/vps_smoke_test.dart' as vps__vps_smoke_test;
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -77,7 +92,7 @@ Future<void> main() async {
     final dartTestGroup = createDartTestGroup(
       topLevelGroup,
       tags: null,
-      excludeTags: null,
+      excludeTags: 'vps',
     );
     if (constants.testDiscoveryEnabled) {
       // Build-time discovery: serialize the WHOLE tree (same shape as
@@ -105,7 +120,22 @@ Future<void> main() async {
   });
 
 // START: GENERATED TEST GROUPS
-  group('smoke_test', smoke_test.main);
+  group('auth.login_test', auth__login_test.main);
+  group('auth.login_unverified_test', auth__login_unverified_test.main);
+  group('auth.login_wrong_password_test', auth__login_wrong_password_test.main);
+  group('auth.logout_test', auth__logout_test.main);
+  group('auth.register_test', auth__register_test.main);
+  group('auth.reset_password_test', auth__reset_password_test.main);
+  group('home.home_contacts_test', home__home_contacts_test.main);
+  group('home.home_shortcuts_test', home__home_shortcuts_test.main);
+  group('profile.caretakers_manage_test', profile__caretakers_manage_test.main);
+  group('profile.caretakers_send_code_test', profile__caretakers_send_code_test.main);
+  group('profile.profile_edit_test', profile__profile_edit_test.main);
+  group('profile.profile_email_change_test', profile__profile_email_change_test.main);
+  group('profile.profile_high_contrast_test', profile__profile_high_contrast_test.main);
+  group('sos.sos_send_test', sos__sos_send_test.main);
+  group('sos.sos_without_location_test', sos__sos_without_location_test.main);
+  group('vps.vps_smoke_test', vps__vps_smoke_test.main);
 // END: GENERATED TEST GROUPS
 
   if (constants.testDiscoveryEnabled) {

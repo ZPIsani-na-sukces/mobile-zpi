@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
 import 'package:mobile_zpi/features/profile/data/models/contact_channel.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/theme/app_typography.dart';
@@ -42,6 +43,7 @@ class ContactValueStep extends StatelessWidget {
           : 'Wyślemy na niego kod, aby potwierdzić zmianę',
       children: [
         AppTextInput(
+          key: keys.contactChange.valueInput,
           label: isPhone ? 'Nowy numer telefonu' : 'Nowy adres e-mail',
           hintText: isPhone
               ? 'np. 600 123 456'
@@ -75,6 +77,7 @@ class ContactValueStep extends StatelessWidget {
           ),
         const SizedBox(height: AppSpacing.sm),
         AppButton.primary(
+          key: keys.contactChange.sendCodeButton,
           label: isSending ? 'Wysyłanie…' : 'Wyślij kod',
           onPressed: isSending ? null : onSubmit,
         ),

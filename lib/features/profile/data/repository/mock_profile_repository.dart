@@ -7,9 +7,9 @@ import 'package:mobile_zpi/features/profile/data/models/detected_address.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
 import 'package:mobile_zpi/features/profile/data/repository/profile_repository.dart';
 
-class MockProfileRepository implements ProfileRepository {
-  static const _contactChangeCode = '123456';
+const mockContactChangeCode = '123456';
 
+class MockProfileRepository implements ProfileRepository {
   final _pendingContactChanges = <String, String>{};
 
   Account _account = const Account(
@@ -85,7 +85,7 @@ class MockProfileRepository implements ProfileRepository {
     required String code,
   }) async {
     final value = _pendingContactChanges[challengeId];
-    if (value == null || code != _contactChangeCode) {
+    if (value == null || code != mockContactChangeCode) {
       throw const InvalidCodeException();
     }
     _pendingContactChanges.remove(challengeId);

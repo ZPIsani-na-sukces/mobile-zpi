@@ -18,6 +18,7 @@ import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_butto
 import 'package:mobile_zpi/features/geozones/presentation/widgets/map_back_home_button.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_navigation_tile.dart';
 import 'package:mobile_zpi/features/geozones/presentation/widgets/walking_route_preview_tile.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 
 @RoutePage()
@@ -78,6 +79,7 @@ class GeozoneView extends HookConsumerWidget {
     };
 
     return Scaffold(
+      key: keys.geozone.page,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -109,7 +111,7 @@ class GeozoneView extends HookConsumerWidget {
           Positioned(
             top: MediaQuery.paddingOf(context).top + AppSpacing.md,
             left: AppSpacing.md,
-            child: const MapBackButton(),
+            child: MapBackButton(key: keys.geozone.backButton),
           ),
         ],
       ),

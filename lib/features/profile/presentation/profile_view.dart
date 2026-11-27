@@ -11,6 +11,7 @@ import 'package:mobile_zpi/features/profile/presentation/widgets/high_contrast_s
 import 'package:mobile_zpi/features/profile/presentation/widgets/logout_button.dart';
 import 'package:mobile_zpi/features/profile/presentation/widgets/profile_info_card.dart';
 import 'package:mobile_zpi/features/profile/presentation/widgets/profile_info_row.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -66,6 +67,7 @@ class _ProfileBody extends ConsumerWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         AppActionCard(
+          key: keys.profile.caretakersCard,
           icon: Icons.group,
           title: 'Opiekunowie',
           subtitle: 'Zobacz swoich opiekunów i zaproś nowych',
@@ -82,11 +84,13 @@ class _ProfileBody extends ConsumerWidget {
         ProfileInfoCard(
           rows: [
             ProfileInfoRow(
+              key: keys.profile.nameRow,
               label: 'Imię i nazwisko',
               value: '${account.firstName} ${account.lastName}',
             ),
             ProfileInfoRow(label: 'Telefon', value: account.phoneNumber),
             ProfileInfoRow(
+              key: keys.profile.emailRow,
               label: 'E-mail',
               value: account.email ?? 'Brak adresu e-mail',
             ),
@@ -95,6 +99,7 @@ class _ProfileBody extends ConsumerWidget {
               value: account.phoneVerified ? 'Tak' : 'Nie',
             ),
             ProfileInfoRow(
+              key: keys.profile.emailVerifiedRow,
               label: 'E-mail potwierdzony',
               value: account.emailVerified ? 'Tak' : 'Nie',
             ),
@@ -112,6 +117,7 @@ class _ProfileBody extends ConsumerWidget {
           AsyncData(:final value) => ProfileInfoCard(
             rows: [
               ProfileInfoRow(
+                key: keys.profile.addressRow,
                 label: 'Adres',
                 value:
                     value?.formattedAddress ?? 'Brak ustawionego adresu domu',
@@ -139,14 +145,15 @@ class _ProfileBody extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        const HighContrastSwitch(),
+        HighContrastSwitch(key: keys.profile.highContrastSwitch),
         const SizedBox(height: AppSpacing.xxl),
         AppButton.primary(
+          key: keys.profile.editButton,
           label: 'Edytuj',
           onPressed: () => context.router.push(const ProfileEditRoute()),
         ),
         const SizedBox(height: AppSpacing.md),
-        const LogoutButton(),
+        LogoutButton(key: keys.profile.logoutButton),
         if (AppEnv.isDev) ...[
           const SizedBox(height: AppSpacing.xl),
           DevSection(seniorId: account.userId),

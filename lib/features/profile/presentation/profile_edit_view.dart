@@ -12,6 +12,7 @@ import 'package:mobile_zpi/features/profile/data/models/contact_channel.dart';
 import 'package:mobile_zpi/features/profile/data/models/home_address.dart';
 import 'package:mobile_zpi/features/profile/data/repository/profile_repository.dart';
 import 'package:mobile_zpi/features/profile/presentation/profile_messages.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -201,6 +202,7 @@ class _ProfileEditForm extends HookConsumerWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         AppTextInput(
+          key: keys.profileEdit.firstNameInput,
           controller: firstNameController,
           label: 'Imię',
           textCapitalization: TextCapitalization.words,
@@ -210,6 +212,7 @@ class _ProfileEditForm extends HookConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         AppTextInput(
+          key: keys.profileEdit.lastNameInput,
           controller: lastNameController,
           label: 'Nazwisko',
           textCapitalization: TextCapitalization.words,
@@ -247,6 +250,7 @@ class _ProfileEditForm extends HookConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         AppActionCard(
+          key: keys.profileEdit.emailChangeCard,
           icon: Icons.mail_outline,
           title: account.email == null
               ? 'Dodaj adres e-mail'
@@ -305,6 +309,7 @@ class _ProfileEditForm extends HookConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         AppTextInput(
+          key: keys.profileEdit.cityInput,
           controller: cityController,
           label: 'Miasto',
           textCapitalization: TextCapitalization.words,
@@ -313,6 +318,7 @@ class _ProfileEditForm extends HookConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         AppTextInput(
+          key: keys.profileEdit.streetInput,
           controller: streetController,
           label: 'Ulica',
           optionalText: 'Opcjonalnie',
@@ -341,7 +347,11 @@ class _ProfileEditForm extends HookConsumerWidget {
           ),
         ],
         const SizedBox(height: AppSpacing.xl),
-        AppButton.primary(label: 'Zapisz', onPressed: busy ? null : onSave),
+        AppButton.primary(
+          key: keys.profileEdit.saveButton,
+          label: 'Zapisz',
+          onPressed: busy ? null : onSave,
+        ),
       ],
     );
   }

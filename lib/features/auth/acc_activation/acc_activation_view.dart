@@ -11,6 +11,7 @@ import 'package:mobile_zpi/features/auth/shared/data/models/phone_challenge.dart
 import 'package:mobile_zpi/features/auth/shared/validation/auth_validators.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/resend_code_button.dart';
 import 'package:mobile_zpi/features/auth/shared/widgets/step_card.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -146,6 +147,7 @@ class AccActivationView extends HookConsumerWidget {
               spacing: AppSpacing.md,
               children: [
                 AppCodeInput(
+                  key: keys.accActivation.codeInput,
                   label: 'Kod z SMS',
                   controller: codeController,
                   autoFocus: true,

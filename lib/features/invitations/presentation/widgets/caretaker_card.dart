@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_zpi/features/invitations/controllers/invitations_controller.dart';
 import 'package:mobile_zpi/features/invitations/data/models/care_invitation.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_radius.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
@@ -61,7 +62,11 @@ class CaretakerCard extends ConsumerWidget {
           const SizedBox(height: AppSpacing.md),
           Divider(height: 1, thickness: 1, color: context.colors.outline),
           const SizedBox(height: AppSpacing.sm),
-          AppButton.text(label: 'Usuń opiekuna', onPressed: onRemove),
+          AppButton.text(
+            key: keys.caretakers.removeButton(relationship.relationshipId),
+            label: 'Usuń opiekuna',
+            onPressed: onRemove,
+          ),
         ],
       ),
     );
@@ -92,6 +97,7 @@ class CaretakerCard extends ConsumerWidget {
             onPressed: () => Navigator.of(dialogContext).pop(false),
           ),
           AppButton.primary(
+            key: keys.caretakers.removeConfirmButton,
             label: 'Usuń',
             onPressed: () => Navigator.of(dialogContext).pop(true),
           ),

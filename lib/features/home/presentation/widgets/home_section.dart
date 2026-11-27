@@ -11,12 +11,14 @@ class HomeSection extends StatelessWidget {
     required this.child,
     this.actionLabel,
     this.onAction,
+    this.actionKey,
   });
 
   final String title;
   final Widget child;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final Key? actionKey;
 
   static const double _actionMinHeight = 48;
   static const double _chevronSize = 24;
@@ -46,6 +48,7 @@ class HomeSection extends StatelessWidget {
               ),
               if (label != null && onAction != null)
                 InkWell(
+                  key: actionKey,
                   onTap: onAction,
                   borderRadius: AppRadius.mdAll,
                   highlightColor: colors.surfacePressed,

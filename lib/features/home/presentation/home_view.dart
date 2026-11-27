@@ -10,6 +10,7 @@ import 'package:mobile_zpi/features/home/presentation/widgets/home_zone_tile.dar
 import 'package:mobile_zpi/features/home/presentation/widgets/upcoming_task_tile.dart';
 import 'package:mobile_zpi/features/profile/controllers/profile_controller.dart';
 import 'package:mobile_zpi/features/sos/presentation/sos_button.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/router/app_router.gr.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 import 'package:mobile_zpi/widgets/app_button.dart';
@@ -51,12 +52,14 @@ class _HomeBody extends ConsumerWidget {
 
     return switch (home) {
       AsyncData(value: final overview) => ListView(
+        key: keys.home.page,
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
           HomeGreeting(firstName: firstName),
           const SizedBox(height: AppSpacing.xl),
           Center(
             child: SosButton(
+              key: keys.home.sosButton,
               onPressed: () =>
                   context.router.push(SosRoute(seniorId: seniorId)),
             ),
@@ -66,6 +69,7 @@ class _HomeBody extends ConsumerWidget {
           const SizedBox(height: AppSpacing.xxl),
           HomeSection(
             title: 'Kontakty',
+            actionKey: keys.home.allContactsButton,
             actionLabel: overview.contacts.isEmpty ? null : 'Wszystkie',
             onAction: () => context.router.push(const ContactsRoute()),
             child: overview.contacts.isEmpty
@@ -79,6 +83,7 @@ class _HomeBody extends ConsumerWidget {
                     children: [
                       for (final contact in overview.contacts)
                         ContactTile(
+                          key: keys.home.contactTile(contact.contactId),
                           name: contact.displayName,
                           relationship: contact.relationshipLabel,
                           phoneNumber: contact.phoneNumber,
@@ -106,6 +111,7 @@ class _HomeBody extends ConsumerWidget {
                     children: [
                       for (final task in overview.tasks)
                         UpcomingTaskTile(
+                          key: keys.home.taskTile(task.occurrenceId),
                           task: task,
                           onTap: () async {
                             await context.router.push(
@@ -142,6 +148,7 @@ class _HomeBody extends ConsumerWidget {
                     children: [
                       for (final zone in overview.zones.take(3))
                         HomeZoneTile(
+                          key: keys.home.zoneTile(zone.zoneId),
                           zone: zone,
                           onTap: () => context.router.push(
                             GeozoneRoute(

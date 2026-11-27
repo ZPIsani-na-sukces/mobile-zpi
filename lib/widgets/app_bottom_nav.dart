@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_zpi/keys.dart';
 import 'package:mobile_zpi/theme/app_colors.dart';
 import 'package:mobile_zpi/theme/app_spacing.dart';
 
@@ -22,25 +23,27 @@ class AppBottomNav extends StatelessWidget {
       child: BottomNavigationBar(
         currentIndex: tabsRouter.activeIndex,
         onTap: tabsRouter.setActiveIndex,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: _BottomNavIcon(Icons.home_outlined),
-            activeIcon: _BottomNavIcon(Icons.home_rounded),
+            key: keys.widgets.navHome,
+            icon: const _BottomNavIcon(Icons.home_outlined),
+            activeIcon: const _BottomNavIcon(Icons.home_rounded),
             label: 'Start',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: _BottomNavIcon(Icons.event_note_outlined),
             activeIcon: _BottomNavIcon(Icons.event_note_rounded),
             label: 'Zadania',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: _BottomNavIcon(Icons.assignment_outlined),
             activeIcon: _BottomNavIcon(Icons.assignment_rounded),
             label: 'Zdrowie',
           ),
           BottomNavigationBarItem(
-            icon: _BottomNavIcon(Icons.person_outline_rounded),
-            activeIcon: _BottomNavIcon(Icons.person_rounded),
+            key: keys.widgets.navProfile,
+            icon: const _BottomNavIcon(Icons.person_outline_rounded),
+            activeIcon: const _BottomNavIcon(Icons.person_rounded),
             label: 'Profil',
           ),
         ],
